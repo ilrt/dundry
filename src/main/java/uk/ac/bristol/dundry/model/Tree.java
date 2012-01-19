@@ -4,6 +4,7 @@
  */
 package uk.ac.bristol.dundry.model;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -12,14 +13,17 @@ import java.util.List;
  */
 public class Tree<T> {
     
-    List<T> children;
+    private final List<Tree<T>> children;
+    private final T node;
     
-    public Tree() {
-        
+    public Tree(T leaf) {
+        this.node = leaf;
+        this.children = Collections.EMPTY_LIST;
     }
     
-    public Tree(List<T> children) {
-        
+    public Tree(T node, List<Tree<T>> children) {
+        this.node = node;
+        this.children = children;
     }
     
 }
