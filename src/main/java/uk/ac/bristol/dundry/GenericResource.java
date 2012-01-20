@@ -11,6 +11,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.ac.bristol.dundry.dao.FileSystemLister;
 import uk.ac.bristol.dundry.model.Tree;
@@ -23,11 +26,13 @@ import uk.ac.bristol.dundry.model.Tree;
 @Component
 @Path("generic")
 public class GenericResource {
-
+    
+    Logger log = LoggerFactory.getLogger(GenericResource.class);
+    
     @Context
     private UriInfo context;
     
-    @Inject
+    @Autowired
     private FileSystemLister fsLister;
     
     /**
@@ -50,6 +55,7 @@ public class GenericResource {
     @GET
     @Produces("text/plain")
     public String listDir(@PathParam("dir") String path) {
+        log.warn("Path is: {}, fsLister is: {}", path, fsLister);
         return fsLister.getTreeAt(path).toString();
     }
 }

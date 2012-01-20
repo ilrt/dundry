@@ -6,11 +6,13 @@ package uk.ac.bristol.dundry.model;
 
 import java.util.Collections;
 import java.util.List;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author Damian Steer <d.steer@bris.ac.uk>
  */
+@XmlRootElement
 public class Tree<T> {
     
     private final List<Tree<T>> children;
