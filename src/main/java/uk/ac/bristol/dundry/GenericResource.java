@@ -58,4 +58,12 @@ public class GenericResource {
         log.warn("Path is: {}, fsLister is: {}", path, fsLister);
         return fsLister.getTreeAt(path).toString();
     }
+    
+    @Path("/listj/{dir}")
+    @GET
+    @Produces("application/json")
+    public Tree<String> listDirJ(@PathParam("dir") String path) {
+        log.warn("Path is: {}, fsLister is: {}", path, fsLister);
+        return fsLister.getTreeAt(path);
+    }
 }

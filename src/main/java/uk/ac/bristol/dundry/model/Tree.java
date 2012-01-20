@@ -18,6 +18,11 @@ public class Tree<T> {
     private final List<Tree<T>> children;
     private final T node;
     
+    public Tree() {
+        this.node = null;
+        this.children = Collections.EMPTY_LIST;
+    }
+    
     public Tree(T leaf) {
         this.node = leaf;
         this.children = Collections.EMPTY_LIST;
@@ -28,8 +33,10 @@ public class Tree<T> {
         this.children = children;
     }
     
+    public void setNode(T t) { }
     public T getNode() { return node; }
     
+    public void setChildren(List<Tree<T>> t) { }
     public List<Tree<T>> getChildren() { return children; }
     
     @Override
