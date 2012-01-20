@@ -26,4 +26,18 @@ public class Tree<T> {
         this.children = children;
     }
     
+    public T getNode() { return node; }
+    
+    public List<Tree<T>> getChildren() { return children; }
+    
+    @Override
+    public String toString() {
+        return buildString("", new StringBuilder()).toString();
+    }
+    
+    private StringBuilder buildString(String indent, StringBuilder in) {
+        in.append(indent).append("[").append(node.toString()).append("]\n");
+        for (Tree<T> c: children) c.buildString(indent + " ", in);
+        return in;
+    }
 }

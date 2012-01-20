@@ -48,8 +48,8 @@ public class GenericResource {
     
     @Path("/list/{dir}")
     @GET
-    @Produces("application/json")
-    public Tree<String> listDir(@PathParam("dir") String path) {
-        return fsLister.getTreeAt(path);
+    @Produces("text/plain")
+    public String listDir(@PathParam("dir") String path) {
+        return fsLister.getTreeAt(path).toString();
     }
 }
