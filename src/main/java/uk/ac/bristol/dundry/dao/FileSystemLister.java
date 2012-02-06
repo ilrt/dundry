@@ -17,9 +17,18 @@ import uk.ac.bristol.dundry.model.Tree;
  */
 @Component
 public class FileSystemLister {
+    private final Path root;
+            
+    public FileSystemLister(String base) {
+        root = Paths.get(base);
+    }
+    
+    public Path getPath(String relative) {
+        return root.resolve(relative);
+    }
     
     public Tree<String> getTreeAt(String base) {
-        return getTreeAt(Paths.get("/tmp/" + base));
+        return getTreeAt(root.resolve(base));
     }
     
     private Tree<String> getTreeAt(Path start) {
