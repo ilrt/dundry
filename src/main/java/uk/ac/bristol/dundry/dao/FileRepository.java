@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
+import org.springframework.stereotype.Component;
 
 /**
  *
@@ -35,4 +36,6 @@ public class FileRepository {
         
         return Files.createDirectory(root.resolve(dirName));
     }
+    
+    
 }

@@ -25,4 +25,12 @@
     
     <context:component-scan base-package="uk.ac.bristol.dundry" />
     
+    <bean class="uk.ac.bristol.dundry.dao.FileSystemLister">
+        <constructor-arg value="/tmp/working"/>
+    </bean>
+    
+    <bean class="uk.ac.bristol.dundry.dao.FileRepository">
+        <constructor-arg value="/tmp/repo"/>
+    </bean>
+    
 </beans>

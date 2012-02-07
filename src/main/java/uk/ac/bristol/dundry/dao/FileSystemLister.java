@@ -15,7 +15,6 @@ import uk.ac.bristol.dundry.model.Tree;
  *
  * @author Damian Steer <d.steer@bris.ac.uk>
  */
-@Component
 public class FileSystemLister {
     private final Path root;
             
