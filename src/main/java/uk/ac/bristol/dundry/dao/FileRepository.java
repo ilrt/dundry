@@ -8,8 +8,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.UUID;
-import org.springframework.stereotype.Component;
+import uk.ac.bristol.dundry.Util;
 
 /**
  *
@@ -26,16 +25,9 @@ public class FileRepository {
         root = Paths.get(base);
     }
     
-    public Path create() throws IOException {
-        // Create a random id!
-        UUID randId = UUID.randomUUID();
-        String baseEncoded = 
-                Long.toString(randId.getMostSignificantBits(), RADIX) +
-                Long.toString(randId.getLeastSignificantBits(), RADIX);
-        String dirName = baseEncoded.replace("-",""); // remove sign bits
-        
-        return Files.createDirectory(root.resolve(dirName));
+    public Path create(String id, Path source) throws IOException {
+        Path target = Files.createDirectory(root.resolve(id));
+        Util.copyDirectory(source, target);
+        return target;
     }
-    
-    
 }

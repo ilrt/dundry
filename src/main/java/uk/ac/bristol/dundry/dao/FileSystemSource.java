@@ -15,19 +15,24 @@ import uk.ac.bristol.dundry.model.Tree;
  *
  * @author Damian Steer <d.steer@bris.ac.uk>
  */
-public class FileSystemLister {
+public class FileSystemSource {
     private final Path root;
             
-    public FileSystemLister(String base) {
+    public FileSystemSource(String base) {
         root = Paths.get(base);
     }
     
     public Path getPath(String relative) {
-        return root.resolve(relative);
+        Path path = root.resolve(relative);
+        // Check whether path falls outside root once resolved
+        // bad bad bad
+        if (!path.startsWith(root)) 
+            throw new IllegalArgumentException("Relative path '" + relative + "' outside root");
+        return path;
     }
     
     public Tree<String> getTreeAt(String base) {
-        return getTreeAt(root.resolve(base));
+        return getTreeAt(getPath(base));
     }
     
     private Tree<String> getTreeAt(Path start) {

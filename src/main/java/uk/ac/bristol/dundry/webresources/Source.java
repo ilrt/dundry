@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package uk.ac.bristol.dundry;
+package uk.ac.bristol.dundry.webresources;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.ac.bristol.dundry.dao.FileSystemLister;
+import uk.ac.bristol.dundry.dao.FileSystemSource;
 import uk.ac.bristol.dundry.model.Tree;
 
 /**
@@ -24,25 +24,25 @@ import uk.ac.bristol.dundry.model.Tree;
  * @author Damian Steer <d.steer@bris.ac.uk>
  */
 @Component
-@Path("generic")
-public class GenericResource {
+@Path("source")
+public class Source {
     
-    Logger log = LoggerFactory.getLogger(GenericResource.class);
+    Logger log = LoggerFactory.getLogger(Source.class);
     
     @Context
     private UriInfo context;
     
     @Autowired
-    private FileSystemLister fsLister;
+    private FileSystemSource fsLister;
     
     /**
-     * Creates a new instance of GenericResource
+     * Creates a new instance of Source
      */
-    public GenericResource() {
+    public Source() {
     }
 
     /**
-     * Retrieves representation of an instance of uk.ac.bristol.dundry.GenericResource
+     * Retrieves representation of an instance of uk.ac.bristol.dundry.Source
      * @return an instance of java.lang.String
      */
     @GET

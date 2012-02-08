@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.ac.bristol.dundry.Util;
 import uk.ac.bristol.dundry.dao.FileRepository;
-import uk.ac.bristol.dundry.dao.FileSystemLister;
+import uk.ac.bristol.dundry.dao.FileSystemSource;
 
 /**
  *
@@ -24,7 +24,7 @@ public class Deposit {
     final static Logger log = LoggerFactory.getLogger(Deposit.class);
     
     @Autowired FileRepository repository;
-    @Autowired FileSystemLister sourceFS;
+    @Autowired FileSystemSource sourceFS;
     
     @Path("/create")
     @POST
