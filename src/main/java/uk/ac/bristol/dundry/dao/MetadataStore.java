@@ -4,13 +4,20 @@
  */
 package uk.ac.bristol.dundry.dao;
 
+import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.tdb.TDBFactory;
 
 /**
  *
  * @author Damian Steer <d.steer@bris.ac.uk>
  */
 public class MetadataStore {
+    private final Dataset store;
+    
+    public MetadataStore(String location) {
+        store = TDBFactory.createDataset(location);
+    }
     
     public Model query(String query) {
         return null;
@@ -25,6 +32,6 @@ public class MetadataStore {
     }
 
     void create(String id) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        
     }
 }

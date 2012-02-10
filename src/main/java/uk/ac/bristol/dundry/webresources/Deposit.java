@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import uk.ac.bristol.dundry.Util;
 import uk.ac.bristol.dundry.dao.FileRepository;
 import uk.ac.bristol.dundry.dao.FileSystemSource;
+import uk.ac.bristol.dundry.dao.Repository;
 
 /**
  *
@@ -23,22 +24,21 @@ public class Deposit {
     
     final static Logger log = LoggerFactory.getLogger(Deposit.class);
     
-    @Autowired FileRepository repository;
+    @Autowired Repository repository;
     @Autowired FileSystemSource sourceFS;
     
-    @Path("/create")
+    @Path("/")
     @POST
     @Consumes("application/x-www-form-urlencoded")
     public Response create(@FormParam("source") String source) throws IOException {
         
         log.info("Create deposit: {}", source);
         
-        java.nio.file.Path toDir = repository.create();
         java.nio.file.Path fromDir = sourceFS.getPath(source);
         
-        Util.copyDirectory(fromDir, toDir);
+        String id = repository.create(fromDir);
         
-        URI createdUri = URI.create("/items/" + toDir.toString());
+        URI createdUri = URI.create("items/" + id);
         
         return Response.created(createdUri).entity("Created and copied").build();
     }

@@ -29,8 +29,17 @@
         <constructor-arg value="/tmp/working"/>
     </bean>
     
-    <bean class="uk.ac.bristol.dundry.dao.FileRepository">
-        <constructor-arg value="/tmp/repo"/>
+    <bean class="uk.ac.bristol.dundry.dao.Repository">
+        <constructor-arg>
+            <bean class="uk.ac.bristol.dundry.dao.FileRepository">
+                <constructor-arg value="/tmp/repo"/>
+            </bean>
+        </constructor-arg>
+        <constructor-arg>
+            <bean class="uk.ac.bristol.dundry.dao.MetadataStore">
+                <constructor-arg value="/tmp/repo/metadata"/>
+            </bean>
+        </constructor-arg>
     </bean>
     
 </beans>

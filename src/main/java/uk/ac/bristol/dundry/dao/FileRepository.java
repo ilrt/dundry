@@ -16,9 +16,6 @@ import uk.ac.bristol.dundry.Util;
  */
 public class FileRepository {
     
-    // play it safe. radix of 36 is ideal
-    static final int RADIX = Math.min(Character.MAX_RADIX, 36);
-    
     private final Path root;
     
     public FileRepository(String base) {

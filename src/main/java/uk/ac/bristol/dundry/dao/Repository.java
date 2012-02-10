@@ -4,6 +4,8 @@
  */
 package uk.ac.bristol.dundry.dao;
 
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.UUID;
@@ -37,5 +39,15 @@ public class Repository {
         mdStore.create(id);
         
         return id;
+    }
+    
+    /**
+     * Take a repository id, make a resource
+     * 
+     * @param id
+     * @return 
+     */
+    public Resource resourceFor(String id) {
+        return ResourceFactory.createResource("repository:" + id);
     }
 }
