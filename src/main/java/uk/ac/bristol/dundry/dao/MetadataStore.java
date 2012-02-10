@@ -24,14 +24,14 @@ public class MetadataStore {
     }
     
     public Model getDataAbout(String subject) {
-        return null;
+        return store.getNamedModel(subject);
     }
     
     public void updateDataAbout(String subject, String update) {
         
     }
 
-    void create(String id) {
-        
+    public void create(String graphId, Model initialContent) {
+        store.getNamedModel(graphId).add(initialContent);
     }
 }

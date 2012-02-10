@@ -13,7 +13,15 @@
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
+    
+    <repositories>
+        <repository>
+            <id>Apache</id>
+            <url>https://repository.apache.org/content/groups/snapshots-group/</url>
+            <snapshots><enabled>true</enabled></snapshots>
+        </repository>
+    </repositories>
+    
     <dependencies>
         <dependency>
             <groupId>org.springframework</groupId>

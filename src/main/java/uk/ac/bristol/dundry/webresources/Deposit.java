@@ -46,9 +46,7 @@ public class Deposit {
     @Path("/items/{item}")
     @GET
     public Response retrieve(@PathParam("item") String item) {
-        return null;
+        return Response.ok(repository.getMetadata(item).getModel()).build();
     }
-    
-    
     
 }
