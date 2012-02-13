@@ -6,6 +6,7 @@ package uk.ac.bristol.dundry.dao;
 
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.tdb.TDB;
 import com.hp.hpl.jena.tdb.TDBFactory;
 
 /**
@@ -33,5 +34,6 @@ public class MetadataStore {
 
     public void create(String graphId, Model initialContent) {
         store.getNamedModel(graphId).add(initialContent);
+        TDB.sync(store);
     }
 }

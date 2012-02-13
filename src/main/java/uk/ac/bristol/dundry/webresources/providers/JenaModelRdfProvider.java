@@ -48,33 +48,33 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)
  * @version $Id: JenaModelRdfProvider.java 177 2008-05-30 13:50:59Z mike.a.jones $
  */
+@Component
 @Provider
 @Produces({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3, MediaType.WILDCARD})
 @Consumes({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3})
-public final class JenaModelRdfProvider implements MessageBodyWriter<Object>,
-        MessageBodyReader<Object> {
-
-
-    public boolean isWriteable(Class<?> aClass, Type type, Annotation[] annotations, MediaType mediaType) {
-        return Model.class.isAssignableFrom(aClass);
+public final class JenaModelRdfProvider implements MessageBodyWriter<Model>,
+        MessageBodyReader<Model> {
+    
+    @Override
+    public boolean isWriteable(Class<?> type, Type type1, Annotation[] antns, MediaType mt) {
+        return Model.class.isAssignableFrom(type);
     }
-
-    public long getSize(Object o, Class<?> aClass, Type type, Annotation[] annotations, MediaType mediaType) {
+    
+    public long getSize(Model o, Class<?> aClass, Type type, Annotation[] annotations, MediaType mediaType) {
         return -1;
     }
 
-    public void writeTo(final Object o, final Class<?> aClass, final Type type,
+    public void writeTo(final Model model, final Class<?> aClass, final Type type,
                         final Annotation[] annotations, final MediaType mediaType,
                         final MultivaluedMap<String, Object> stringObjectMultivaluedMap,
                         final OutputStream outputStream) throws IOException,
             WebApplicationException {
-
-        Model model = (Model) o;
 
         // defaults to N3
         if (mediaType.getType().equals("text") && mediaType.getSubtype().equals("rdf+n3")) {
@@ -91,7 +91,8 @@ public final class JenaModelRdfProvider implements MessageBodyWriter<Object>,
         return aClass == Model.class;
     }
 
-    public Object readFrom(Class<Object> objectClass, Type type, Annotation[] annotations,
+
+    public Model readFrom(Class<Model> objectClass, Type type, Annotation[] annotations,
                            MediaType mediaType,
                            MultivaluedMap<String, String> stringStringMultivaluedMap,
                            InputStream inputStream) throws IOException, WebApplicationException {

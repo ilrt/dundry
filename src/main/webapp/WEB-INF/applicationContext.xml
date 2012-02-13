@@ -26,18 +26,18 @@
     <context:component-scan base-package="uk.ac.bristol.dundry" />
     
     <bean class="uk.ac.bristol.dundry.dao.FileSystemSource">
-        <constructor-arg value="/tmp/working"/>
+        <constructor-arg value="working"/>
     </bean>
     
     <bean class="uk.ac.bristol.dundry.dao.Repository">
         <constructor-arg>
             <bean class="uk.ac.bristol.dundry.dao.FileRepository">
-                <constructor-arg value="/tmp/repo"/>
+                <constructor-arg value="repo"/>
             </bean>
         </constructor-arg>
         <constructor-arg>
             <bean class="uk.ac.bristol.dundry.dao.MetadataStore">
-                <constructor-arg value="/tmp/repo/metadata"/>
+                <constructor-arg value="repo/metadata"/>
             </bean>
         </constructor-arg>
     </bean>
