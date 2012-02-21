@@ -51,7 +51,7 @@ public class Source {
         return "hello";
     }
     
-    @Path("/list/{dir}")
+    @Path("/list/{dir: .+}")
     @GET
     @Produces("text/plain")
     public String listDir(@PathParam("dir") String path) {
@@ -59,7 +59,7 @@ public class Source {
         return fsLister.getTreeAt(path).toString();
     }
     
-    @Path("/listj/{dir}")
+    @Path("/listj/{dir: .+}")
     @GET
     @Produces("application/json")
     public Tree<String> listDirJ(@PathParam("dir") String path) {
