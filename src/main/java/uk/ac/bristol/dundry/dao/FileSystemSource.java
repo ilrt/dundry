@@ -1,14 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package uk.ac.bristol.dundry.dao;
 
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.stereotype.Component;
 import uk.ac.bristol.dundry.model.Tree;
 
 /**
@@ -16,27 +11,55 @@ import uk.ac.bristol.dundry.model.Tree;
  * @author Damian Steer <d.steer@bris.ac.uk>
  */
 public class FileSystemSource {
+    
+    public final static Tree<String> NONE = new Tree<>();
+    
     private final Path root;
-            
+    
     public FileSystemSource(String base) {
         root = Paths.get(base);
     }
     
+    /**
+     * Resolve path relative to the root of this source
+     * @param relative
+     * @return 
+     */
     public Path getPath(String relative) {
-        Path path = root.resolve(relative);
-        // Check whether path falls outside root once resolved
-        // bad bad bad
-        if (!path.startsWith(root)) 
-            throw new IllegalArgumentException("Relative path '" + relative + "' outside root");
-        return path;
+        return root.resolve(relative);
     }
     
-    public Tree<String> getTreeAt(String base) {
+    /**
+     * Get a path relative to the root of this source
+     * @param path
+     * @return 
+     */
+    public Path getRelativePath(Path path) {
+        return root.relativize(path);
+    }
+    
+    /**
+     * Get a file tree rooted at root/base
+     * @param base
+     * @return
+     * @throws IOException 
+     */
+    public Tree<String> getTreeAt(String base) throws IOException {
         return getTreeAt(getPath(base));
     }
     
-    private Tree<String> getTreeAt(Path start) {
-        String label = start.toString();
+    /**
+     * Get a file tree rooted at root/base
+     * @param start
+     * @return
+     * @throws IOException 
+     */
+    private Tree<String> getTreeAt(Path start) throws IOException {
+        // This will happen if you try to get a non-existent root
+        // (unless the directory listing goes stale?)
+        if (!Files.exists(start)) return NONE;
+        
+        String label = getRelativePath(start).toString();
         
         if (!Files.isDirectory(start, LinkOption.NOFOLLOW_LINKS)) return new Tree(label);
         
@@ -47,9 +70,8 @@ public class FileSystemSource {
             for (Path p : ds) {
                 subDirs.add(getTreeAt(p));
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+        
         return new Tree(label, subDirs);
     } 
 }

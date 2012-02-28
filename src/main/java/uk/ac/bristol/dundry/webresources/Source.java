@@ -4,12 +4,15 @@
  */
 package uk.ac.bristol.dundry.webresources;
 
+import java.io.IOException;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +27,7 @@ import uk.ac.bristol.dundry.model.Tree;
  * @author Damian Steer <d.steer@bris.ac.uk>
  */
 @Component
-@Path("source")
+@Path("sources")
 public class Source {
     
     Logger log = LoggerFactory.getLogger(Source.class);
@@ -40,30 +43,19 @@ public class Source {
      */
     public Source() {
     }
-
-    /**
-     * Retrieves representation of an instance of uk.ac.bristol.dundry.Source
-     * @return an instance of java.lang.String
-     */
-    @GET
-    @Produces("text/plain")
-    public String getXml() {
-        return "hello";
-    }
     
-    @Path("/list/{dir: .+}")
+    @Path("/{dir: .+}")
     @GET
-    @Produces("text/plain")
-    public String listDir(@PathParam("dir") String path) {
-        log.warn("Path is: {}, fsLister is: {}", path, fsLister);
-        return fsLister.getTreeAt(path).toString();
-    }
-    
-    @Path("/listj/{dir: .+}")
-    @GET
-    @Produces("application/json")
-    public Tree<String> listDirJ(@PathParam("dir") String path) {
-        log.warn("Path is: {}, fsLister is: {}", path, fsLister);
-        return fsLister.getTreeAt(path);
+    public Response listDir(@PathParam("dir") String path) throws IOException {
+        log.info("List source path: {}", path);
+        
+        if (path.contains("..")) // No reason to allow these, and dangerous
+            return Response.status(Response.Status.BAD_REQUEST).
+                    entity("We don't accept relative paths").build();
+        Tree<String> listing = fsLister.getTreeAt(path);
+        if (listing == FileSystemSource.NONE)
+            return Response.status(Response.Status.NOT_FOUND).build(); 
+        else
+            return Response.ok(listing).build();
     }
 }
