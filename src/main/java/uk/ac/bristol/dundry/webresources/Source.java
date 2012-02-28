@@ -52,6 +52,7 @@ public class Source {
         if (path.contains("..")) // No reason to allow these, and dangerous
             return Response.status(Response.Status.BAD_REQUEST).
                     entity("We don't accept relative paths").build();
+        
         Tree<String> listing = fsLister.getTreeAt(path);
         if (listing == FileSystemSource.NONE)
             return Response.status(Response.Status.NOT_FOUND).build(); 

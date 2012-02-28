@@ -22,11 +22,21 @@ public class FileSystemSource {
     
     /**
      * Resolve path relative to the root of this source
+     * It considers '/' to be the root
      * @param relative
      * @return 
      */
     public Path getPath(String relative) {
-        return root.resolve(relative);
+        // Remove leading '/'
+        String relativised = relative.replaceFirst("^/+", "");
+        
+        Path relPath = root.resolve(relativised).normalize();
+        
+        // Is the path now below root?
+        if (!relPath.startsWith(root)) {
+            throw new RuntimeException("Path " + relative + " not under root");
+        }
+        return relPath;
     }
     
     /**
