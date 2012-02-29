@@ -5,6 +5,7 @@ import java.net.URI;
 import java.nio.file.Files;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
+import org.codehaus.jettison.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,12 +39,28 @@ public class Deposit {
         
         String id = repository.create(fromDir);
         
-        URI createdUri = URI.create("items/" + id);
+        URI createdUri = URI.create(id);
         
         return Response.created(createdUri).entity("Created and copied").build();
     }
     
-    @Path("/items/{item}")
+    @Path("/")
+    @POST
+    @Consumes("application/json")
+    public Response create(JSONObject source) throws IOException {
+        
+        log.info("Create deposit: {}", source);
+        
+        /*java.nio.file.Path fromDir = sourceFS.getPath(source);
+        
+        String id = repository.create(fromDir);*/
+        
+        URI createdUri = URI.create("1234");
+        
+        return Response.created(createdUri).build();
+    }
+    
+    @Path("/{item}")
     @GET
     public Response retrieve(@PathParam("item") String item) {
         return Response.ok(repository.getMetadata(item).getModel()).build();
