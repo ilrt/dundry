@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.bristol.dundry.model.DepositDescription;
 
 /**
  *
@@ -38,17 +39,21 @@ public class Repository {
         this.mdStore = mdStore;
     }
     
-    public List<String> getIds() {
-        ResultSet r = mdStore.query("select distinct ?g { graph ?g { } }");
-        List<String> ids = new LinkedList<>();
+    public List<DepositDescription> getIds() {
+        ResultSet r = mdStore.query("select distinct ?g ?title { graph ?g1 { ?g <http://purl.org/dc/terms/title> ?title } }");
+        List<DepositDescription> ids = new LinkedList<>();
         while (r.hasNext()) {
             QuerySolution nxt = r.next();
-            ids.add(nxt.getResource("g").getURI().replaceFirst("^repo:", ""));
+            ids.add( new DepositDescription(
+                        nxt.getResource("g").getURI().replaceFirst("^repo:", ""),
+                        nxt.getLiteral("title").getLexicalForm()
+                    ) );
         }
+        log.info("Ids is: {}", ids);
         return ids;
     }
     
-    public String create(Path source) throws IOException {
+    public String create(Path source, String title, String description, String creator) throws IOException {
         // Create a random id!
         UUID randId = UUID.randomUUID();
         String baseEncoded = 
@@ -62,8 +67,10 @@ public class Repository {
         Resource subject = model.createResource("repo:" + id);
         subject.addLiteral(DCTerms.dateSubmitted, model.createTypedLiteral(Calendar.getInstance()));
         subject.addProperty(DCTerms.source, model.createResource(source.toUri().toString()));
-        subject.addProperty(DCTerms.creator, "unknown");
+        subject.addProperty(DCTerms.creator, creator);
         subject.addProperty(DCTerms.identifier, id);
+        subject.addProperty(DCTerms.title, title);
+        subject.addProperty(DCTerms.description, description);
         
         mdStore.create("repo:" + id, model);
         

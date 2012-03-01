@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.ac.bristol.dundry.dao.FileSystemSource;
 import uk.ac.bristol.dundry.dao.Repository;
-import uk.ac.bristol.dundry.model.ListWrapper;
+import uk.ac.bristol.dundry.model.ListDepositDescriptions;
 
 /**
  *
@@ -30,7 +30,7 @@ public class Deposit {
     @Path("/")
     @GET
     public Response list() {
-        return Response.ok(new ListWrapper(repository.getIds())).build();
+        return Response.ok(new ListDepositDescriptions(repository.getIds())).build();
     }
     
     @Path("/")
@@ -46,11 +46,11 @@ public class Deposit {
         
         java.nio.file.Path fromDir = sourceFS.getPath(source);
         
-        String id = repository.create(fromDir);
+        String id = repository.create(fromDir, title, description, "unknown");
         
         URI createdUri = URI.create(id);
         
-        return Response.created(createdUri).entity("Created and copied").build();
+        return Response.created(createdUri).build();
     }
     
     @Path("/")

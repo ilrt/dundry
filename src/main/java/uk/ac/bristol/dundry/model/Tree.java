@@ -6,6 +6,7 @@ package uk.ac.bristol.dundry.model;
 
 import java.util.Collections;
 import java.util.List;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -34,6 +35,8 @@ public class Tree<T> {
     }
     
     public void setNode(T t) { }
+    
+    @XmlElement(type = String.class)
     public T getNode() { return node; }
     
     public void setChildren(List<Tree<T>> t) { }
