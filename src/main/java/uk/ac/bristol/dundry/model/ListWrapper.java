@@ -16,7 +16,9 @@ public class ListWrapper {
     
     public ListWrapper(List l) { this.l = l; }
     
-    @XmlElement(name = "item")
+    // My list ought to be typed (otherwise I get xsi stuff)
+    // See: http://stackoverflow.com/questions/3773156/jaxb-supress-xsi-and-xmlns
+    @XmlElement(name = "item", type = String.class)
     public List getData() { return l; }
     
 }
