@@ -2,18 +2,17 @@ package uk.ac.bristol.dundry.webresources;
 
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.Files;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
+import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.ac.bristol.dundry.Util;
-import uk.ac.bristol.dundry.dao.FileRepository;
 import uk.ac.bristol.dundry.dao.FileSystemSource;
 import uk.ac.bristol.dundry.dao.Repository;
+import uk.ac.bristol.dundry.model.ListWrapper;
 
 /**
  *
@@ -29,11 +28,21 @@ public class Deposit {
     @Autowired FileSystemSource sourceFS;
     
     @Path("/")
+    @GET
+    public Response list() {
+        return Response.ok(new ListWrapper(repository.getIds())).build();
+    }
+    
+    @Path("/")
     @POST
     @Consumes("application/x-www-form-urlencoded")
-    public Response create(@FormParam("source") String source) throws IOException {
-        
-        log.info("Create deposit: {}", source);
+    public Response create(
+            @FormParam("source") String source,
+            @FormParam("title") String title,
+            @FormParam("description") String description) throws IOException {
+                
+        log.info("Create deposit: {} title: {} desc: {}", 
+                new String[]{ source, title, description });
         
         java.nio.file.Path fromDir = sourceFS.getPath(source);
         
@@ -47,17 +56,15 @@ public class Deposit {
     @Path("/")
     @POST
     @Consumes("application/json")
-    public Response create(JSONObject source) throws IOException {
+    public Response create(JSONObject source) throws IOException, JSONException {
         
         log.info("Create deposit: {}", source);
         
-        /*java.nio.file.Path fromDir = sourceFS.getPath(source);
+        JSONObject depositStub = source.getJSONObject("deposit");
         
-        String id = repository.create(fromDir);*/
-        
-        URI createdUri = URI.create("1234");
-        
-        return Response.created(createdUri).build();
+        return create(depositStub.getString("source"),
+                depositStub.getString("title"),
+                depositStub.getString("description"));
     }
     
     @Path("/{item}")
