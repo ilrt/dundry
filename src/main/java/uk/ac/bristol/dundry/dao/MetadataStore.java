@@ -6,7 +6,6 @@ package uk.ac.bristol.dundry.dao;
 
 import com.hp.hpl.jena.query.*;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.tdb.TDB;
 import com.hp.hpl.jena.tdb.TDBFactory;
 
 /**
@@ -14,6 +13,7 @@ import com.hp.hpl.jena.tdb.TDBFactory;
  * @author Damian Steer <d.steer@bris.ac.uk>
  */
 public class MetadataStore {
+    
     private final Dataset store;
     
     public MetadataStore(String location) {
@@ -23,10 +23,12 @@ public class MetadataStore {
     public ResultSet query(String query) {
         QueryExecution qe = QueryExecutionFactory.create(query, store);
         try {
+            store.begin(ReadWrite.READ);
             ResultSet r = qe.execSelect();
             return ResultSetFactory.copyResults(r);
         } finally {
             qe.close();
+            store.end();
         }
     }
     
@@ -39,7 +41,8 @@ public class MetadataStore {
     }
 
     public void create(String graphId, Model initialContent) {
+        store.begin(ReadWrite.WRITE);
         store.getNamedModel(graphId).add(initialContent);
-        TDB.sync(store);
+        store.commit();
     }
 }
