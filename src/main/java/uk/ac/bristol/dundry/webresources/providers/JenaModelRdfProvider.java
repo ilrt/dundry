@@ -33,6 +33,7 @@
  */
 package uk.ac.bristol.dundry.webresources.providers;
 
+import com.hp.hpl.jena.query.ARQ;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import java.io.IOException;
@@ -56,42 +57,53 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Provider
-@Produces({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3, MediaType.WILDCARD})
+@Produces({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3, 
+    RdfMediaType.TEXT_TURTLE, MediaType.APPLICATION_JSON, 
+    MediaType.WILDCARD})
 @Consumes({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3})
 public final class JenaModelRdfProvider implements MessageBodyWriter<Model>,
         MessageBodyReader<Model> {
+    
+    static { ARQ.init(); } // Ensure RIOT hooks in
     
     @Override
     public boolean isWriteable(Class<?> type, Type type1, Annotation[] antns, MediaType mt) {
         return Model.class.isAssignableFrom(type);
     }
     
+    @Override
     public long getSize(Model o, Class<?> aClass, Type type, Annotation[] annotations, MediaType mediaType) {
         return -1;
     }
 
+    @Override
     public void writeTo(final Model model, final Class<?> aClass, final Type type,
                         final Annotation[] annotations, final MediaType mediaType,
                         final MultivaluedMap<String, Object> stringObjectMultivaluedMap,
                         final OutputStream outputStream) throws IOException,
             WebApplicationException {
-
-        // defaults to N3
-        if (mediaType.getType().equals("text") && mediaType.getSubtype().equals("rdf+n3")) {
-            model.write(outputStream, "N3");
-        } else {
-            model.write(outputStream, "RDF/XML-ABBREV");
+        
+        // defaults to turtle
+        switch (mediaType.toString()) {
+            case "application/rdf+xml":
+                model.write(outputStream, "RDF/XML-ABBREV"); break;
+            case "application/json":
+                model.write(outputStream, "RDF/JSON"); break;
+            default:
+                model.write(outputStream, "TTL");
         }
 
     }
 
     // ---- Reader implememtation
 
+    @Override
     public boolean isReadable(Class<?> aClass, Type type, Annotation[] annotations, MediaType mediaType) {
         return aClass == Model.class;
     }
 
 
+    @Override
     public Model readFrom(Class<Model> objectClass, Type type, Annotation[] annotations,
                            MediaType mediaType,
                            MultivaluedMap<String, String> stringStringMultivaluedMap,
@@ -99,11 +111,14 @@ public final class JenaModelRdfProvider implements MessageBodyWriter<Model>,
 
         Model model = ModelFactory.createDefaultModel();
 
-        // defaults to RDF/XML
-        if (mediaType.getType().equals("text") && mediaType.getSubtype().equals("rdf+n3")) {
-            model.read(inputStream, null, "N3");
-        } else {
-            model.read(inputStream, null, "RDF/XML-ABBREV");
+        // defaults to turtle
+        switch (mediaType.toString()) {
+            case "application/rdf+xml":
+                model.read(inputStream, "RDF/XML"); break;
+            case "application/json":
+                model.read(inputStream, "RDF/JSON"); break;
+            default:
+                model.read(inputStream, "TTL");
         }
 
         return model;
