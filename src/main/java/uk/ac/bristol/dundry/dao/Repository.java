@@ -70,7 +70,7 @@ public class Repository {
         subject.addProperty(DCTerms.creator, creator);
         subject.addProperty(DCTerms.identifier, id);
         subject.addProperty(DCTerms.title, title);
-        subject.addProperty(DCTerms.description, description);
+        if (description != null) subject.addProperty(DCTerms.description, description);
         
         mdStore.create("repo:" + id, model);
         
