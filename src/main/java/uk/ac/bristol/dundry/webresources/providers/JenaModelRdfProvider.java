@@ -60,7 +60,8 @@ import org.springframework.stereotype.Component;
 @Produces({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3, 
     RdfMediaType.TEXT_TURTLE, MediaType.APPLICATION_JSON, 
     MediaType.WILDCARD})
-@Consumes({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3})
+@Consumes({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3, 
+    RdfMediaType.TEXT_TURTLE, MediaType.APPLICATION_JSON})
 public final class JenaModelRdfProvider implements MessageBodyWriter<Model>,
         MessageBodyReader<Model> {
     
