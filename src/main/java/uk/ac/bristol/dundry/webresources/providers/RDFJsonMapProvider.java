@@ -65,7 +65,15 @@ public class RDFJsonMapProvider implements MessageBodyWriter<Resource> {
         propertyToKey = keyToProperty.inverse();
     }
     
-    private void map(Resource resource, XMLStreamWriter writer) throws XMLStreamException {
+    /**
+     * Write a resource and properties to a simple XML / JSON format,
+     * mapping properties to keys as it goes.
+     * Unmappable properties are lost.
+     * @param resource Resource to write
+     * @param writer The XML / JSON writer
+     * @throws XMLStreamException 
+     */
+    protected void map(Resource resource, XMLStreamWriter writer) throws XMLStreamException {
         writer.writeStartElement("item");
         writer.writeStartElement("id");
         writer.writeCharacters(resource.getURI());
@@ -90,7 +98,7 @@ public class RDFJsonMapProvider implements MessageBodyWriter<Resource> {
 
     @Override
     public boolean isWriteable(Class<?> type, Type type1, Annotation[] antns, MediaType mt) {
-        return type.isAssignableFrom(Resource.class);
+        return Resource.class.isAssignableFrom(type);
     }
 
     @Override
