@@ -42,10 +42,14 @@
         </constructor-arg>
     </bean>
     
-    <bean class="uk.ac.bristol.dundry.webresources.providers.RDFJsonMapProvider"
+    <bean class="uk.ac.bristol.dundry.webresources.providers.RdfResourceMappingProvider"
         scope="singleton">
         <constructor-arg>
             <map>
+                <entry><key><value>source</value></key><value>http://purl.org/dc/terms/source</value></entry>
+                <entry><key><value>title</value></key><value>http://purl.org/dc/terms/title</value></entry>
+                <entry><key><value>description</value></key><value>http://purl.org/dc/terms/description</value></entry>
+                <entry><key><value>contributors</value></key><value>http://purl.org/dc/terms/contributor</value></entry>
             </map>
         </constructor-arg>
     </bean>

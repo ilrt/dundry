@@ -16,7 +16,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.Map;
-import javax.inject.Scope;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -24,10 +23,13 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import org.codehaus.jettison.mapped.MappedNamespaceConvention;
 import org.codehaus.jettison.mapped.MappedXMLStreamWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -37,8 +39,12 @@ import org.codehaus.jettison.mapped.MappedXMLStreamWriter;
  * @author Damian Steer <d.steer@bris.ac.uk>
  */
 @Provider
-@Produces(MediaType.APPLICATION_JSON)
-public class RDFJsonMapProvider implements MessageBodyWriter<Resource> {
+@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+public class RdfResourceMappingProvider implements MessageBodyWriter<Resource> {
+    
+    final static Logger log = LoggerFactory.getLogger(RdfResourceMappingProvider.class);
+    
+    final static XMLOutputFactory OUT_FAC = XMLOutputFactory.newInstance();
     
     final BiMap<String, Property> keyToProperty;
     final BiMap<Property, String> propertyToKey;
@@ -48,7 +54,7 @@ public class RDFJsonMapProvider implements MessageBodyWriter<Resource> {
      * 
      * @param map key to property map
      */
-    public RDFJsonMapProvider(Map<String, String> keyToProp) {
+    public RdfResourceMappingProvider(Map<String, String> keyToProp) {
         // Map string value to a property
         Map<String, Property> k2p = Maps.transformValues(keyToProp,
                  new Function<String, Property>() {
@@ -74,26 +80,29 @@ public class RDFJsonMapProvider implements MessageBodyWriter<Resource> {
      * @throws XMLStreamException 
      */
     protected void map(Resource resource, XMLStreamWriter writer) throws XMLStreamException {
-        writer.writeStartElement("item");
+        // writer the uri of the resource in id
         writer.writeStartElement("id");
         writer.writeCharacters(resource.getURI());
         writer.writeEndElement();
         /* TODO: label */
+        // Now loop through each statement, mapping as we go...
         Iterator<Statement> si = resource.listProperties();
         while (si.hasNext()) {
             Statement s = si.next();
+            // If we have a mapping for this property create and entry for key
             if (propertyToKey.containsKey(s.getPredicate())) {
                 writer.writeStartElement(propertyToKey.get(s.getPredicate()));
+                // If the value is a resource recurse
                 if (s.getObject().isResource()) {
                     map(s.getObject().asResource(), writer);
                 }
+                // Otherwise write the value as a string (limited :-()
                 else {
                     writer.writeCharacters(s.getObject().asLiteral().getLexicalForm());
                 }
                 writer.writeEndElement();
             }
         }
-        writer.writeEndElement();
     }
 
     @Override
@@ -112,16 +121,37 @@ public class RDFJsonMapProvider implements MessageBodyWriter<Resource> {
             throws IOException, WebApplicationException {
         try {
             Writer outW = new OutputStreamWriter(out, "UTF-8");
-            MappedNamespaceConvention con = new MappedNamespaceConvention();
-            XMLStreamWriter streamWriter = new MappedXMLStreamWriter(con, outW);
+            XMLStreamWriter streamWriter = getWriterFor(mt, outW);
             streamWriter.writeStartDocument();
+            streamWriter.writeStartElement("item");
             map(t, streamWriter);
+            streamWriter.writeEndElement();
             streamWriter.writeEndDocument();
             streamWriter.flush();
             streamWriter.close();
             outW.close();
         } catch (XMLStreamException ex) {
             throw new WebApplicationException(ex, Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    /**
+     * Return an 'XML' writer suitable for the mimetype. May return a fake
+     * XML writer ;-)
+     * 
+     * @param mimeType
+     * @param out
+     * @return
+     * @throws XMLStreamException 
+     */
+    protected XMLStreamWriter getWriterFor(MediaType mimeType, Writer out) 
+            throws XMLStreamException {
+        switch (mimeType.toString()) {
+            case "application/json":
+                MappedNamespaceConvention con = new MappedNamespaceConvention();
+                return new MappedXMLStreamWriter(con, out);
+            default:
+                return OUT_FAC.createXMLStreamWriter(out);
         }
     }
     

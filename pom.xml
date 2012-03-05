@@ -20,6 +20,12 @@
             <url>https://repository.apache.org/content/groups/snapshots-group/</url>
             <snapshots><enabled>true</enabled></snapshots>
         </repository>
+        <repository>
+            <url>http://repo1.maven.org/maven2/</url>
+            <id>junit_4</id>
+            <layout>default</layout>
+            <name>Repository for library Library[junit_4]</name>
+        </repository>
     </repositories>
     
     <dependencies>
@@ -168,6 +174,12 @@
             <artifactId>guava</artifactId>
             <version>r09</version>
             <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.10</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>javax</groupId>
