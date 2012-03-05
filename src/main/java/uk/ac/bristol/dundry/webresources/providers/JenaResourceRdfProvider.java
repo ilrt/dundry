@@ -33,6 +33,7 @@
  */
 package uk.ac.bristol.dundry.webresources.providers;
 
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -43,40 +44,50 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)
  * @version $Id: JenaResourceRdfProvider.java 177 2008-05-30 13:50:59Z mike.a.jones $
  */
+@Component
 @Provider
-@Produces({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3})
-public final class JenaResourceRdfProvider implements MessageBodyWriter<Object> {
+@Produces({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3, 
+    RdfMediaType.TEXT_TURTLE, MediaType.WILDCARD})
+public final class JenaResourceRdfProvider implements MessageBodyWriter<Resource> {
 
     // ---- Writer implementation
 
+    @Override
     public boolean isWriteable(Class<?> aClass, Type type, Annotation[] annotations, MediaType mediaType) {
         return Resource.class.isAssignableFrom(aClass);
     }
 
-    public long getSize(Object o, Class<?> aClass, Type type, Annotation[] annotations, MediaType mediaType) {
+    @Override
+    public long getSize(Resource o, Class<?> aClass, Type type, Annotation[] annotations, MediaType mediaType) {
 
         // since we are dealing with a model we would need to serialize it to the desired
         // format before we would know the size.
         return -1;
     }
 
-    public void writeTo(final Object o, final Class<?> aClass, final Type type,
+    @Override
+    public void writeTo(final Resource o, final Class<?> aClass, final Type type,
                         final Annotation[] annotations, final MediaType mediaType,
                         final MultivaluedMap<String, Object> stringObjectMultivaluedMap,
                         final OutputStream outputStream) throws IOException {
-
-        Resource resource = (Resource) o;
-
-        // defaults to N3
-        if (mediaType.getType().equals("text") && mediaType.getSubtype().equals("rdf+n3")) {
-            resource.getModel().write(outputStream, "N3");
-        } else {
-            resource.getModel().write(outputStream, "RDF/XML-ABBREV");
+        
+        // We just serialise the whole model here. May need rethinking?
+        Model model = o.getModel();
+        
+        // defaults to turtle
+        switch (mediaType.toString()) {
+            case "application/rdf+xml":
+                model.write(outputStream, "RDF/XML-ABBREV"); break;
+            case "application/json":
+                model.write(outputStream, "RDF/JSON"); break;
+            default:
+                model.write(outputStream, "TTL");
         }
 
     }
