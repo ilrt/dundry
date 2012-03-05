@@ -42,4 +42,12 @@
         </constructor-arg>
     </bean>
     
+    <bean class="uk.ac.bristol.dundry.webresources.providers.RDFJsonMapProvider"
+        scope="singleton">
+        <constructor-arg>
+            <map>
+            </map>
+        </constructor-arg>
+    </bean>
+    
 </beans>

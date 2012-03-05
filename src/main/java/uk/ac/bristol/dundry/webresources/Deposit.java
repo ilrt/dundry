@@ -70,7 +70,7 @@ public class Deposit {
     @Path("/{item}")
     @GET
     public Response retrieve(@PathParam("item") String item) {
-        return Response.ok(repository.getMetadata(item).getModel()).build();
+        return Response.ok(repository.getMetadata(item)).build();
     }
     
 }
