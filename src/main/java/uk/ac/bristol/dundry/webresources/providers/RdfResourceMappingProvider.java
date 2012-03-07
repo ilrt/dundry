@@ -81,7 +81,7 @@ public class RdfResourceMappingProvider implements MessageBodyWriter<Resource> {
      */
     protected void map(Resource resource, XMLStreamWriter writer) throws XMLStreamException {
         // writer the uri of the resource in id
-        writer.writeStartElement("uri");
+        writer.writeStartElement("id");
         writer.writeCharacters(resource.getURI());
         writer.writeEndElement();
         /* TODO: label */
@@ -136,7 +136,7 @@ public class RdfResourceMappingProvider implements MessageBodyWriter<Resource> {
     }
     
     /**
-     * Return an 'XML' writer suitable for the mediatype. May return a fake
+     * Return an 'XML' writer suitable for the mimetype. May return a fake
      * XML writer ;-)
      * 
      * @param mimeType

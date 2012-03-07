@@ -79,7 +79,7 @@ public class RdfResourceMappingProviderTest {
         
         String result = new String(out.toByteArray(), "UTF-8");
         
-        assertEquals("{\"item\":{\"uri\":\"http:\\/\\/example.com\\/r\"}}", result);
+        assertEquals("{\"item\":{\"id\":\"http:\\/\\/example.com\\/r\"}}", result);
         
         i = get("title", DCTerms.title.getURI());
         
@@ -89,6 +89,6 @@ public class RdfResourceMappingProviderTest {
         
         result = new String(out.toByteArray(), "UTF-8");
         
-        assertEquals("{\"item\":{\"uri\":\"http:\\/\\/example.com\\/r\",\"title\":\"the title\"}}", result);
+        assertEquals("{\"item\":{\"id\":\"http:\\/\\/example.com\\/r\",\"title\":\"the title\"}}", result);
     }
 }
