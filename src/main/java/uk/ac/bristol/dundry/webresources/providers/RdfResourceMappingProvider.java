@@ -8,6 +8,7 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.vocabulary.RDFS;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -30,6 +31,7 @@ import org.codehaus.jettison.mapped.MappedNamespaceConvention;
 import org.codehaus.jettison.mapped.MappedXMLStreamWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.bristol.dundry.dao.Repository;
 
 /**
  *
@@ -80,11 +82,20 @@ public class RdfResourceMappingProvider implements MessageBodyWriter<Resource> {
      * @throws XMLStreamException 
      */
     protected void map(Resource resource, XMLStreamWriter writer) throws XMLStreamException {
-        // writer the uri of the resource in id
-        writer.writeStartElement("id");
-        writer.writeCharacters(resource.getURI());
-        writer.writeEndElement();
-        /* TODO: label */
+        // If present, write the id of the resource as id
+        if (resource.isURIResource()) {
+            writer.writeStartElement("id");
+            // TODO: Not convinced toExternalId should be here. We ought to be passing
+            // around relative uris. Hmm. Hmm.
+            writer.writeCharacters(Repository.toExternalId(resource.getURI()));
+            writer.writeEndElement();
+        }
+        // If present, write the label of this resource
+        if (resource.hasProperty(RDFS.label)) {
+            writer.writeStartElement("label");
+            writer.writeCharacters(resource.getProperty(RDFS.label).getLiteral().getLexicalForm());
+            writer.writeEndElement();
+        }
         // Now loop through each statement, mapping as we go...
         Iterator<Statement> si = resource.listProperties();
         while (si.hasNext()) {

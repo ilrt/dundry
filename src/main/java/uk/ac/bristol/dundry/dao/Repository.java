@@ -45,7 +45,7 @@ public class Repository {
         while (r.hasNext()) {
             QuerySolution nxt = r.next();
             ids.add( new DepositDescription(
-                        nxt.getResource("g").getURI().replaceFirst("^repo:", ""),
+                        toExternalId(nxt.getResource("g").getURI()),
                         nxt.getLiteral("title").getLexicalForm()
                     ) );
         }
@@ -64,7 +64,7 @@ public class Repository {
         Path repoDir = fileRepo.create(id, source);
         
         Model model = ModelFactory.createDefaultModel();
-        Resource subject = model.createResource("repo:" + id);
+        Resource subject = model.createResource(toInternalId(id));
         subject.addLiteral(DCTerms.dateSubmitted, model.createTypedLiteral(Calendar.getInstance()));
         subject.addProperty(DCTerms.source, model.createResource(source.toUri().toString()));
         subject.addProperty(DCTerms.creator, creator);
@@ -72,12 +72,32 @@ public class Repository {
         subject.addProperty(DCTerms.title, title);
         if (description != null) subject.addProperty(DCTerms.description, description);
         
-        mdStore.create("repo:" + id, model);
+        mdStore.create(toInternalId(id), model);
         
         return id;
     }
     
     public Resource getMetadata(String id) {
-        return mdStore.getDataAbout("repo:" + id).createResource("repo:" + id);
+        return mdStore.getDataAbout(toInternalId(id)).createResource(toInternalId(id));
+    }
+    
+    /**
+     * Takes an id and makes it suitable for external use by stripping off
+     * leading 'repo:' if present
+     * @param uri
+     * @return An un-repo'd string
+     */
+    public static String toExternalId(String uri) {
+        if (uri.startsWith("repo:")) return uri.substring(5);
+        else return uri;
+    }
+    
+    /**
+     * Make an internal uri from id
+     * @param id
+     * @return 
+     */
+    public static String toInternalId(String id) {
+        return "repo:" + id;
     }
 }
