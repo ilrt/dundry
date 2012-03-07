@@ -73,4 +73,10 @@ public class Deposit {
         return Response.ok(repository.getMetadata(item)).build();
     }
     
+    @Path("{item}")
+    @PUT
+    public Response update(JSONObject o) {
+        log.debug("Object: {}", o);
+        return Response.ok().build();
+    }
 }
