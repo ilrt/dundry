@@ -4,30 +4,31 @@ import com.google.common.base.Function;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.Maps;
+import com.google.common.io.CharStreams;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDFS;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.Map;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
+import javax.xml.stream.*;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import org.codehaus.jettison.mapped.MappedNamespaceConvention;
+import org.codehaus.jettison.mapped.MappedXMLStreamReader;
 import org.codehaus.jettison.mapped.MappedXMLStreamWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,11 +43,14 @@ import uk.ac.bristol.dundry.dao.Repository;
  */
 @Provider
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-public class RdfResourceMappingProvider implements MessageBodyWriter<Resource> {
+@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+public class RdfResourceMappingProvider 
+    implements MessageBodyWriter<Resource>, MessageBodyReader<Resource> {
     
     final static Logger log = LoggerFactory.getLogger(RdfResourceMappingProvider.class);
     
     final static XMLOutputFactory OUT_FAC = XMLOutputFactory.newInstance();
+    final static XMLInputFactory IN_FAC = XMLInputFactory.newInstance();
     
     final BiMap<String, Property> keyToProperty;
     final BiMap<Property, String> propertyToKey;
@@ -131,8 +135,7 @@ public class RdfResourceMappingProvider implements MessageBodyWriter<Resource> {
         MediaType mt, MultivaluedMap<String, Object> mm, OutputStream out) 
             throws IOException, WebApplicationException {
         try {
-            Writer outW = new OutputStreamWriter(out, "UTF-8");
-            XMLStreamWriter streamWriter = getWriterFor(mt, outW);
+            XMLStreamWriter streamWriter = getWriterFor(mt, out);
             streamWriter.writeStartDocument();
             streamWriter.writeStartElement("item");
             map(t, streamWriter);
@@ -140,7 +143,6 @@ public class RdfResourceMappingProvider implements MessageBodyWriter<Resource> {
             streamWriter.writeEndDocument();
             streamWriter.flush();
             streamWriter.close();
-            outW.close();
         } catch (XMLStreamException ex) {
             throw new WebApplicationException(ex, Status.INTERNAL_SERVER_ERROR);
         }
@@ -155,15 +157,51 @@ public class RdfResourceMappingProvider implements MessageBodyWriter<Resource> {
      * @return
      * @throws XMLStreamException 
      */
-    protected XMLStreamWriter getWriterFor(MediaType mimeType, Writer out) 
-            throws XMLStreamException {
+    protected XMLStreamWriter getWriterFor(MediaType mimeType, OutputStream out) 
+            throws XMLStreamException, UnsupportedEncodingException {
         switch (mimeType.toString()) {
             case "application/json":
+                Writer outW = new OutputStreamWriter(out, "UTF-8");
                 MappedNamespaceConvention con = new MappedNamespaceConvention();
-                return new MappedXMLStreamWriter(con, out);
+                return new MappedXMLStreamWriter(con, outW);
             default:
                 return OUT_FAC.createXMLStreamWriter(out);
         }
+    }
+    
+    protected XMLStreamReader getReaderFor(MediaType mimeType, InputStream in) 
+            throws XMLStreamException, JSONException, IOException {
+        switch (mimeType.toString()) {
+            case "application/json":
+                // This seems too complex. IS -> String -> JSONObject -> XSR
+                String jsonIn = CharStreams.toString(new InputStreamReader( in, "UTF-8" ) );
+                JSONObject o = new JSONObject(jsonIn);
+                MappedNamespaceConvention con = new MappedNamespaceConvention();
+                return new MappedXMLStreamReader(o, con);
+            default:
+                return IN_FAC.createXMLStreamReader(in);
+        }
+    }
+    
+    @Override
+    public boolean isReadable(Class<?> type, Type type1, Annotation[] antns, MediaType mt) {
+        return Resource.class.isAssignableFrom(type);
+    }
+
+    @Override
+    public Resource readFrom(Class<Resource> type, Type type1, Annotation[] antns, 
+        MediaType mt, MultivaluedMap<String, String> mm, InputStream in)
+            throws IOException, WebApplicationException {
+        try {
+            XMLStreamReader streamReader = getReaderFor(mt, in);
+            return parse(streamReader);
+        } catch (XMLStreamException | JSONException ex) {
+            throw new WebApplicationException(ex, Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private Resource parse(XMLStreamReader streamReader) {
+        return null;
     }
     
     

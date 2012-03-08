@@ -91,4 +91,6 @@ public class RdfResourceMappingProviderTest {
         
         assertEquals("{\"item\":{\"id\":\"http:\\/\\/example.com\\/r\",\"title\":\"the title\"}}", result);
     }
+    
+    
 }
