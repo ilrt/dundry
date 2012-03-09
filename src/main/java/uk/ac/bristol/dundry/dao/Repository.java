@@ -98,6 +98,7 @@ public class Repository {
      * @return 
      */
     public static String toInternalId(String id) {
-        return "repo:" + id;
+        if (id.startsWith("http://") || id.startsWith("file://")) return id;
+        else return "repo:" + id;
     }
 }

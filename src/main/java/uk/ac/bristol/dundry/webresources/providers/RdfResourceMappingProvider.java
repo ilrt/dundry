@@ -5,16 +5,12 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.Maps;
 import com.google.common.io.CharStreams;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
-import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
@@ -61,8 +57,17 @@ public class RdfResourceMappingProvider
      * @param map key to property map
      */
     public RdfResourceMappingProvider(Map<String, String> keyToProp) {
+        
+        Map<String, String> keyToPropDefaults = new HashMap<>();
+        
+        // Default label mapping
+        keyToPropDefaults.put("label", RDFS.label.getURI());
+        
+        // Add given mappings in
+        keyToPropDefaults.putAll(keyToProp);
+        
         // Map string value to a property
-        Map<String, Property> k2p = Maps.transformValues(keyToProp,
+        Map<String, Property> k2p = Maps.transformValues(keyToPropDefaults,
                  new Function<String, Property>() {
 
             @Override
@@ -200,9 +205,91 @@ public class RdfResourceMappingProvider
         }
     }
 
-    private Resource parse(XMLStreamReader streamReader) {
-        return null;
+    private Resource parse(XMLStreamReader reader) throws XMLStreamException {
+        
+        Model m = ModelFactory.createDefaultModel();
+        
+        // Move to the root object
+        reader.nextTag();
+        
+        return (Resource) parseRDFNode(reader, m);
+    }
+
+    private RDFNode parseRDFNode(XMLStreamReader reader, Model m) throws XMLStreamException {
+        String id = null;
+        StringBuilder content = null;
+        List<Attribute> properties = null;
+        int level = 0;
+        while (reader.hasNext()) {
+            int et = reader.next();
+            if (XMLStreamReader.CHARACTERS == et) {
+                if (properties != null)
+                    log.warn("Characters found unexpectedly. Mixed content. Continuing...");
+                if (content == null) content = new StringBuilder();
+                content.append(reader.getText());
+                //System.err.println("Chars: " + reader.getText());
+            }
+            else if (XMLStreamReader.START_ELEMENT == et) {
+                if (content != null)
+                    log.warn("Tag found unexpectedly. Mixed content. Continuing...");
+                if ("id".equals(reader.getLocalName())) {
+                    // id is special
+                    id = parseRDFNode(reader, m).asLiteral().getLexicalForm();
+                }
+                else {
+                    String name = reader.getLocalName();
+                    if (!keyToProperty.containsKey(name)) {
+                        // SKIP...
+                        level++;
+                    } else {
+                        if (properties == null) properties = new LinkedList<>();
+                        
+                        //System.err.println("START: " + reader.getLocalName());
+                        Attribute a = 
+                                new Attribute(
+                                    keyToProperty.get(name),
+                                    parseRDFNode(reader, m));
+                        //System.err.printf("Add property: <%s> <%s>\n", a.predicate, a.value);
+                        properties.add(a);
+                    }
+                }
+            }
+            else if (XMLStreamReader.END_ELEMENT == et) {
+                //System.err.println("END: " + level + " " + reader.getLocalName());
+                level--;
+                if (level < 0) break;
+            }
+        }
+        
+        //if (content != null && properties != null) {
+            //System.err.println("ARGH: mixed " + id);
+        //}
+        
+        if (content != null) {
+            //System.err.println("return literal " + content);
+            return m.createLiteral(content.toString());
+        }
+        
+        Resource r = (id == null) ? 
+                m.createResource() : 
+                m.createResource(Repository.toInternalId(id));
+        
+        if (properties != null) {
+            for (Attribute a: properties) {
+                r.addProperty(a.predicate, a.value);
+            }
+        }
+        
+        return r;
     }
     
-    
+    static class Attribute {
+        final Property predicate;
+        final RDFNode value;
+        
+        public Attribute(Property predicate, RDFNode value) {
+            this.predicate = predicate;
+            this.value = value;
+        }
+    }
 }

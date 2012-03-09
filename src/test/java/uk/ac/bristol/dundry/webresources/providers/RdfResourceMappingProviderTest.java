@@ -9,8 +9,10 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.impl.ResourceImpl;
+import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.vocabulary.DCTerms;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import javax.ws.rs.core.MediaType;
@@ -92,5 +94,22 @@ public class RdfResourceMappingProviderTest {
         assertEquals("{\"item\":{\"id\":\"http:\\/\\/example.com\\/r\",\"title\":\"the title\"}}", result);
     }
     
-    
+    @Test
+    public void testReadFrom() throws Exception {
+        RdfResourceMappingProvider i = get(
+                "contributor", "http://purl.org/dc/terms/contributor",
+                "source", "http://purl.org/dc/terms/source",
+                "title", "http://purl.org/dc/terms/title",
+                "description", "http://purl.org/dc/terms/description"
+                );
+        InputStream in = this.getClass().getResourceAsStream("/ex1.json");
+        Resource r = i.readFrom(Resource.class, null, null, MediaType.valueOf("application/json"), null, in);
+        Model expected = FileManager.get().loadModel("ex1.ttl");
+        
+        //expected.write(System.err, "TTL");
+        //System.err.println("================");
+        //r.getModel().write(System.err, "TTL");
+        
+        assertTrue("ex1 json correct", expected.isIsomorphicWith(r.getModel()));
+    }
 }
