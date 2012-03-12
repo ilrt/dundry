@@ -45,4 +45,10 @@ public class MetadataStore {
         store.getNamedModel(graphId).add(initialContent);
         store.commit();
     }
+
+    void replaceData(String graphId, Model model) {
+        store.begin(ReadWrite.WRITE);
+        store.getNamedModel(graphId).removeAll().add(model);
+        store.commit();
+    }
 }

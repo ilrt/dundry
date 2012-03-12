@@ -99,12 +99,6 @@ public class RdfResourceMappingProvider
             writer.writeCharacters(Repository.toExternalId(resource.getURI()));
             writer.writeEndElement();
         }
-        // If present, write the label of this resource
-        if (resource.hasProperty(RDFS.label)) {
-            writer.writeStartElement("label");
-            writer.writeCharacters(resource.getProperty(RDFS.label).getLiteral().getLexicalForm());
-            writer.writeEndElement();
-        }
         // Now loop through each statement, mapping as we go...
         Iterator<Statement> si = resource.listProperties();
         while (si.hasNext()) {
@@ -222,6 +216,7 @@ public class RdfResourceMappingProvider
         int level = 0;
         while (reader.hasNext()) {
             int et = reader.next();
+            
             if (XMLStreamReader.CHARACTERS == et) {
                 if (properties != null)
                     log.warn("Characters found unexpectedly. Mixed content. Continuing...");
@@ -233,8 +228,11 @@ public class RdfResourceMappingProvider
                 if (content != null)
                     log.warn("Tag found unexpectedly. Mixed content. Continuing...");
                 if ("id".equals(reader.getLocalName())) {
-                    // id is special
-                    id = parseRDFNode(reader, m).asLiteral().getLexicalForm();
+                    // id is special.
+                    id = reader.getElementText();
+                    
+                    // Jettison bug. We should be at end element now
+                    if (!reader.isEndElement()) reader.next();
                 }
                 else {
                     String name = reader.getLocalName();
@@ -261,28 +259,32 @@ public class RdfResourceMappingProvider
             }
         }
         
-        //if (content != null && properties != null) {
-            //System.err.println("ARGH: mixed " + id);
-        //}
+        /** We treat empty content as missing on the RDF side **/
+        if (content != null && content.length() == 0) return null;
+        if (id != null && id.isEmpty()) return null;
         
-        if (content != null) {
-            //System.err.println("return literal " + content);
-            return m.createLiteral(content.toString());
-        }
+        /** We have content: create a literal **/
+        if (content != null) return m.createLiteral(content.toString());
         
-        Resource r = (id == null) ? 
+        /** Otherwise it's a resource (anon or named) **/
+        Resource r = (id == null || id.isEmpty()) ? 
                 m.createResource() : 
                 m.createResource(Repository.toInternalId(id));
         
+        // Copy over retrieved properties
         if (properties != null) {
             for (Attribute a: properties) {
-                r.addProperty(a.predicate, a.value);
+                // If object is not null add property
+                if (a.value != null) r.addProperty(a.predicate, a.value);
             }
         }
         
         return r;
     }
     
+    /**
+     * A struct for holding partial triples
+     */
     static class Attribute {
         final Property predicate;
         final RDFNode value;

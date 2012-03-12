@@ -1,5 +1,6 @@
 package uk.ac.bristol.dundry.webresources;
 
+import com.hp.hpl.jena.rdf.model.Resource;
 import java.io.IOException;
 import java.net.URI;
 import javax.ws.rs.*;
@@ -27,13 +28,13 @@ public class Deposit {
     @Autowired Repository repository;
     @Autowired FileSystemSource sourceFS;
     
-    @Path("/")
+    @Path("")
     @GET
     public Response list() {
         return Response.ok(new ListDepositDescriptions(repository.getIds())).build();
     }
     
-    @Path("/")
+    @Path("")
     @POST
     @Consumes("application/x-www-form-urlencoded")
     public Response create(
@@ -53,7 +54,7 @@ public class Deposit {
         return Response.created(createdUri).build();
     }
     
-    @Path("/")
+    @Path("")
     @POST
     @Consumes("application/json")
     public Response create(JSONObject source) throws IOException, JSONException {
@@ -67,7 +68,7 @@ public class Deposit {
                 depositStub.getString("description"));
     }
     
-    @Path("/{item}")
+    @Path("{item}")
     @GET
     public Response retrieve(@PathParam("item") String item) {
         return Response.ok(repository.getMetadata(item)).build();
@@ -75,8 +76,9 @@ public class Deposit {
     
     @Path("{item}")
     @PUT
-    public Response update(JSONObject o) {
-        log.debug("Object: {}", o);
+    public Response update(@PathParam("item") String item, Resource data) {
+        log.debug("Update: {} with {}", item, data.getModel());
+        repository.updateMetadata(item, data);
         return Response.ok().build();
     }
 }

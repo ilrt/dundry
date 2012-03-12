@@ -81,6 +81,10 @@ public class Repository {
         return mdStore.getDataAbout(toInternalId(id)).createResource(toInternalId(id));
     }
     
+    public void updateMetadata(String id, Resource r) {
+        mdStore.replaceData(toInternalId(id), r.getModel());
+    }
+    
     /**
      * Takes an id and makes it suitable for external use by stripping off
      * leading 'repo:' if present

@@ -106,10 +106,18 @@ public class RdfResourceMappingProviderTest {
         Resource r = i.readFrom(Resource.class, null, null, MediaType.valueOf("application/json"), null, in);
         Model expected = FileManager.get().loadModel("ex1.ttl");
         
-        //expected.write(System.err, "TTL");
-        //System.err.println("================");
-        //r.getModel().write(System.err, "TTL");
+        r.getModel().write(System.err, "TTL");
         
         assertTrue("ex1 json correct", expected.isIsomorphicWith(r.getModel()));
+        
+        in = this.getClass().getResourceAsStream("/ex2.json");
+        r = i.readFrom(Resource.class, null, null, MediaType.valueOf("application/json"), null, in);
+        expected = FileManager.get().loadModel("ex2.ttl");
+        assertTrue("ex2 (missing desc) json correct", expected.isIsomorphicWith(r.getModel()));
+        
+        in = this.getClass().getResourceAsStream("/ex3.json");
+        r = i.readFrom(Resource.class, null, null, MediaType.valueOf("application/json"), null, in);
+        expected = FileManager.get().loadModel("ex3.ttl");
+        assertTrue("ex3 (empty id) json correct", expected.isIsomorphicWith(r.getModel()));
     }
 }
