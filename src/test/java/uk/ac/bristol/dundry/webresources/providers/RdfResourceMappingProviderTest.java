@@ -105,9 +105,7 @@ public class RdfResourceMappingProviderTest {
         InputStream in = this.getClass().getResourceAsStream("/ex1.json");
         Resource r = i.readFrom(Resource.class, null, null, MediaType.valueOf("application/json"), null, in);
         Model expected = FileManager.get().loadModel("ex1.ttl");
-        
-        r.getModel().write(System.err, "TTL");
-        
+                
         assertTrue("ex1 json correct", expected.isIsomorphicWith(r.getModel()));
         
         in = this.getClass().getResourceAsStream("/ex2.json");
