@@ -11,6 +11,7 @@ import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.Map.Entry;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
@@ -100,8 +101,31 @@ public class RdfResourceMappingProvider
             writer.writeEndElement();
         }
         // Now loop through each statement, mapping as we go...
-        Iterator<Statement> si = resource.listProperties();
-        while (si.hasNext()) {
+        //Iterator<Statement> si = resource.listProperties();
+        
+        for (Entry<Property, String> e: propertyToKey.entrySet()) {
+            if (resource.hasProperty(e.getKey())) {
+                List<Statement> values = resource.listProperties(e.getKey()).toList();
+                // Wrap multi-values is plural name element
+                if (values.size() > 1) writer.writeStartElement(e.getValue() + "s");
+                
+                for (Statement s: values) {
+                    writer.writeStartElement(e.getValue());
+                    if (s.getObject().isResource()) {
+                        map(s.getObject().asResource(), writer);
+                    }
+                    // Otherwise write the value as a string (limited :-()
+                    else {
+                        writer.writeCharacters(s.getObject().asLiteral().getLexicalForm());
+                    }
+                    writer.writeEndElement();
+                }
+                
+                if (values.size() > 1) writer.writeEndElement();
+            }
+        }
+        
+        /*while (si.hasNext()) {
             Statement s = si.next();
             // If we have a mapping for this property create and entry for key
             if (propertyToKey.containsKey(s.getPredicate())) {
@@ -116,7 +140,7 @@ public class RdfResourceMappingProvider
                 }
                 writer.writeEndElement();
             }
-        }
+        }*/
     }
 
     @Override
