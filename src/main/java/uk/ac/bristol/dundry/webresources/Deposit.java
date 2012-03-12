@@ -77,7 +77,9 @@ public class Deposit {
     @Path("{item}")
     @PUT
     public Response update(@PathParam("item") String item, Resource data) {
-        log.debug("Update: {} with {}", item, data.getModel());
+        if (log.isDebugEnabled()) {
+            log.debug("Update: {} with {}", item, data.getModel());
+        }
         repository.updateMetadata(item, data);
         return Response.ok().build();
     }
