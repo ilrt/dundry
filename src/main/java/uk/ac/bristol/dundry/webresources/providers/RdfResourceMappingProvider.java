@@ -49,15 +49,28 @@ public class RdfResourceMappingProvider
     final static XMLOutputFactory OUT_FAC = XMLOutputFactory.newInstance();
     final static XMLInputFactory IN_FAC = XMLInputFactory.newInstance();
     
-    final BiMap<String, Property> keyToProperty;
-    final BiMap<Property, String> propertyToKey;
+    private final BiMap<String, Property> keyToProperty;
+    private final BiMap<Property, String> propertyToKey;
+    private final List<String> asArrays;
+    
+    /**
+     * Create a provider (no array mapping)
+     * 
+     * @param keyToProp key to property map
+     */
+    public RdfResourceMappingProvider(Map<String, String> keyToProp) {
+        this(keyToProp, Collections.EMPTY_LIST);
+    }
     
     /**
      * Create a provider
      * 
-     * @param map key to property map
+     * @param keyToProp key to property map
+     * @param asArrays keys to serialise as arrays in json
      */
-    public RdfResourceMappingProvider(Map<String, String> keyToProp) {
+    public RdfResourceMappingProvider(Map<String, String> keyToProp, List<String> asArrays) {
+        
+        this.asArrays = asArrays;
         
         Map<String, String> keyToPropDefaults = new HashMap<>();
         
@@ -100,15 +113,13 @@ public class RdfResourceMappingProvider
             writer.writeCharacters(Repository.toExternalId(resource.getURI()));
             writer.writeEndElement();
         }
-        // Now loop through each statement, mapping as we go...
-        //Iterator<Statement> si = resource.listProperties();
         
+        // Step through each mappable property and extract values for resource
+        // This ensures properties are grouped together, which is better (?)
         for (Entry<Property, String> e: propertyToKey.entrySet()) {
             if (resource.hasProperty(e.getKey())) {
+                // Get values as a list
                 List<Statement> values = resource.listProperties(e.getKey()).toList();
-                // Wrap multi-values is plural name element
-                if (values.size() > 1) writer.writeStartElement(e.getValue() + "s");
-                
                 for (Statement s: values) {
                     writer.writeStartElement(e.getValue());
                     if (s.getObject().isResource()) {
@@ -119,28 +130,9 @@ public class RdfResourceMappingProvider
                         writer.writeCharacters(s.getObject().asLiteral().getLexicalForm());
                     }
                     writer.writeEndElement();
-                }
-                
-                if (values.size() > 1) writer.writeEndElement();
+                }                
             }
         }
-        
-        /*while (si.hasNext()) {
-            Statement s = si.next();
-            // If we have a mapping for this property create and entry for key
-            if (propertyToKey.containsKey(s.getPredicate())) {
-                writer.writeStartElement(propertyToKey.get(s.getPredicate()));
-                // If the value is a resource recurse
-                if (s.getObject().isResource()) {
-                    map(s.getObject().asResource(), writer);
-                }
-                // Otherwise write the value as a string (limited :-()
-                else {
-                    writer.writeCharacters(s.getObject().asLiteral().getLexicalForm());
-                }
-                writer.writeEndElement();
-            }
-        }*/
     }
 
     @Override
@@ -186,7 +178,11 @@ public class RdfResourceMappingProvider
             case "application/json":
                 Writer outW = new OutputStreamWriter(out, "UTF-8");
                 MappedNamespaceConvention con = new MappedNamespaceConvention();
-                return new MappedXMLStreamWriter(con, outW);
+                MappedXMLStreamWriter writer = new MappedXMLStreamWriter(con, outW);
+                // Copy over items to always serialise as arrays
+                // and yes, they spelled the method name wrong
+                for (String key: asArrays) writer.seriliazeAsArray(key);
+                return writer;
             default:
                 return OUT_FAC.createXMLStreamWriter(out);
         }
