@@ -28,13 +28,11 @@ public class Deposit {
     @Autowired Repository repository;
     @Autowired FileSystemSource sourceFS;
     
-    @Path("")
     @GET
     public Response list() {
         return Response.ok(new ListDepositDescriptions(repository.getIds())).build();
     }
     
-    @Path("")
     @POST
     @Consumes("application/x-www-form-urlencoded")
     public Response create(
@@ -54,7 +52,6 @@ public class Deposit {
         return Response.created(createdUri).build();
     }
     
-    @Path("")
     @POST
     @Consumes("application/json")
     public Response create(JSONObject source) throws IOException, JSONException {
@@ -81,6 +78,13 @@ public class Deposit {
             log.debug("Update: {} with {}", item, data.getModel());
         }
         repository.updateMetadata(item, data);
+        return Response.ok().build();
+    }
+    
+    @Path("{item}")
+    @DELETE
+    public Response delete(@PathParam("item") String item) {
+        log.info("DELETE: {}", item);
         return Response.ok().build();
     }
 }
