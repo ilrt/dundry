@@ -115,7 +115,7 @@ public class RdfResourceMappingProvider
         }
         
         // Step through each mappable property and extract values for resource
-        // This ensures properties are grouped together, which is better (?)
+        // This ensures properties are grouped together, which is better (?)for 
         for (Entry<Property, String> e: propertyToKey.entrySet()) {
             if (resource.hasProperty(e.getKey())) {
                 // Get values as a list
@@ -180,8 +180,7 @@ public class RdfResourceMappingProvider
                 MappedNamespaceConvention con = new MappedNamespaceConvention();
                 MappedXMLStreamWriter writer = new MappedXMLStreamWriter(con, outW);
                 // Copy over items to always serialise as arrays
-                // and yes, they spelled the method name wrong
-                for (String key: asArrays) writer.seriliazeAsArray(key);
+                for (String key: asArrays) writer.serializeAsArray(key);
                 return writer;
             default:
                 return OUT_FAC.createXMLStreamWriter(out);
