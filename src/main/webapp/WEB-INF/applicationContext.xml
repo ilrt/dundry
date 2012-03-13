@@ -50,11 +50,24 @@
                 <entry><key><value>title</value></key><value>http://purl.org/dc/terms/title</value></entry>
                 <entry><key><value>description</value></key><value>http://purl.org/dc/terms/description</value></entry>
                 <entry><key><value>contributors</value></key><value>http://purl.org/dc/terms/contributor</value></entry>
+                <entry><key><value>creators</value></key><value>http://purl.org/dc/terms/creator</value></entry>
+                <entry><key><value>publisher</value></key><value>http://purl.org/dc/terms/publisher</value></entry>
+                <entry><key><value>subjects</value></key><value>http://purl.org/dc/terms/subject</value></entry>
+                <entry><key><value>valid</value></key><value>http://purl.org/dc/terms/dateValid</value></entry>
+                <entry><key><value>accepted</value></key><value>http://purl.org/dc/terms/dateAccepted</value></entry>
+                <entry><key><value>language</value></key><value>http://purl.org/dc/terms/language</value></entry>
+                <entry><key><value>atype</value></key><value>http://purl.org/dc/terms/type</value></entry>
+                <entry><key><value>references</value></key><value>http://purl.org/dc/terms/references</value></entry>
+                <entry><key><value>aformat</value></key><value>http://purl.org/dc/terms/format</value></entry>
+                <entry><key><value>license</value></key><value>http://purl.org/dc/terms/license</value></entry>
             </map>
         </constructor-arg>
         <constructor-arg>
             <list>
                 <value>contributors</value>
+                <value>creators</value>
+                <value>subjects</value>
+                <value>references</value>
             </list>
         </constructor-arg>
     </bean>
