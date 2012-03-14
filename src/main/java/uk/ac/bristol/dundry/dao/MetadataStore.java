@@ -42,13 +42,21 @@ public class MetadataStore {
 
     public void create(String graphId, Model initialContent) {
         store.begin(ReadWrite.WRITE);
-        store.getNamedModel(graphId).add(initialContent);
-        store.commit();
+        try {
+            store.getNamedModel(graphId).add(initialContent);
+            store.commit();
+        } finally {
+            store.end();
+        }
     }
 
     void replaceData(String graphId, Model model) {
         store.begin(ReadWrite.WRITE);
-        store.getNamedModel(graphId).removeAll().add(model);
-        store.commit();
+        try {
+            store.getNamedModel(graphId).removeAll().add(model);
+            store.commit();
+        } finally {
+            store.end();
+        }
     }
 }

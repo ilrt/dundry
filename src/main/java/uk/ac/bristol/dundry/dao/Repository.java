@@ -77,7 +77,7 @@ public class Repository {
         Path repoDir = fileRepo.create(id, source);
         
         subject.addLiteral(DCTerms.dateSubmitted, subject.getModel().createTypedLiteral(Calendar.getInstance()));
-        subject.addLiteral(DCTerms.source, source.toAbsolutePath());
+        subject.addLiteral(DCTerms.source, source.toAbsolutePath().toString());
         subject.addProperty(DCTerms.creator, creator);
         
         mdStore.create(toInternalId(id), subject.getModel());
