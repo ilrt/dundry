@@ -1,6 +1,10 @@
 package uk.ac.bristol.dundry.webresources;
 
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.DCTerms;
+import com.hp.hpl.jena.vocabulary.DC_11;
 import java.io.IOException;
 import java.net.URI;
 import javax.ws.rs.*;
@@ -33,6 +37,14 @@ public class Deposit {
         return Response.ok(new ListDepositDescriptions(repository.getIds())).build();
     }
     
+    /**
+     * Convenient way to create a deposit via a form
+     * @param source
+     * @param title
+     * @param description
+     * @return
+     * @throws IOException 
+     */
     @POST
     @Consumes("application/x-www-form-urlencoded")
     public Response create(
@@ -43,26 +55,31 @@ public class Deposit {
         log.info("Create deposit: {} title: {} desc: {}", 
                 new String[]{ source, title, description });
         
-        java.nio.file.Path fromDir = sourceFS.getPath(source);
+        Model model = ModelFactory.createDefaultModel();
+        Resource record = model.createResource();
+        record.addLiteral(DCTerms.title, title);
+        record.addLiteral(DCTerms.description, description);
+        record.addLiteral(DCTerms.source, source);
         
-        String id = repository.create(fromDir, title, description, "unknown");
-        
-        URI createdUri = URI.create(id);
-        
-        return Response.created(createdUri).build();
+        return create(record);
     }
     
     @POST
     @Consumes("application/json")
-    public Response create(JSONObject source) throws IOException, JSONException {
+    public Response create(Resource record) throws IOException {
         
-        log.info("Create deposit: {}", source);
+        log.info("Create deposit: {}", record.getModel());
+                
+        String source = record.getRequiredProperty(DCTerms.source).getString();
         
-        JSONObject depositStub = source.getJSONObject("deposit");
+        java.nio.file.Path fromDir = sourceFS.getPath(source);
         
-        return create(depositStub.getString("source"),
-                depositStub.getString("title"),
-                depositStub.getString("description"));
+        // TODO: username
+        String id = repository.create(fromDir, "unknown", record);
+        
+        URI createdUri = URI.create(id);
+        
+        return Response.created(createdUri).build();
     }
     
     @Path("{item}")

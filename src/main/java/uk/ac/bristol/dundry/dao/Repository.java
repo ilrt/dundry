@@ -9,6 +9,7 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.util.ResourceUtils;
 import com.hp.hpl.jena.vocabulary.DCTerms;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -53,7 +54,16 @@ public class Repository {
         return ids;
     }
     
-    public String create(Path source, String title, String description, String creator) throws IOException {
+    /**
+     * Deposit source into the repository
+     * 
+     * @param source Path to the root of the file(s) to deposit
+     * @param creator User id who made this deposit
+     * @param subject Metadata to include about the created deposit. It will be renamed once and id has been allocated.
+     * @return
+     * @throws IOException 
+     */
+    public String create(Path source, String creator, Resource subject) throws IOException {
         // Create a random id!
         UUID randId = UUID.randomUUID();
         String baseEncoded = 
@@ -61,18 +71,16 @@ public class Repository {
                 Long.toString(randId.getLeastSignificantBits(), RADIX);
         String id = baseEncoded.replace("-",""); // remove sign bits
         
+        // Now we have an id rename the subject
+        ResourceUtils.renameResource(subject, toInternalId(id));
+        
         Path repoDir = fileRepo.create(id, source);
         
-        Model model = ModelFactory.createDefaultModel();
-        Resource subject = model.createResource(toInternalId(id));
-        subject.addLiteral(DCTerms.dateSubmitted, model.createTypedLiteral(Calendar.getInstance()));
-        subject.addProperty(DCTerms.source, model.createResource(source.toUri().toString()));
+        subject.addLiteral(DCTerms.dateSubmitted, subject.getModel().createTypedLiteral(Calendar.getInstance()));
+        subject.addLiteral(DCTerms.source, source.toAbsolutePath());
         subject.addProperty(DCTerms.creator, creator);
-        subject.addProperty(DCTerms.identifier, id);
-        subject.addProperty(DCTerms.title, title);
-        if (description != null) subject.addProperty(DCTerms.description, description);
         
-        mdStore.create(toInternalId(id), model);
+        mdStore.create(toInternalId(id), subject.getModel());
         
         return id;
     }
