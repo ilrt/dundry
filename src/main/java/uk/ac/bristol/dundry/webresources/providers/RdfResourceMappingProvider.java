@@ -9,7 +9,9 @@ import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import java.io.*;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.*;
 import java.util.Map.Entry;
 import javax.ws.rs.Consumes;
@@ -29,12 +31,18 @@ import org.codehaus.jettison.mapped.MappedXMLStreamReader;
 import org.codehaus.jettison.mapped.MappedXMLStreamWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.reflect.generics.reflectiveObjects.TypeVariableImpl;
 import uk.ac.bristol.dundry.dao.Repository;
+import uk.ac.bristol.dundry.model.ResourceCollection;
 
 /**
  *
  * A Configurable provider that provides a very simple-minded RDF <-> JSON
- * object mapping. Of limited use.
+ * object mapping.
+ * 
+ * Note we have a limitation of the type system here: We want to write
+ * Resources and List&lt;Resources>. I suppose we could always deal with the
+ * latter via singleton lists?
  * 
  * @author Damian Steer <d.steer@bris.ac.uk>
  */
@@ -42,7 +50,7 @@ import uk.ac.bristol.dundry.dao.Repository;
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class RdfResourceMappingProvider 
-    implements MessageBodyWriter<Resource>, MessageBodyReader<Resource> {
+    implements MessageBodyWriter<Object>, MessageBodyReader<Resource> {
     
     final static Logger log = LoggerFactory.getLogger(RdfResourceMappingProvider.class);
     
@@ -137,24 +145,35 @@ public class RdfResourceMappingProvider
 
     @Override
     public boolean isWriteable(Class<?> type, Type type1, Annotation[] antns, MediaType mt) {
-        return Resource.class.isAssignableFrom(type);
+        
+        return Resource.class.isAssignableFrom(type) ||
+                ResourceCollection.class.isAssignableFrom(type);
     }
-
+    
     @Override
-    public long getSize(Resource t, Class<?> type, Type type1, Annotation[] antns, MediaType mt) {
+    public long getSize(Object t, Class<?> type, Type type1, Annotation[] antns, MediaType mt) {
         return -1;
     }
 
     @Override
-    public void writeTo(Resource t, Class<?> type, Type type1, Annotation[] antns,
+    public void writeTo(Object t, Class<?> type, Type type1, Annotation[] antns,
         MediaType mt, MultivaluedMap<String, Object> mm, OutputStream out) 
             throws IOException, WebApplicationException {
+        // We either have a resource, or resource collection
+        // Make a singleton resource collection to simplify things
+        ResourceCollection resources = (t instanceof ResourceCollection) ?
+                (ResourceCollection) t :
+                new ResourceCollection(Collections.singleton((Resource) t));
         try {
             XMLStreamWriter streamWriter = getWriterFor(mt, out);
             streamWriter.writeStartDocument();
-            streamWriter.writeStartElement("item");
-            map(t, streamWriter);
-            streamWriter.writeEndElement();
+            //streamWriter.writeStartElement("items");
+            for (Resource r: resources) {
+                streamWriter.writeStartElement("item");
+                map(r, streamWriter);
+                streamWriter.writeEndElement();
+            }
+            //streamWriter.writeEndElement();
             streamWriter.writeEndDocument();
             streamWriter.flush();
             streamWriter.close();

@@ -13,11 +13,11 @@ import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.vocabulary.DCTerms;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import javax.ws.rs.core.MediaType;
 import static org.junit.Assert.*;
 import org.junit.Test;
+import uk.ac.bristol.dundry.model.ResourceCollection;
 
 /**
  *
@@ -54,6 +54,9 @@ public class RdfResourceMappingProviderTest {
         assertTrue("Can write resources", i.isWriteable(Resource.class, null, null, null));
         assertTrue("Can write resources impls", i.isWriteable(ResourceImpl.class, null, null, null));
         assertFalse("Can write literals", i.isWriteable(Literal.class, null, null, null));
+        
+        ResourceCollection t = new ResourceCollection(Collections.EMPTY_LIST);
+        assertTrue("Can write list of resources", i.isWriteable(t.getClass(), t.getClass(), null, null));
     }
 
     /**
@@ -92,6 +95,10 @@ public class RdfResourceMappingProviderTest {
         result = new String(out.toByteArray(), "UTF-8");
         
         assertEquals("{\"item\":{\"id\":\"http:\\/\\/example.com\\/r\",\"title\":\"the title\"}}", result);
+    }
+    
+    @Test
+    public void testWritingMultipleItems() {
     }
     
     @Test

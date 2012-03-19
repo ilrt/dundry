@@ -11,6 +11,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.util.ResourceUtils;
 import com.hp.hpl.jena.vocabulary.DCTerms;
+import com.hp.hpl.jena.vocabulary.RDFS;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Calendar;
@@ -19,7 +20,7 @@ import java.util.List;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.bristol.dundry.model.DepositDescription;
+import uk.ac.bristol.dundry.model.ResourceCollection;
 
 /**
  *
@@ -40,18 +41,18 @@ public class Repository {
         this.mdStore = mdStore;
     }
     
-    public List<DepositDescription> getIds() {
+    public ResourceCollection getIds() {
+        Model resultModel = ModelFactory.createDefaultModel();
         ResultSet r = mdStore.query("select distinct ?g ?title { graph ?g1 { ?g <http://purl.org/dc/terms/title> ?title } }");
-        List<DepositDescription> ids = new LinkedList<>();
+        List<Resource> ids = new LinkedList<>();
         while (r.hasNext()) {
             QuerySolution nxt = r.next();
-            ids.add( new DepositDescription(
-                        toExternalId(nxt.getResource("g").getURI()),
-                        nxt.getLiteral("title").getLexicalForm()
-                    ) );
+            Resource item = nxt.getResource("g");
+            item.addLiteral(RDFS.label, nxt.getLiteral("title").getLexicalForm());
+            ids.add( item );
         }
         log.info("Ids is: {}", ids);
-        return ids;
+        return new ResourceCollection(ids);
     }
     
     /**

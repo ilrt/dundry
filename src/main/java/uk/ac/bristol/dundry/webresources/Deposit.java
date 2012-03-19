@@ -4,20 +4,16 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.DCTerms;
-import com.hp.hpl.jena.vocabulary.DC_11;
 import java.io.IOException;
 import java.net.URI;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.ac.bristol.dundry.dao.FileSystemSource;
 import uk.ac.bristol.dundry.dao.Repository;
-import uk.ac.bristol.dundry.model.ListDepositDescriptions;
 
 /**
  *
@@ -34,7 +30,7 @@ public class Deposit {
     
     @GET
     public Response list() {
-        return Response.ok(new ListDepositDescriptions(repository.getIds())).build();
+        return Response.ok(repository.getIds()).build();
     }
     
     /**
