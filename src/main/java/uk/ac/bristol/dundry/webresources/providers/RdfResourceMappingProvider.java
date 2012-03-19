@@ -58,6 +58,10 @@ public class RdfResourceMappingProvider
     private final BiMap<Property, String> propertyToKey;
     private final List<String> asArrays;
     
+    // '{"item":[]}' in bytes
+    private static final byte[] EMPTY_JSON_RESULT = 
+            new byte[]{ 123, 34, 105, 116, 101, 109, 34, 58, 91, 93, 125 };
+    
     /**
      * Create a provider (no array mapping)
      * 
@@ -165,7 +169,7 @@ public class RdfResourceMappingProvider
         // Special case that I can't persuade the JSON writer to deal with
         // (it writes [""])
         if (resources.isEmpty() && mt.equals(MediaType.APPLICATION_JSON_TYPE)) {
-            out.write('['); out.write(']');
+            out.write(EMPTY_JSON_RESULT);
             return;
         }
         
