@@ -9,9 +9,7 @@ import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import java.io.*;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 import java.util.*;
 import java.util.Map.Entry;
 import javax.ws.rs.Consumes;
@@ -31,7 +29,6 @@ import org.codehaus.jettison.mapped.MappedXMLStreamReader;
 import org.codehaus.jettison.mapped.MappedXMLStreamWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.reflect.generics.reflectiveObjects.TypeVariableImpl;
 import uk.ac.bristol.dundry.dao.Repository;
 import uk.ac.bristol.dundry.model.ResourceCollection;
 
@@ -164,16 +161,22 @@ public class RdfResourceMappingProvider
         ResourceCollection resources = (t instanceof ResourceCollection) ?
                 (ResourceCollection) t :
                 new ResourceCollection(Collections.singleton((Resource) t));
+        
+        // Special case that I can't persuade the JSON writer to deal with
+        // (it writes [""])
+        if (resources.isEmpty() && mt.equals(MediaType.APPLICATION_JSON_TYPE)) {
+            out.write('['); out.write(']');
+            return;
+        }
+        
         try {
             XMLStreamWriter streamWriter = getWriterFor(mt, out);
             streamWriter.writeStartDocument();
-            //streamWriter.writeStartElement("items");
             for (Resource r: resources) {
                 streamWriter.writeStartElement("item");
                 map(r, streamWriter);
                 streamWriter.writeEndElement();
             }
-            //streamWriter.writeEndElement();
             streamWriter.writeEndDocument();
             streamWriter.flush();
             streamWriter.close();

@@ -11,11 +11,14 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.impl.ResourceImpl;
 import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.vocabulary.DCTerms;
+import com.hp.hpl.jena.vocabulary.RDFS;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import javax.ws.rs.core.MediaType;
 import static org.junit.Assert.*;
+import org.junit.Ignore;
 import org.junit.Test;
 import uk.ac.bristol.dundry.model.ResourceCollection;
 
@@ -78,27 +81,78 @@ public class RdfResourceMappingProviderTest {
         Resource r = makeResource("http://example.com/r");
         r.addLiteral(DCTerms.title, "the title");
         
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        
-        i.writeTo(r, null, null, null, MediaType.valueOf("application/json"), null, out);
-        
-        String result = new String(out.toByteArray(), "UTF-8");
-        
-        assertEquals("{\"item\":{\"id\":\"http:\\/\\/example.com\\/r\"}}", result);
+        assertEquals("{\"item\":{\"id\":\"http:\\/\\/example.com\\/r\"}}", map(i, r, "application/json"));
         
         i = get("title", DCTerms.title.getURI());
         
-        out = new ByteArrayOutputStream();
-        
-        i.writeTo(r, null, null, null, MediaType.valueOf("application/json"), null, out);
-        
-        result = new String(out.toByteArray(), "UTF-8");
-        
-        assertEquals("{\"item\":{\"id\":\"http:\\/\\/example.com\\/r\",\"title\":\"the title\"}}", result);
+        assertEquals("{\"item\":{\"id\":\"http:\\/\\/example.com\\/r\",\"title\":\"the title\"}}", map(i, r, "application/json"));
     }
     
     @Test
-    public void testWritingMultipleItems() {
+    public void testWritingMultipleItems() throws IOException {
+        RdfResourceMappingProvider i = get(
+                "source", "http://purl.org/dc/terms/source",
+                "title", "http://purl.org/dc/terms/title");
+        
+        Resource r = makeResource("http://example.com/r");
+        r.addLiteral(DCTerms.title, "title 1");
+        r.addLiteral(DCTerms.title, "title 2");
+        
+        // ALERT: this relies on the order of the titles, which may change
+        assertEquals("Repeated title",
+                "{\"item\":{\"id\":\"http:\\/\\/example.com\\/r\",\"title\":[\"title 2\",\"title 1\"]}}",
+                map(i, r, "application/json")
+                );
+        
+        r = makeResource("http://example.com/r");
+        r.addProperty(DCTerms.source, makeResource("http://example.com/a"));
+        r.addProperty(DCTerms.source, makeResource("http://example.com/b"));
+        
+        assertEquals("Repeated source",
+                "{\"item\":{\"id\":\"http:\\/\\/example.com\\/r\",\"source\":[{\"id\":\"http:\\/\\/example.com\\/b\"},{\"id\":\"http:\\/\\/example.com\\/a\"}]}}",
+                map(i, r, "application/json")
+                );
+    }
+    
+    @Test
+    public void testWritingCollection() throws IOException {
+        RdfResourceMappingProvider i = get(
+                "source", "http://purl.org/dc/terms/source",
+                "title", "http://purl.org/dc/terms/title");
+        
+        List<Resource> rs = new ArrayList<>();
+        
+        Resource r = makeResource("http://example.com/a");
+        r.addLiteral(DCTerms.title, "title 1");
+        
+        rs.add(r);
+        
+        r = makeResource("http://example.com/b");
+        r.addLiteral(DCTerms.title, "title 2");
+        
+        rs.add(r);
+        
+        // ALERT: this relies on the order of the resources, which may change
+        assertEquals("Repeated resource",
+                "{\"item\":[{\"id\":\"http:\\/\\/example.com\\/a\",\"title\":\"title 1\"},{\"id\":\"http:\\/\\/example.com\\/b\",\"title\":\"title 2\"}]}",
+                map(i, new ResourceCollection(rs), "application/json")
+                );
+    }
+    
+    @Test
+    public void testWritingEmptyCollection() throws IOException {
+        RdfResourceMappingProvider i = get();
+        assertEquals("Empty resource list",
+                "{\"item\":[]}",
+                map(i, new ResourceCollection(Collections.EMPTY_LIST), "application/json")
+                );
+    }
+    
+    // Map object r, and return result as a string
+    private String map(RdfResourceMappingProvider i, Object r, String mType) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        i.writeTo(r, null, null, null, MediaType.valueOf(mType), null, out);
+        return new String(out.toByteArray(), "UTF-8");
     }
     
     @Test
