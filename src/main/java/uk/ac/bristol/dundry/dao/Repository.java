@@ -47,7 +47,8 @@ public class Repository {
         List<Resource> ids = new LinkedList<>();
         while (r.hasNext()) {
             QuerySolution nxt = r.next();
-            Resource item = nxt.getResource("g");
+            // get item and copy to resultModel
+            Resource item = nxt.getResource("g").inModel(resultModel);
             item.addLiteral(RDFS.label, nxt.getLiteral("title").getLexicalForm());
             ids.add( item );
         }

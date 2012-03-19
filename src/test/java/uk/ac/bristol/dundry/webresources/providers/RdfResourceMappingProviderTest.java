@@ -148,6 +148,18 @@ public class RdfResourceMappingProviderTest {
                 );
     }
     
+    @Test
+    public void testWritingSingletonCollection() throws IOException {
+        RdfResourceMappingProvider i = get();
+        Resource r = makeResource("http://example.com/a");
+        r.addLiteral(RDFS.label, "label");
+        System.err.println(map(i, new ResourceCollection(Collections.singleton(r)), "application/json"));
+        assertEquals("Singleton resource list includes array",
+                "{\"item\":[{\"id\":\"http:\\/\\/example.com\\/a\",\"label\":\"label\"}]}",
+                map(i, new ResourceCollection(Collections.singleton(r)), "application/json")
+                );
+    }
+    
     // Map object r, and return result as a string
     private String map(RdfResourceMappingProvider i, Object r, String mType) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
