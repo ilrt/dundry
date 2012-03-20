@@ -43,13 +43,21 @@ public class Repository {
     
     public ResourceCollection getIds() {
         Model resultModel = ModelFactory.createDefaultModel();
-        ResultSet r = mdStore.query("select distinct ?g ?title { graph ?g1 { ?g <http://purl.org/dc/terms/title> ?title } }");
+        ResultSet r = mdStore.query("select distinct ?g ?title ?description ?source "
+                + "{ graph ?g1 { "
+                + "?g <http://purl.org/dc/terms/title> ?title ;"
+                + "   <http://purl.org/dc/terms/source> ?source . "
+                + "OPTIONAL { ?g <http://purl.org/dc/terms/description> ?description } "
+                + "} }");
         List<Resource> ids = new LinkedList<>();
         while (r.hasNext()) {
             QuerySolution nxt = r.next();
             // get item and copy to resultModel
             Resource item = nxt.getResource("g").inModel(resultModel);
-            item.addLiteral(RDFS.label, nxt.getLiteral("title").getLexicalForm());
+            item.addLiteral(RDFS.label, nxt.get("title"));
+            item.addLiteral(DCTerms.source, nxt.get("source"));
+            if (nxt.contains("description"))
+                item.addLiteral(DCTerms.description, nxt.get("description"));
             ids.add( item );
         }
         log.info("Ids is: {}", ids);
