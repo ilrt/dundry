@@ -136,7 +136,7 @@ public class RdfResourceMappingProvider
                     }
                     // Otherwise write the value as a string (limited :-()
                     else {
-                        writer.writeCharacters(s.getObject().asLiteral().getLexicalForm());
+                        writer.writeCharacters(s.getLiteral().getLexicalForm());
                     }
                     writer.writeEndElement();
                 }                
@@ -167,14 +167,17 @@ public class RdfResourceMappingProvider
                 new ResourceCollection(Collections.singleton((Resource) t));
         
         // Special case that I can't persuade the JSON writer to deal with
-        // (it writes [""])
+        // (it writes [""] rather than [])
         if (resources.isEmpty() && mt.equals(MediaType.APPLICATION_JSON_TYPE)) {
             out.write(EMPTY_JSON_RESULT);
             return;
         }
         
         try {
-            XMLStreamWriter streamWriter = getWriterFor(mt, out);
+            // Get appropriate writer for mediatype, and whether this is an
+            // individual or list context
+            XMLStreamWriter streamWriter = 
+                    getWriterFor(mt, out, (t instanceof ResourceCollection));
             streamWriter.writeStartDocument();
             for (Resource r: resources) {
                 streamWriter.writeStartElement("item");
@@ -195,10 +198,11 @@ public class RdfResourceMappingProvider
      * 
      * @param mimeType
      * @param out
+     * @param inListContext Whether we are serialising a list of items
      * @return
      * @throws XMLStreamException 
      */
-    protected XMLStreamWriter getWriterFor(MediaType mimeType, OutputStream out) 
+    protected XMLStreamWriter getWriterFor(MediaType mimeType, OutputStream out, boolean inListContext) 
             throws XMLStreamException, UnsupportedEncodingException {
         switch (mimeType.toString()) {
             case "application/json":
@@ -207,6 +211,8 @@ public class RdfResourceMappingProvider
                 MappedXMLStreamWriter writer = new MappedXMLStreamWriter(con, outW);
                 // Copy over items to always serialise as arrays
                 for (String key: asArrays) writer.serializeAsArray(key);
+                // If we are serialising a list <item> should always be an array
+                if (inListContext) writer.serializeAsArray("item");
                 return writer;
             default:
                 return OUT_FAC.createXMLStreamWriter(out);

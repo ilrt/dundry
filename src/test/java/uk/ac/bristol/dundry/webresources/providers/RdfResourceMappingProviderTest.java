@@ -153,7 +153,6 @@ public class RdfResourceMappingProviderTest {
         RdfResourceMappingProvider i = get();
         Resource r = makeResource("http://example.com/a");
         r.addLiteral(RDFS.label, "label");
-        System.err.println(map(i, new ResourceCollection(Collections.singleton(r)), "application/json"));
         assertEquals("Singleton resource list includes array",
                 "{\"item\":[{\"id\":\"http:\\/\\/example.com\\/a\",\"label\":\"label\"}]}",
                 map(i, new ResourceCollection(Collections.singleton(r)), "application/json")
