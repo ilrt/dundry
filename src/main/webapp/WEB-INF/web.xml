@@ -13,22 +13,24 @@
         <load-on-startup>2</load-on-startup>
     </servlet>
     <servlet>
-        <servlet-name>ServletAdaptor</servlet-name>
+        <servlet-name>Jersey Spring Web Application</servlet-name>
         <servlet-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</servlet-class>
-        <init-param>
+        <!-- this interacts badly with the configurable RdfResourceMappingProvider,
+             so we let spring make everything for the moment -->
+        <!--<init-param>
             <description>Multiple packages, separated by semicolon(;), can be specified in param-value</description>
             <param-name>com.sun.jersey.config.property.packages</param-name>
             <param-value>uk.ac.bristol.dundry</param-value>
+        </init-param>-->
+        <init-param>
+            <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
+            <param-value>uk.ac.bristol.dundry.filters.URIExtensionConneg</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>
         <servlet-name>dispatcher</servlet-name>
         <url-pattern>*.htm</url-pattern>
     </servlet-mapping>
-    <servlet>
-       <servlet-name>Jersey Spring Web Application</servlet-name>
-       <servlet-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</servlet-class>
-     </servlet>
      <servlet-mapping>
        <servlet-name>Jersey Spring Web Application</servlet-name>
        <url-pattern>/r/*</url-pattern>
