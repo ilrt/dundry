@@ -12,7 +12,6 @@ import uk.ac.bristol.dundry.webresources.providers.RdfMediaType;
  * 
  * @author Damian Steer <d.steer@bris.ac.uk>
  */
-//@Component
 public class URIExtensionConneg extends UriConnegFilter {
     
     final static Map<String, MediaType> extToType;
@@ -29,8 +28,6 @@ public class URIExtensionConneg extends UriConnegFilter {
     
     public URIExtensionConneg() {
         super(extToType);
-        
-        System.err.println(">>>>>> gotcha <<<<<<<<<<<");
     }
     
 }
