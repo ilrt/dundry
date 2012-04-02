@@ -23,21 +23,27 @@
 
     <!-- ADD PERSISTENCE SUPPORT HERE (jpa, hibernate, etc) -->
     
+    <!-- Load values which typically vary per profile (dev, prod etc) -->
+    <bean id="placeholderConfig"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location" value="classpath:app.properties" />
+    </bean>
+    
     <context:component-scan base-package="uk.ac.bristol.dundry" />
     
     <bean class="uk.ac.bristol.dundry.dao.FileSystemSource">
-        <constructor-arg value="working"/>
+        <constructor-arg value="${sources.dir}"/>
     </bean>
     
     <bean class="uk.ac.bristol.dundry.dao.Repository">
         <constructor-arg>
             <bean class="uk.ac.bristol.dundry.dao.FileRepository">
-                <constructor-arg value="repo"/>
+                <constructor-arg value="${repo.dir}"/>
             </bean>
         </constructor-arg>
         <constructor-arg>
             <bean class="uk.ac.bristol.dundry.dao.MetadataStore">
-                <constructor-arg value="repo/metadata"/>
+                <constructor-arg value="${repo.metadata}"/>
             </bean>
         </constructor-arg>
     </bean>
