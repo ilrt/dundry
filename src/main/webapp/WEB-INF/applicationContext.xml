@@ -47,7 +47,7 @@
             </bean>
         </constructor-arg>
     </bean>
-    
+        
     <bean class="uk.ac.bristol.dundry.webresources.providers.RdfResourceMappingProvider"
         scope="singleton">
         <constructor-arg>
