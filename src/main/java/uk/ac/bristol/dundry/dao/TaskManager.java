@@ -27,11 +27,12 @@ public class TaskManager {
     
     public void startJob(String id) throws SchedulerException {
         JobDetail job = newJob(HelloJob.class)
-        .withIdentity("job-" + id, "group-" + id)
+        .withIdentity("job-" + id, "my-group")
+        .usingJobData("ID", id)
         .build();
         
         Trigger trigger = newTrigger()
-        .withIdentity("trigger-" + id, "group-trigger-" + id)
+        .withIdentity("trigger-" + id, "my-group")
         .startNow()           
         .build();
         
@@ -42,7 +43,7 @@ public class TaskManager {
 
         @Override
         public void execute(JobExecutionContext jec) throws JobExecutionException {
-            String name = jec.getJobDetail().getKey().getName();
+            String name = (String) jec.getMergedJobDataMap().getString("ID");
             try {
                 System.err.printf("Execute %s (%s)\n", 1, name);
                 Thread.sleep(20000);
