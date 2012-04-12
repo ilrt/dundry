@@ -27,9 +27,8 @@ public class Tasks {
     @GET
     public Response list() throws SchedulerException {
         StringBuilder r = new StringBuilder("Tasks:\n\n");
-        for (JobExecutionContext i: taskManager.listAllTasks()) {
-            r.append("[] ");
-            r.append(i.getJobDetail().getKey().getName());
+        for (Object i: taskManager.listAllTasks()) {
+            r.append(i);
             r.append("\n");
         }
         return Response.ok(r.toString()).build();
@@ -39,6 +38,6 @@ public class Tasks {
     public Response start() throws SchedulerException {
         String id = "xrn-" + (idNo++);
         taskManager.startJob(id);
-        return Response.ok("Started job " + id).build();
+        return Response.ok("Started job " + id + "\n").build();
     }
 }
