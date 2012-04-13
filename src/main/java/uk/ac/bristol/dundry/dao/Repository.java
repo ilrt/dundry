@@ -4,6 +4,8 @@
  */
 package uk.ac.bristol.dundry.dao;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -14,13 +16,15 @@ import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Calendar;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.logging.Level;
+import org.quartz.Job;
+import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.bristol.dundry.model.ResourceCollection;
+import uk.ac.bristol.dundry.tasks.CopyTask;
 
 /**
  *
@@ -33,12 +37,27 @@ public class Repository {
     // play it safe. radix of 36 is ideal
     static final int RADIX = Math.min(Character.MAX_RADIX, 36);
     
+    @Autowired private TaskManager taskManager;
     private final FileRepository fileRepo;
     private final MetadataStore mdStore;
+    private final List<Class<? extends Job>> jobs;
     
-    public Repository(FileRepository fileRepo, MetadataStore mdStore) {
+    public Repository(FileRepository fileRepo, MetadataStore mdStore, List<String> jobsClasses) {
         this.fileRepo = fileRepo;
         this.mdStore = mdStore;
+        
+        // Load up job classes
+        jobs = new ArrayList<>();
+        for (String jobClassName: jobsClasses) {
+            // Try to load the class. Check it is a Job.
+            try {
+                Class<?> job = Repository.class.getClassLoader().loadClass(jobClassName);
+                if (Job.class.isAssignableFrom(job)) jobs.add((Class<? extends Job>) job);
+                else log.error("Class <{}> is not a Job. Ignoring.", jobClassName);
+            } catch (ClassNotFoundException ex) {
+                log.error("Job class <{}> not found. Ignoring.", jobClassName);
+            }
+        }
     }
     
     public ResourceCollection getIds() {
@@ -73,7 +92,7 @@ public class Repository {
      * @return
      * @throws IOException 
      */
-    public String create(Path source, String creator, Resource subject) throws IOException {
+    public String create(Path source, String creator, Resource subject) throws IOException, SchedulerException {
         // Create a random id!
         UUID randId = UUID.randomUUID();
         String baseEncoded = 
@@ -86,15 +105,38 @@ public class Repository {
         
         Path repoDir = fileRepo.create(id, source);
         
-        subject.addLiteral(DCTerms.dateSubmitted, subject.getModel().createTypedLiteral(Calendar.getInstance()));
+        subject.addLiteral(DCTerms.dateSubmitted, Calendar.getInstance());
         subject.addLiteral(DCTerms.source, source.toAbsolutePath().toString());
         subject.addProperty(DCTerms.creator, creator);
         
         mdStore.create(toInternalId(id), subject.getModel());
         
+        startTasks(id, CopyTask.class, CopyTask.FROM, source, CopyTask.TO, repoDir);
+        
         return id;
     }
     
+    /**
+     * Begin the post-creation tasks.
+     * 
+     * @param loadJob First task to get get data into the repository
+     * @param settings 
+     */
+    private void startTasks(String id, Class<? extends Job> loadJob, Object... settings) throws SchedulerException {
+        Map<String, Object> context = new HashMap<>();
+        
+        for (int i = 0; i < settings.length; i++) {
+            context.put((String) settings[i], settings[i+1]);
+        }
+        
+        List<Class<? extends Job>> allJobs = new ArrayList<>();
+        
+        allJobs.add(loadJob);
+        allJobs.addAll(jobs);
+        
+        taskManager.startJobs(id, allJobs, context);
+    }
+        
     public Resource getMetadata(String id) {
         return mdStore.getDataAbout(toInternalId(id)).createResource(toInternalId(id));
     }

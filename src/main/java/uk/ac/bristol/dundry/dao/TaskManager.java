@@ -2,6 +2,7 @@ package uk.ac.bristol.dundry.dao;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.stereotype.Component;
@@ -60,6 +61,28 @@ public class TaskManager {
             jobs.add(job);
         }
         startJobsInOrder(id, jobs);
+    }
+    
+    public void startJobs(String id, List<Class<? extends Job>> jobs, Map<String, Object> context)
+            throws SchedulerException {
+        List<JobDetail> jobDetails = new ArrayList<>();
+        
+        // Create context for these jobs
+        JobDataMap jobData = new JobDataMap();
+        jobData.putAll(context);
+        
+        // Make the job details
+        int count = 0;
+        for (Class<? extends Job> job: jobs) {
+            JobDetail jobDetail = newJob(job)
+                    .withIdentity(job.getName() + count++, id)
+                    .usingJobData(jobData)
+                    .build();
+            
+            jobDetails.add(jobDetail);
+        }
+        
+        startJobsInOrder(id, jobDetails);
     }
     
     public void startJobsInOrder(String id, List<JobDetail> jobs) throws SchedulerException {

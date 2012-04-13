@@ -24,7 +24,6 @@ public class FileRepository {
     
     public Path create(String id, Path source) throws IOException {
         Path target = Files.createDirectory(root.resolve(id));
-        Util.copyDirectory(source, target);
         return target;
     }
 }
