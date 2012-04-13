@@ -54,10 +54,10 @@ public class Repository {
             QuerySolution nxt = r.next();
             // get item and copy to resultModel
             Resource item = nxt.getResource("g").inModel(resultModel);
-            item.addLiteral(RDFS.label, nxt.get("title"));
-            item.addLiteral(DCTerms.source, nxt.get("source"));
+            item.addProperty(RDFS.label, nxt.get("title"));
+            item.addProperty(DCTerms.source, nxt.get("source"));
             if (nxt.contains("description"))
-                item.addLiteral(DCTerms.description, nxt.get("description"));
+                item.addProperty(DCTerms.description, nxt.get("description"));
             ids.add( item );
         }
         log.info("Ids is: {}", ids);
