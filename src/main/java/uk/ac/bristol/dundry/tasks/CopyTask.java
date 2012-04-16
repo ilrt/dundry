@@ -3,12 +3,10 @@ package uk.ac.bristol.dundry.tasks;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.logging.Level;
 import org.quartz.JobDataMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.bristol.dundry.Util;
-import uk.ac.bristol.dundry.dao.MetadataStore;
+import uk.ac.bristol.dundry.dao.Repository;
 
 /**
  *
@@ -20,28 +18,17 @@ public class CopyTask extends JobBase {
 
     
     public final static String FROM = "copy-task-from";
-    public final static String TO = "copy-task-to";
     
     @Override
-    public void execute(MetadataStore store, String id, Path root, JobDataMap jobData) {
+    public void execute(Repository store, String id, Path root, JobDataMap jobData) {
         Path from = (Path) jobData.get(FROM);
-        Path to = (Path) jobData.get(TO);
+        Path to = root;
         
         try {
             copyDirectory(from, to);
         } catch (IOException ex) {
             throw new RuntimeException("Error copying", ex);
         }
-    }
-
-    @Override
-    public String getName() {
-        return "Copy durectory";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Recursively copy a directory.";
     }
         
     /**

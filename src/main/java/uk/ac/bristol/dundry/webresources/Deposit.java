@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.URI;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
+import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +47,7 @@ public class Deposit {
     public Response create(
             @FormParam("source") String source,
             @FormParam("title") String title,
-            @FormParam("description") String description) throws IOException {
+            @FormParam("description") String description) throws IOException, SchedulerException {
                 
         log.info("Create deposit: {} title: {} desc: {}", 
                 new String[]{ source, title, description });
@@ -62,7 +63,7 @@ public class Deposit {
     
     @POST
     @Consumes("application/json")
-    public Response create(Resource record) throws IOException {
+    public Response create(Resource record) throws IOException, SchedulerException {
         
         log.info("Create deposit: {}", record.getModel());
                 
