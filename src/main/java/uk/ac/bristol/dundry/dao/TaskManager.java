@@ -5,25 +5,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import static org.quartz.JobBuilder.newJob;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
-import org.springframework.stereotype.Component;
-import static org.quartz.JobBuilder.*;
-import static org.quartz.TriggerBuilder.*;
-import static org.quartz.SimpleScheduleBuilder.*;
 import org.quartz.impl.matchers.EverythingMatcher;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.listeners.JobChainingJobListener;
-import org.quartz.spi.JobFactory;
-import org.quartz.spi.TriggerFiredBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.bristol.dundry.tasks.ChainTerminator;
 
 /**
  *
  * @author Damian Steer <d.steer@bris.ac.uk>
  */
-@Component
 public class TaskManager {
     
     static final Logger log = LoggerFactory.getLogger(TaskManager.class);
@@ -31,7 +26,7 @@ public class TaskManager {
     private final Scheduler scheduler;
     private final ArrayList<Class<? extends Job>> defaultJobs;
     
-    public TaskManager(List<String> jobsClasses) throws SchedulerException {
+    public TaskManager(List<String> jobsClasses )throws SchedulerException {
         this.scheduler = StdSchedulerFactory.getDefaultScheduler();
         this.scheduler.start();
         
@@ -106,6 +101,12 @@ public class TaskManager {
         executeJobsInOrder(id, jobDetails);
     }
     
+    /**
+     * 
+     * @param id
+     * @param jobs
+     * @throws SchedulerException 
+     */
     public void executeJobsInOrder(String id, List<JobDetail> jobs) throws SchedulerException {
         if (jobs.isEmpty()) {
             return;
@@ -115,10 +116,21 @@ public class TaskManager {
         for (JobDetail jd: jobs) scheduler.addJob(jd, true);
         
         // Make a chain of these defaultJobs 
-        JobChainingJobListener jcl = new JobChainingJobListener("chain-" + id);
+        String chainId = "chain-" + id;
+        JobChainingJobListener jcl = new JobChainingJobListener(chainId);
         for (int i = 0; i < jobs.size() - 1; i++) {
             jcl.addJobChainLink(jobs.get(i).getKey(), jobs.get(i + 1).getKey());
         }
+        
+        // Once complete the chain listener just hangs around. This last job will
+        // remove it
+        JobDetail terminator = newJob(ChainTerminator.class)
+                .usingJobData(ChainTerminator.LISTENERID, chainId)
+                .build();
+        
+        // Schedule for termination
+        scheduler.addJob(terminator, true);
+        jcl.addJobChainLink(jobs.get(jobs.size() - 1).getKey(), terminator.getKey());
         
         // Add chain listener to scheduler
         scheduler.getListenerManager().addJobListener(jcl, EverythingMatcher.allJobs());

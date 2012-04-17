@@ -16,7 +16,6 @@ public class CopyTask extends JobBase {
     
     final static Logger log = LoggerFactory.getLogger(CopyTask.class);
 
-    
     public final static String FROM = "copy-task-from";
     
     @Override

@@ -47,7 +47,15 @@
             </bean>
         </constructor-arg>
     </bean>
-        
+    
+    <bean class="uk.ac.bristol.dundry.dao.TaskManager">
+        <constructor-arg>
+              <list>
+                  <value>org.quartz.jobs.NoOpJob</value>
+              </list>
+        </constructor-arg>
+    </bean>
+    
     <bean class="uk.ac.bristol.dundry.webresources.providers.RdfResourceMappingProvider"
         scope="singleton">
         <constructor-arg>

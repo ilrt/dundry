@@ -15,7 +15,7 @@ public abstract class JobBase implements Job {
     
     public final static String REPOSITORY = "jobs-base-repository";
     public final static String ID = "jobs-base-id";
-    public final static String PATH = "jobs-base-id";
+    public final static String PATH = "jobs-base-path";
     
     @Override
     final public void execute(JobExecutionContext jec) throws JobExecutionException {
