@@ -8,7 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Clean up 
+ * Clean up a job chain by removing it from the scheduler
+ * 
  * @author Damian Steer <d.steer@bris.ac.uk>
  */
 public class ChainTerminator implements Job {
@@ -23,7 +24,7 @@ public class ChainTerminator implements Job {
         try {
             jec.getScheduler().getListenerManager().removeJobListener(id);
         } catch (SchedulerException ex) {
-            log.error("Problem removing job chain listener {} from listener manager", id);
+            log.error("Problem removing job chain listener {} from listener manager: {}", id, ex);
         }
     }
     

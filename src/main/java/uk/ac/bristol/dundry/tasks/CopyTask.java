@@ -1,5 +1,10 @@
 package uk.ac.bristol.dundry.tasks;
 
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import com.hp.hpl.jena.vocabulary.DCTerms;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -24,7 +29,9 @@ public class CopyTask extends JobBase {
         Path to = root;
         
         try {
-            copyDirectory(from, to);
+            Resource rootRes = store.getMetadata(id);
+            copyDirectory(from, to, rootRes);
+            store.updateMetadata(id, rootRes);
         } catch (IOException ex) {
             throw new RuntimeException("Error copying", ex);
         }
@@ -38,7 +45,7 @@ public class CopyTask extends JobBase {
      * @return
      * @throws IOException 
      */
-    public static Path copyDirectory(final Path from, final Path to) throws IOException {
+    private Path copyDirectory(final Path from, final Path to, final Resource root) throws IOException {
         
         log.info("Copy {} to {}", from, to);
         
@@ -48,11 +55,15 @@ public class CopyTask extends JobBase {
         
         try {
             return Files.walkFileTree(from, new SimpleFileVisitor<Path>() {
+                
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                     Path rel = parent.relativize(file);
                     log.debug("Visit {}", file);
                     Files.copy(file, to.resolve(rel), StandardCopyOption.COPY_ATTRIBUTES);
+                    
+                    recordVisit(rel);
+                    
                     return FileVisitResult.CONTINUE;
                 }
                 
@@ -62,7 +73,16 @@ public class CopyTask extends JobBase {
                     log.trace("Visit dir {}", dir);
                     log.trace("Create dir {}", to.resolve(rel));
                     Files.createDirectory(to.resolve(rel));
+                    
+                    recordVisit(rel);
+                    
                     return FileVisitResult.CONTINUE;
+                }
+                
+                private void recordVisit(Path relativePath) {
+                    Resource item = root.getModel().createResource(root.getURI() + "/" + relativePath.toString());
+                    item.addProperty(DCTerms.type, "file");
+                    root.addProperty(DCTerms.hasPart, item);
                 }
             });
         } catch (IOException ex) {
