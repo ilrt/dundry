@@ -42,7 +42,7 @@
             </bean>
         </constructor-arg>
         <constructor-arg>
-            <bean class="uk.ac.bristol.dundry.dao.MetadataStore">
+            <bean class="uk.ac.bristol.dundry.dao.MetadataStoreTDB">
                 <constructor-arg value="${repo.metadata}"/>
             </bean>
         </constructor-arg>

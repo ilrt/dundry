@@ -39,7 +39,7 @@ public class Repository {
     // play it safe. radix of 36 is ideal
     static final int RADIX = Math.min(Character.MAX_RADIX, 36);
     
-    @Autowired private TaskManager taskManager;
+    @Autowired protected TaskManager taskManager;
     private final FileRepository fileRepo;
     private final MetadataStore mdStore;
     
@@ -115,7 +115,7 @@ public class Repository {
     }
         
     public Resource getMetadata(String id) {
-        return mdStore.getDataAbout(toInternalId(id)).createResource(toInternalId(id));
+        return mdStore.getData(toInternalId(id)).createResource(toInternalId(id));
     }
     
     public void updateMetadata(String id, Resource r) {

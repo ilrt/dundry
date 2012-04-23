@@ -55,52 +55,6 @@ public class TaskManager {
         return stuff;
     }
     
-    public void startJob(String id) throws SchedulerException {
-        /*JobDetail job = newJob(HelloJob.class)
-        .withIdentity("job-" + id, "my-group")
-        .usingJobData("ID", id)
-        .build();
-        
-        Trigger trigger = newTrigger()
-        .withIdentity("trigger-" + id, "my-group")
-        .startNow()           
-        .build();
-        
-        scheduler.scheduleJob(job, trigger);*/
-        
-        List<JobDetail> jobs = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            JobDetail job = newJob(HelloJob.class)
-                    .withIdentity(id + "-" + i, "my-group")
-                    .usingJobData("ID", id)
-                    .build();
-            jobs.add(job);
-        }
-        executeJobsInOrder(id, jobs);
-    }
-    
-    public void startJobs(String id, List<Class<? extends Job>> jobs, Map<String, Object> context)
-            throws SchedulerException {
-        List<JobDetail> jobDetails = new ArrayList<>();
-        
-        // Create context for these defaultJobs
-        JobDataMap jobData = new JobDataMap();
-        jobData.putAll(context);
-        
-        // Make the job details
-        int count = 0;
-        for (Class<? extends Job> job: jobs) {
-            JobDetail jobDetail = newJob(job)
-                    .withIdentity(job.getName() + count++, id)
-                    .usingJobData(jobData)
-                    .build();
-            
-            jobDetails.add(jobDetail);
-        }
-        
-        executeJobsInOrder(id, jobDetails);
-    }
-    
     /**
      * 
      * @param id
@@ -167,21 +121,4 @@ public class TaskManager {
         
         executeJobsInOrder(id, jobDetails);
     }
-    
-    public static class HelloJob implements Job {
-
-        @Override
-        public void execute(JobExecutionContext jec) throws JobExecutionException {
-            String name = jec.getMergedJobDataMap().getString("ID");
-            int hc = System.identityHashCode(this);
-            try {
-                System.err.printf("[%s] Execute %s (%s)\n", hc, 1, name);
-                Thread.sleep(20000);
-                System.err.printf("[%s] Execute %s (%s)\n", hc, 2, name);
-            } catch (InterruptedException ex) {
-                throw new JobExecutionException("Error sleeping" , ex);
-            }
-        }
-        
-    }}
-
+}

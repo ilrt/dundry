@@ -33,11 +33,4 @@ public class Tasks {
         }
         return Response.ok(r.toString()).build();
     }
-    
-    @POST
-    public Response start() throws SchedulerException {
-        String id = "xrn-" + (idNo++);
-        taskManager.startJob(id);
-        return Response.ok("Started job " + id + "\n").build();
-    }
 }
