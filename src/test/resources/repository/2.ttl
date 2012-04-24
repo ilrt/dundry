@@ -1,0 +1,4 @@
+@prefix : <http://example.com/#> .
+@prefix dc: <http://purl.org/dc/terms/> .
+
+<repo:2> dc:title "2" ; dc:description "2"

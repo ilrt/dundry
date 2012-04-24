@@ -115,11 +115,34 @@ public class Repository {
     }
         
     public Resource getMetadata(String id) {
-        return mdStore.getData(toInternalId(id)).createResource(toInternalId(id));
+        String internalId = toInternalId(id);
+        
+        Model m = ModelFactory.createDefaultModel();
+        m.add(mdStore.getData(internalId));
+        m.add(mdStore.getData(internalId + "/prov"));
+        return m.createResource(internalId);
     }
     
     public void updateMetadata(String id, Resource r) {
-        mdStore.replaceData(toInternalId(id), r.getModel());
+        String internalId = toInternalId(id);
+        
+        // Replace metadata with new information that's not in prov
+        Model m = ModelFactory.createDefaultModel();
+        m.add(r.getModel());
+        m.remove(mdStore.getData(internalId + "/prov"));
+        mdStore.replaceData(internalId, r.getModel());
+    }
+    
+    public Resource getProvenanceMetadata(String id) {
+        String internalId = toInternalId(id);
+        
+        return mdStore.getData(internalId + "/prov").createResource(internalId);
+    }
+    
+    public void updateProvenanceMetadata(String id, Resource r) {
+        String internalId = toInternalId(id);
+        
+        mdStore.replaceData(internalId + "/prov", r.getModel());
     }
     
     /**
