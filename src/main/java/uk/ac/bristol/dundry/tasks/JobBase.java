@@ -1,5 +1,7 @@
 package uk.ac.bristol.dundry.tasks;
 
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Resource;
 import java.nio.file.Path;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -20,9 +22,30 @@ public abstract class JobBase implements Job {
     @Override
     final public void execute(JobExecutionContext jec) throws JobExecutionException {
         JobDataMap jobData = jec.getMergedJobDataMap();
-        execute((Repository) jobData.get(REPOSITORY), 
+        Repository repo = (Repository) jobData.get(REPOSITORY);
+        String id = jobData.getString(ID);
+        Resource prov = ModelFactory.createDefaultModel().createResource(id);
+        Resource item = ModelFactory.createDefaultModel().createResource(id);
+                
+        execute(repo, 
                 jobData.getString(ID), (Path) jobData.get(PATH), jobData);
         // TODO: mark this as 'completed'
+        
+        // Update provenance (bad name) data
+        if (prov.getModel().size() > 0) {
+            Resource currProv = repo.getProvenanceMetadata(id);
+            currProv.getModel().add(prov.getModel());
+            repo.updateProvenanceMetadata(id, currProv);
+        }
+        
+        // Update regular data
+        if (item.getModel().size() > 0) {
+            Resource curr = repo.getMetadata(id);
+            curr.getModel().add(item.getModel());
+            repo.updateMetadata(id, curr);
+        }
+        
+        
     }
     
     // Common case: task will go through file system, and put result in store
