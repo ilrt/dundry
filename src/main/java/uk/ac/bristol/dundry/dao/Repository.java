@@ -93,13 +93,14 @@ public class Repository {
         
         Path repoDir = fileRepo.create(id, source);
         
-        subject.addLiteral(DCTerms.dateSubmitted, Calendar.getInstance());
-        subject.addProperty(DCTerms.source, source.toAbsolutePath().toString());
-        subject.addProperty(DCTerms.creator, creator);
+        Resource prov = ModelFactory.createDefaultModel().createResource(toInternalId(id));
+        prov.addLiteral(DCTerms.dateSubmitted, Calendar.getInstance());
+        prov.addProperty(DCTerms.source, source.toAbsolutePath().toString());
+        prov.addProperty(DCTerms.creator, creator);
         
         // Create mutable and immutable graphs
-        mdStore.create(toInternalId(id)); // often a noop
-        mdStore.create(toInternalId(id) + "/prov", subject.getModel());
+        mdStore.create(toInternalId(id), subject.getModel()); // often a noop
+        mdStore.create(toInternalId(id) + "/prov", prov.getModel());
         
         // Start the post-deposit tasks
         // Starting with the context for execution

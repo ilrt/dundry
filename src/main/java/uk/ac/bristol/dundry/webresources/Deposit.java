@@ -54,9 +54,9 @@ public class Deposit {
         
         Model model = ModelFactory.createDefaultModel();
         Resource record = model.createResource();
-        record.addLiteral(DCTerms.title, title);
-        record.addLiteral(DCTerms.description, description);
-        record.addLiteral(DCTerms.source, source);
+        record.addProperty(DCTerms.title, title);
+        record.addProperty(DCTerms.description, description);
+        record.addProperty(DCTerms.source, source);
         
         return create(record);
     }
