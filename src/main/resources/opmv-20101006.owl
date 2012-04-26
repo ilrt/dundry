@@ -13,7 +13,7 @@
 <http://purl.org/net/opmv/ns#> rdf:type owl:Ontology .
 
 <http://purl.org/net/opmv/ns>
-  a owl:Ontology , foaf:Document , void:Dataset ;
+  a foaf:Document , void:Dataset ;
   rdfs:label "The Core OPMV Vocabulary"@en ;
   dct:title "The Core OPMV Vocabulary"@en ;
   dct:creator <http://www.jenitennison.com/#me> ;
