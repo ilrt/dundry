@@ -57,8 +57,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Provider
-@Produces({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3, 
-    RdfMediaType.TEXT_TURTLE, MediaType.APPLICATION_JSON, 
+@Produces({RdfMediaType.TEXT_TURTLE, RdfMediaType.APPLICATION_RDF_XML,
+    RdfMediaType.TEXT_RDF_N3,  MediaType.APPLICATION_JSON, 
     MediaType.WILDCARD})
 @Consumes({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3, 
     RdfMediaType.TEXT_TURTLE, MediaType.APPLICATION_JSON})
@@ -83,24 +83,31 @@ public final class JenaModelRdfProvider implements MessageBodyWriter<Model>,
                         final MultivaluedMap<String, Object> stringObjectMultivaluedMap,
                         final OutputStream outputStream) throws IOException,
             WebApplicationException {
-        
+        writeModel(model, outputStream, mediaType);
+    }
+    
+    // Shared with resource provider
+    static void writeModel(Model model, OutputStream outputStream, MediaType mediaType) {
         // defaults to turtle
+        final String outputFormat;
         switch (mediaType.toString()) {
             case "application/rdf+xml":
-                model.write(outputStream, "RDF/XML-ABBREV"); break;
+            case "application/xml":
+                outputFormat = "RDF/XML-ABBREV"; break;
             case "application/json":
-                model.write(outputStream, "RDF/JSON"); break;
+                outputFormat = "RDF/JSON"; break;
             default:
-                model.write(outputStream, "TTL");
+                outputFormat = "TTL";
         }
-
+        
+        model.write(outputStream, outputFormat);
     }
 
     // ---- Reader implememtation
 
     @Override
     public boolean isReadable(Class<?> aClass, Type type, Annotation[] annotations, MediaType mediaType) {
-        return aClass == Model.class;
+        return Model.class.isAssignableFrom(aClass);
     }
 
 

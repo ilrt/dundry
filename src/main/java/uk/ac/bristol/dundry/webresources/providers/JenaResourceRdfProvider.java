@@ -52,8 +52,9 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Provider
-@Produces({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3, 
-    RdfMediaType.TEXT_TURTLE, MediaType.WILDCARD})
+@Produces({RdfMediaType.TEXT_TURTLE, RdfMediaType.APPLICATION_RDF_XML,
+    RdfMediaType.TEXT_RDF_N3,  MediaType.APPLICATION_JSON, 
+    MediaType.WILDCARD})
 public final class JenaResourceRdfProvider implements MessageBodyWriter<Resource> {
 
     // ---- Writer implementation
@@ -80,16 +81,7 @@ public final class JenaResourceRdfProvider implements MessageBodyWriter<Resource
         // We just serialise the whole model here. May need rethinking?
         Model model = o.getModel();
         
-        // defaults to turtle
-        switch (mediaType.toString()) {
-            case "application/rdf+xml":
-                model.write(outputStream, "RDF/XML-ABBREV"); break;
-            case "application/json":
-                model.write(outputStream, "RDF/JSON"); break;
-            default:
-                model.write(outputStream, "TTL");
-        }
-
+        JenaModelRdfProvider.writeModel(model, outputStream, mediaType);
     }
 
 }
