@@ -62,7 +62,7 @@ public class CopyTask extends JobBase {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                     Path rel = parent.relativize(file);
-                    log.debug("Visit {}", file);
+                    log.trace("Visit {}", file);
                     Files.copy(file, to.resolve(rel), StandardCopyOption.COPY_ATTRIBUTES);
                     
                     recordVisit(rel, RDFS.Resource); // we really don't know what it is
