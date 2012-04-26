@@ -19,7 +19,12 @@ public class MetadataStoreTDB implements MetadataStore {
     public MetadataStoreTDB(String location) {
         store = TDBFactory.createDataset(location);
     }
-
+    
+    @Override
+    public void create(String graphId) {
+        // nothing to do here. Created on demand.
+    }
+    
     @Override
     public void create(String graphId, Model initialContent) {
         store.begin(ReadWrite.WRITE);

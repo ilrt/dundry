@@ -15,7 +15,12 @@ public class MetadataStoreDS implements MetadataStore {
     private final Dataset store;
     
     public MetadataStoreDS(Dataset store) { this.store = store; }
-
+    
+    @Override
+    public void create(String graphId) {
+        // nothing to do here. Created on demand.
+    }
+    
     @Override
     public void create(String graphId, Model initialContent) {
         store.getNamedModel(graphId).add(initialContent);

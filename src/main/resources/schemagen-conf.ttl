@@ -6,6 +6,7 @@
 	sgen:package "uk.ac.bristol.dundry.vocabs";
 	sgen:output "src/main/java";
 	sgen:classname "OPMV";
+	# local copy of <http://open-biomed.sourceforge.net/opmv/opmv-20101006.owl>
 	sgen:input <opmv-20101006.owl>;
 	sgen:encoding "TURTLE";
 .

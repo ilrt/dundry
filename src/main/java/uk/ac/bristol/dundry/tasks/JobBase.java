@@ -3,14 +3,17 @@ package uk.ac.bristol.dundry.tasks;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import java.nio.file.Path;
+import java.util.Calendar;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import uk.ac.bristol.dundry.dao.Repository;
+import uk.ac.bristol.dundry.vocabs.OPMV;
 
 /**
- *
+ * Useful base class which should be used for all dundry tasks.
+ * 
  * @author Damian Steer <d.steer@bris.ac.uk>
  */
 public abstract class JobBase implements Job {
@@ -19,17 +22,29 @@ public abstract class JobBase implements Job {
     public final static String ID = "jobs-base-id";
     public final static String PATH = "jobs-base-path";
     
+    /**
+     * Job execution which wraps a more convenient interface for dundry, which
+     * will also record when job was run and other information.
+     * @param jec
+     * @throws JobExecutionException 
+     */
     @Override
     final public void execute(JobExecutionContext jec) throws JobExecutionException {
         JobDataMap jobData = jec.getMergedJobDataMap();
         Repository repo = (Repository) jobData.get(REPOSITORY);
         String id = jobData.getString(ID);
-        Resource prov = ModelFactory.createDefaultModel().createResource(id);
-        Resource item = ModelFactory.createDefaultModel().createResource(id);
-                
-        execute(repo, 
+        Resource prov = ModelFactory.createDefaultModel().createResource(Repository.toInternalId(id));
+        Resource item = ModelFactory.createDefaultModel().createResource(Repository.toInternalId(id));
+        
+        Resource task = prov.getModel().createResource();
+        prov.addProperty(OPMV.wasGeneratedBy, task);
+        task.addLiteral(OPMV.wasStartedAt, Calendar.getInstance());
+        task.addProperty(OPMV.used, this.getClass().getCanonicalName());
+        
+        execute(item, prov, 
                 jobData.getString(ID), (Path) jobData.get(PATH), jobData);
-        // TODO: mark this as 'completed'
+        
+        task.addLiteral(OPMV.wasEndedAt, Calendar.getInstance());
         
         // Update provenance (bad name) data
         if (prov.getModel().size() > 0) {
@@ -48,7 +63,18 @@ public abstract class JobBase implements Job {
         
     }
     
-    // Common case: task will go through file system, and put result in store
-    // TODO: maybe it should just return a model? or augment a resource?
-    abstract public void execute(Repository store, String id, Path root, JobDataMap jobData);
+    /**
+     * Perform some work on the repository based at root.
+     * 
+     * You can write data to either item or prov. The former represents this repository
+     * in the publicly mutable store, the latter is only modifiable from within the
+     * repository.
+     * 
+     * @param item Mutable repository metadata
+     * @param prov Externally immutable metadata
+     * @param id Id of the repository
+     * @param root Location of data in filesystem
+     * @param jobData General runtime context
+     */
+    abstract public void execute(Resource item, Resource prov, String id, Path root, JobDataMap jobData);
 }

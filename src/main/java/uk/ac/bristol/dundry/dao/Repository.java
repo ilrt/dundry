@@ -94,10 +94,12 @@ public class Repository {
         Path repoDir = fileRepo.create(id, source);
         
         subject.addLiteral(DCTerms.dateSubmitted, Calendar.getInstance());
-        subject.addLiteral(DCTerms.source, source.toAbsolutePath().toString());
+        subject.addProperty(DCTerms.source, source.toAbsolutePath().toString());
         subject.addProperty(DCTerms.creator, creator);
         
-        mdStore.create(toInternalId(id), subject.getModel());
+        // Create mutable and immutable graphs
+        mdStore.create(toInternalId(id)); // often a noop
+        mdStore.create(toInternalId(id) + "/prov", subject.getModel());
         
         // Start the post-deposit tasks
         // Starting with the context for execution

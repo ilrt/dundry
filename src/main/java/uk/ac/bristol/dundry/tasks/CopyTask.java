@@ -13,7 +13,6 @@ import java.util.Deque;
 import org.quartz.JobDataMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.bristol.dundry.dao.Repository;
 
 /**
  *
@@ -26,14 +25,12 @@ public class CopyTask extends JobBase {
     public final static String FROM = "copy-task-from";
     
     @Override
-    public void execute(Repository store, String id, Path root, JobDataMap jobData) {
+    public void execute(Resource item, Resource prov, String id, Path root, JobDataMap jobData) {
         Path from = (Path) jobData.get(FROM);
         Path to = root;
         
         try {
-            Resource rootRes = store.getMetadata(id);
-            copyDirectory(from, to, rootRes);
-            store.updateMetadata(id, rootRes);
+            copyDirectory(from, to, item);
         } catch (IOException ex) {
             throw new RuntimeException("Error copying", ex);
         }

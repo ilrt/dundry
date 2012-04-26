@@ -20,4 +20,6 @@ public interface MetadataStore {
     ResultSet query(String query);
     
     void replaceData(String graphId, Model content);
+
+    void create(String toInternalId);
 }
