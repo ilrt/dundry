@@ -1,2 +1,2 @@
 curl http://localhost:8080/r/sources/example
-curl -d source=example http://localhost:8080/r/deposits
+curl -d source=example -d title=example-dep -d description=A-description http://localhost:8080/r/deposits

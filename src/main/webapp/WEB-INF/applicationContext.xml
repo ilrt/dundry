@@ -51,6 +51,7 @@
     <bean class="uk.ac.bristol.dundry.dao.TaskManager">
         <constructor-arg>
               <list>
+                  <value>uk.ac.bristol.dundry.tasks.MDExtractTika</value>
                   <value>org.quartz.jobs.NoOpJob</value>
               </list>
         </constructor-arg>

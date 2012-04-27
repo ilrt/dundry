@@ -8,6 +8,7 @@ import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.slf4j.LoggerFactory;
 import uk.ac.bristol.dundry.dao.Repository;
 import uk.ac.bristol.dundry.vocabs.OPMV;
 
@@ -17,6 +18,8 @@ import uk.ac.bristol.dundry.vocabs.OPMV;
  * @author Damian Steer <d.steer@bris.ac.uk>
  */
 public abstract class JobBase implements Job {
+    
+    static final org.slf4j.Logger log = LoggerFactory.getLogger(JobBase.class);
     
     public final static String REPOSITORY = "jobs-base-repository";
     public final static String ID = "jobs-base-id";
@@ -40,6 +43,11 @@ public abstract class JobBase implements Job {
         prov.addProperty(OPMV.wasGeneratedBy, task);
         task.addLiteral(OPMV.wasStartedAt, Calendar.getInstance());
         task.addProperty(OPMV.used, this.getClass().getCanonicalName());
+        
+        if (log.isDebugEnabled()) {
+            log.debug("Running job {} with arguments: ID => '{}' PATH => '{}'",
+                new Object[] { this.getClass(), jobData.getString(ID), jobData.get(PATH) });
+        }
         
         execute(item, prov, 
                 jobData.getString(ID), (Path) jobData.get(PATH), jobData);
