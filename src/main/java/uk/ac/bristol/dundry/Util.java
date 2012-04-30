@@ -3,15 +3,7 @@ package uk.ac.bristol.dundry;
 import com.hp.hpl.jena.iri.IRI;
 import com.hp.hpl.jena.iri.IRIFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.logging.Level;
-import javax.ws.rs.core.UriBuilder;
+import java.nio.file.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
