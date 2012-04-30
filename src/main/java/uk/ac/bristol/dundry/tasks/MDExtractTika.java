@@ -27,6 +27,7 @@ import org.quartz.JobDataMap;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
+import uk.ac.bristol.dundry.Util;
 
 /**
  *
@@ -85,8 +86,7 @@ public class MDExtractTika extends JobBase {
         }
 
         private void storeMetadata(Metadata metadata, Path rel, Resource item) {
-            // TODO: utility functions doing this cleanly everywhere
-            Resource subject = item.getModel().createResource(item.getURI() + "/" + rel);
+            Resource subject = Util.resolve(item, rel);
             
             for (Entry<String, Property> map: FIELD_MAPPING.entrySet()) {
                 String[] values = metadata.getValues(map.getKey());
