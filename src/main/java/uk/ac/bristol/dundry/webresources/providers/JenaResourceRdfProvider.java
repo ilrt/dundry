@@ -53,7 +53,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Provider
 @Produces({RdfMediaType.TEXT_TURTLE, RdfMediaType.APPLICATION_RDF_XML,
-    RdfMediaType.TEXT_RDF_N3,  MediaType.APPLICATION_JSON, 
+    RdfMediaType.TEXT_RDF_N3, 
     MediaType.WILDCARD})
 public final class JenaResourceRdfProvider implements MessageBodyWriter<Resource> {
 
