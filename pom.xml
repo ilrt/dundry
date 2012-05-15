@@ -47,11 +47,6 @@
     </profiles>
     
     <repositories>
-        <!--<repository>
-            <id>Apache</id>
-            <url>https://repository.apache.org/content/groups/snapshots-group/</url>
-            <snapshots><enabled>true</enabled></snapshots>
-        </repository>-->
         <repository>
             <url>http://repo1.maven.org/maven2/</url>
             <id>junit_4</id>
@@ -298,7 +293,7 @@
             <plugin>
                 <groupId>org.mortbay.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
-                <version>7.5.4.v20111024</version>
+                <version>8.1.3.v20120416</version>
             </plugin>
         </plugins>
     </build>
