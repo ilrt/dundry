@@ -1,38 +1,36 @@
 package uk.ac.bristol.dundry.tasks;
 
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.vocabulary.DCTerms;
-import com.hp.hpl.jena.vocabulary.DCTypes;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayDeque;
-import java.util.Deque;
+import org.quartz.Job;
 import org.quartz.JobDataMap;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * Task to copy from one directory to another. That's it.
+ * 
  * @author pldms
  */
-public class CopyTask extends JobBase {
+public class CopyTask implements Job {
     
     final static Logger log = LoggerFactory.getLogger(CopyTask.class);
 
     public final static String FROM = "copy-task-from";
+    public final static String TO = "copy-task-to";
     
     @Override
-    public void execute(Resource item, Resource prov, String id, Path root, JobDataMap jobData) {
+    public void execute(JobExecutionContext jec) throws JobExecutionException {
+        JobDataMap jobData = jec.getMergedJobDataMap();
         Path from = (Path) jobData.get(FROM);
-        Path to = root;
-        
+        Path to = (Path) jobData.get(FROM);
         try {
-            copyDirectory(from, to, item);
+            copyDirectory(from, to);
         } catch (IOException ex) {
-            throw new RuntimeException("Error copying", ex);
+            throw new JobExecutionException("Copy failed", ex);
         }
     }
         
@@ -44,7 +42,7 @@ public class CopyTask extends JobBase {
      * @return
      * @throws IOException 
      */
-    private Path copyDirectory(final Path from, final Path to, final Resource root) throws IOException {
+    private Path copyDirectory(final Path from, final Path to) throws IOException {
         
         log.info("Copy {} to {}", from, to);
         
@@ -54,19 +52,12 @@ public class CopyTask extends JobBase {
         
         try {
             return Files.walkFileTree(from, new SimpleFileVisitor<Path>() {
-                
-                // Keep track of parents as we walk the tree, so
-                // tree structure is recorded faithfully
-                Deque<Resource> parents = new ArrayDeque<>();
                                 
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                     Path rel = parent.relativize(file);
                     log.trace("Visit {}", file);
                     Files.copy(file, to.resolve(rel), StandardCopyOption.COPY_ATTRIBUTES);
-                    
-                    recordVisit(rel, RDFS.Resource); // we really don't know what it is
-                    
                     return FileVisitResult.CONTINUE;
                 }
                 
@@ -76,35 +67,7 @@ public class CopyTask extends JobBase {
                     log.trace("Visit dir {}", dir);
                     log.trace("Create dir {}", to.resolve(rel));
                     Files.createDirectory(to.resolve(rel));
-                    
-                    // Record dir as a collection of resources
-                    Resource item = recordVisit(rel, DCTypes.Collection);
-                    parents.push(item); // make this the current parent
-                    
                     return FileVisitResult.CONTINUE;
-                }
-                
-                @Override
-                public FileVisitResult postVisitDirectory(Path dir, IOException exception) {
-                    
-                    parents.pop(); // finished. Forget this directory
-                    
-                    return FileVisitResult.CONTINUE;
-                } 
-                
-                /**
-                 * Make a note of this item in the database
-                 * @return item in database
-                 */
-                private Resource recordVisit(Path relativePath, Resource type) {
-                    // Parent is either top of stack or -- if absent -- root
-                    Resource parent = (parents.isEmpty()) ? root : parents.peek() ;
-                    
-                    Resource item = root.getModel().createResource(root.getURI() + "/" + relativePath.toString());
-                    if (!RDFS.Resource.equals(type)) item.addProperty(RDF.type, type);
-                    
-                    parent.addProperty(DCTerms.hasPart, item);
-                    return item;
                 }
             });
         } catch (IOException ex) {

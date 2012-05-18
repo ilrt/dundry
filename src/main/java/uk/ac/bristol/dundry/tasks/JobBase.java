@@ -8,6 +8,7 @@ import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.bristol.dundry.dao.Repository;
 import uk.ac.bristol.dundry.vocabs.OPMV;
@@ -19,7 +20,7 @@ import uk.ac.bristol.dundry.vocabs.OPMV;
  */
 public abstract class JobBase implements Job {
     
-    static final org.slf4j.Logger log = LoggerFactory.getLogger(JobBase.class);
+    private static final Logger log = LoggerFactory.getLogger(JobBase.class);
     
     public final static String REPOSITORY = "jobs-base-repository";
     public final static String ID = "jobs-base-id";
@@ -84,5 +85,6 @@ public abstract class JobBase implements Job {
      * @param root Location of data in filesystem
      * @param jobData General runtime context
      */
-    abstract public void execute(Resource item, Resource prov, String id, Path root, JobDataMap jobData);
+    abstract public void execute(Resource item, Resource prov, String id, Path root, JobDataMap jobData)
+            throws JobExecutionException;
 }

@@ -1,10 +1,15 @@
 package uk.ac.bristol.dundry.dao;
 
+import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
+import org.quartz.JobDetail;
 import uk.ac.bristol.dundry.model.Tree;
+import uk.ac.bristol.dundry.tasks.CopyTask;
+import static org.quartz.JobBuilder.newJob;
+import org.quartz.JobDataMap;
 
 /**
  *
@@ -37,6 +42,23 @@ public class FileSystemSource {
             throw new RuntimeException("Path " + relative + " not under root");
         }
         return relPath;
+    }
+    
+    /**
+     * Deposit an item (
+     * @param itemId
+     * @param depositLocation
+     * @return 
+     */
+    public JobDetail depositItem(String sourceItemId, String depositId, Path depositLocation) {
+        Path sourcePath = getPath(sourceItemId);
+        // Create context for these jobs
+        JobDataMap jobData = new JobDataMap();
+        jobData.putAll(ImmutableMap.of(CopyTask.FROM, sourcePath, CopyTask.TO, depositLocation)); 
+        return newJob(CopyTask.class)
+                    .withIdentity(CopyTask.class.getName(), depositId)
+                    .usingJobData(jobData)
+                    .build();
     }
     
     /**

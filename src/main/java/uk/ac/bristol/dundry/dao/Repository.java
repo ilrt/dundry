@@ -4,8 +4,6 @@
  */
 package uk.ac.bristol.dundry.dao;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableMap;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
@@ -18,14 +16,16 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.logging.Level;
 import org.quartz.Job;
+import static org.quartz.JobBuilder.newJob;
+import org.quartz.JobDataMap;
+import org.quartz.JobDetail;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.bristol.dundry.model.ResourceCollection;
-import uk.ac.bristol.dundry.tasks.CopyTask;
+import uk.ac.bristol.dundry.tasks.IndexDepositTask;
 import uk.ac.bristol.dundry.tasks.JobBase;
 
 /**
@@ -36,16 +36,30 @@ public class Repository {
     
     static final Logger log = LoggerFactory.getLogger(Repository.class);
     
-    // play it safe. radix of 36 is ideal
-    static final int RADIX = Math.min(Character.MAX_RADIX, 36);
+    // play it safe. radix of 36 is ideal 
+   static final int RADIX = Math.min(Character.MAX_RADIX, 36);
     
     @Autowired protected TaskManager taskManager;
     private final FileRepository fileRepo;
     private final MetadataStore mdStore;
+    private final List<Class<? extends Job>> defaultJobs;
     
-    public Repository(FileRepository fileRepo, MetadataStore mdStore) {
+    public Repository(FileRepository fileRepo, MetadataStore mdStore, List<String> postDepositJobClasses) {
         this.fileRepo = fileRepo;
         this.mdStore = mdStore;
+        
+        // Load up job classes
+        defaultJobs = new ArrayList<>();
+        for (String jobClassName: postDepositJobClasses) {
+            // Try to load the class. Check it is a Job.
+            try {
+                Class<?> job = Repository.class.getClassLoader().loadClass(jobClassName);
+                if (Job.class.isAssignableFrom(job)) defaultJobs.add((Class<? extends Job>) job);
+                else log.error("Class <{}> is not a Job. Ignoring.", jobClassName);
+            } catch (ClassNotFoundException ex) {
+                log.error("Job class <{}> not found. Ignoring.", jobClassName);
+            }
+        }
     }
     
     public ResourceCollection getIds() {
@@ -70,17 +84,20 @@ public class Repository {
         log.info("Ids is: {}", ids);
         return new ResourceCollection(ids);
     }
-    
+
+    public boolean hasId(String item) {
+        return getProvenanceMetadata(item).hasProperty(null);
+    }
+     
     /**
-     * Deposit source into the repository
+     * Create a new deposit
      * 
-     * @param source Path to the root of the file(s) to deposit
      * @param creator User id who made this deposit
      * @param subject Metadata to include about the created deposit. It will be renamed once and id has been allocated.
      * @return
      * @throws IOException 
      */
-    public String create(Path source, String creator, Resource subject) throws IOException, SchedulerException {
+    public String create(String creator, Resource subject) throws IOException, SchedulerException {
         // Create a random id!
         UUID randId = UUID.randomUUID();
         String baseEncoded = 
@@ -91,32 +108,56 @@ public class Repository {
         // Now we have an id rename the subject
         ResourceUtils.renameResource(subject, toInternalId(id));
         
-        Path repoDir = fileRepo.create(id, source);
+        Path repoDir = fileRepo.create(id);
         
         Resource prov = ModelFactory.createDefaultModel().createResource(toInternalId(id));
         prov.addLiteral(DCTerms.dateSubmitted, Calendar.getInstance());
-        prov.addProperty(DCTerms.source, source.toAbsolutePath().toString());
         prov.addProperty(DCTerms.creator, creator);
         
         // Create mutable and immutable graphs
         mdStore.create(toInternalId(id), subject.getModel()); // often a noop
         mdStore.create(toInternalId(id) + "/prov", prov.getModel());
         
-        // Start the post-deposit tasks
-        // Starting with the context for execution
-        ImmutableMap<String, ? extends Object> context =
-                ImmutableMap.of(
-                    CopyTask.FROM, source, 
-                    JobBase.PATH, repoDir,
-                    JobBase.REPOSITORY, this,
-                    JobBase.ID, id);
-        
-        // Begin tasks, starting with copying
-        taskManager.startTasks(id, context, CopyTask.class);
-        
         return id;
     }
+    
+    /**
+     * Make a deposit in the 
+     * 
+     * @param depositTask 
+     * @param id The repository id
+     * @param source An identifier for the source (will be recorded with deposit)
+     */
+    public void makeDeposit(JobDetail depositTask, String id, String source) throws SchedulerException {
+        Resource prov = getProvenanceMetadata(id);
         
+        prov.addProperty(DCTerms.source, source);
+        prov.addLiteral(DCTerms.dateSubmitted, Calendar.getInstance());
+        
+        // Add in default post-deposit tasks
+        List<JobDetail> jobDetails = new ArrayList<>();
+        jobDetails.add(depositTask);
+        
+        // Create context for these jobs
+        JobDataMap jobData = new JobDataMap();
+        jobData.putAll(ImmutableMap.of(
+                    JobBase.PATH, fileRepo.pathForId(id),
+                    JobBase.REPOSITORY, this,
+                    JobBase.ID, id));
+        
+        // Create instances from default jobs
+        for (Class<? extends Job> job: defaultJobs) {
+            JobDetail jobDetail = newJob(job)
+                    .withIdentity(job.getName(), id)
+                    .usingJobData(jobData)
+                    .build();
+            
+            jobDetails.add(jobDetail);
+        }
+        
+        taskManager.executeJobsInOrder(id, jobDetails);
+    }
+    
     public Resource getMetadata(String id) {
         String internalId = toInternalId(id);
         
@@ -146,6 +187,10 @@ public class Repository {
         String internalId = toInternalId(id);
         
         mdStore.replaceData(internalId + "/prov", r.getModel());
+    }
+   
+    public Path getPathForId(String id) {
+        return fileRepo.pathForId(id);
     }
     
     /**

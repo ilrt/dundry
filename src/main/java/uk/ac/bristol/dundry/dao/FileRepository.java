@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import uk.ac.bristol.dundry.Util;
 
 /**
  *
@@ -22,8 +21,12 @@ public class FileRepository {
         root = Paths.get(base);
     }
     
-    public Path create(String id, Path source) throws IOException {
+    public Path create(String id) throws IOException {
         Path target = Files.createDirectory(root.resolve(id));
         return target;
+    }
+    
+    public Path pathForId(String id) {
+        return root.resolve(id);
     }
 }

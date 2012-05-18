@@ -10,13 +10,19 @@ import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.vocabulary.DCTerms;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import org.junit.Test;
+import java.util.Collections;
 import static org.junit.Assert.*;
-import org.openjena.riot.RiotLoader;
+import org.junit.Test;
+import static org.mockito.Matchers.anyList;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 import org.openjena.riot.Lang;
+import org.openjena.riot.RiotLoader;
+import static org.quartz.JobBuilder.newJob;
+import org.quartz.JobDetail;
+import org.quartz.SchedulerException;
+import org.quartz.jobs.NoOpJob;
 
 /**
  *
@@ -32,8 +38,9 @@ public class RepositoryTest {
         RiotLoader.read(in, ds, Lang.TRIG, "http://example.com/ds");
         MetadataStore mStore = new MetadataStoreDS(DatasetImpl.wrap(ds));
         FileRepository fr = mock(FileRepository.class);
-        when(fr.create(anyString(), any(Path.class))).thenReturn(Paths.get("bar"));
-        instance = new Repository(fr, mStore);
+        when(fr.create(anyString())).thenReturn(Paths.get("bar"));
+        when(fr.pathForId(anyString())).thenReturn(Paths.get("baz"));
+        instance = new Repository(fr, mStore, Collections.EMPTY_LIST);
         instance.taskManager = mock(TaskManager.class);
     }
     
@@ -47,7 +54,13 @@ public class RepositoryTest {
     @Test
     public void testGetIds() {
     }
-
+    
+    @Test
+    public void testHasId() {
+        assertTrue(instance.hasId("2"));
+        assertFalse(instance.hasId("89"));
+    }
+    
     /**
      * Test of create method, of class Repository.
      */ 
@@ -55,15 +68,22 @@ public class RepositoryTest {
     public void testCreate() throws Exception {
         Model m = ModelFactory.createDefaultModel();
         Resource foo = m.createResource("http://example.com/temp");
-        String result = instance.create(Paths.get("foo"), "creator", foo);
+        String result = instance.create("creator", foo);
         
         // Check we got a result
         assertNotNull(result);
-        
-        // Check start tasks was called
-        verify(instance.taskManager).startTasks(anyString(), anyMapOf(String.class, Object.class), any(Class.class));
     }
-
+    
+    @Test
+    public void testDeposit() throws SchedulerException {
+        
+        JobDetail depJob = newJob(NoOpJob.class).build();
+        
+        instance.makeDeposit(depJob, "2", "test-source");
+        
+        verify(instance.taskManager).executeJobsInOrder(anyString(), anyList());
+    }
+    
     /**
      * Test of getMetadata method, of class Repository.
      */

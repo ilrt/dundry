@@ -24,6 +24,7 @@ import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.apache.tika.sax.BodyContentHandler;
 import org.quartz.JobDataMap;
+import org.quartz.JobExecutionException;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
@@ -97,7 +98,7 @@ public class MDExtractTika extends JobBase {
         }
     }
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws JobExecutionException {
         JobBase job = new MDExtractTika();
         String id = "123456789";
         Resource prov = ModelFactory.createDefaultModel().createResource("repo:" + id);

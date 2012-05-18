@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.URI;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
+import org.quartz.JobDetail;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,18 +46,16 @@ public class Deposit {
     @POST
     @Consumes("application/x-www-form-urlencoded")
     public Response create(
-            @FormParam("source") String source,
+            //@FormParam("source") String source,
             @FormParam("title") String title,
             @FormParam("description") String description) throws IOException, SchedulerException {
                 
-        log.info("Create deposit: {} title: {} desc: {}", 
-                new String[]{ source, title, description });
+        log.info("Create title: {} desc: {}", title, description);
         
         Model model = ModelFactory.createDefaultModel();
         Resource record = model.createResource();
         record.addProperty(DCTerms.title, title);
         record.addProperty(DCTerms.description, description);
-        record.addProperty(DCTerms.source, source);
         
         return create(record);
     }
@@ -67,12 +66,8 @@ public class Deposit {
         
         log.info("Create deposit: {}", record.getModel());
                 
-        String source = record.getRequiredProperty(DCTerms.source).getString();
-        
-        java.nio.file.Path fromDir = sourceFS.getPath(source);
-        
         // TODO: username
-        String id = repository.create(fromDir, "unknown", record);
+        String id = repository.create("unknown", record);
         
         URI createdUri = URI.create(id);
         
@@ -92,6 +87,23 @@ public class Deposit {
             log.debug("Update: {} with {}", item, data.getModel());
         }
         repository.updateMetadata(item, data);
+        return Response.ok().build();
+    }
+    
+    @Path("{item}")
+    @POST
+    @Consumes("application/x-www-form-urlencoded")
+    public Response addContent(@PathParam("item") String item, @FormParam("source") String source) throws SchedulerException {
+        log.info("Add content from source {} to {}", source, item);
+        
+        // Check we have something to add to
+        if (!repository.hasId(item)) return Response.status(Response.Status.NOT_FOUND).build();
+        
+        java.nio.file.Path repoDir = repository.getPathForId(item);
+        JobDetail depositTask = sourceFS.depositItem(source, item, repoDir);
+        
+        repository.makeDeposit(depositTask, item, source);
+        
         return Response.ok().build();
     }
     
