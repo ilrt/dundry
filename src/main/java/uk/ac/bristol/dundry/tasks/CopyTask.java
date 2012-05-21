@@ -42,7 +42,7 @@ public class CopyTask implements Job {
      * @return
      * @throws IOException 
      */
-    private Path copyDirectory(final Path from, final Path to) throws IOException {
+    protected Path copyDirectory(final Path from, final Path to) throws IOException {
         
         log.info("Copy {} to {}", from, to);
         
