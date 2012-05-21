@@ -26,7 +26,7 @@ public class CopyTask implements Job {
     public void execute(JobExecutionContext jec) throws JobExecutionException {
         JobDataMap jobData = jec.getMergedJobDataMap();
         Path from = (Path) jobData.get(FROM);
-        Path to = (Path) jobData.get(FROM);
+        Path to = (Path) jobData.get(TO);
         try {
             copyDirectory(from, to);
         } catch (IOException ex) {
