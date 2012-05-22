@@ -15,7 +15,7 @@ public class Util {
     
     final static Logger log = LoggerFactory.getLogger(Util.class);
     
-    final static IRIFactory IRIFACTORY = IRIFactory.iriImplementation();
+    final static IRIFactory IRIFACTORY = IRIFactory.jenaImplementation();
     
     /**
      * Resolve a path relative to a resource.
