@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.bristol.dundry.model.ResourceCollection;
 import uk.ac.bristol.dundry.tasks.JobBase;
-import uk.ac.bristol.dundry.vocabs.DundryVocab;
+import uk.ac.bristol.dundry.vocabs.RepositoryVocab;
 
 /**
  *
@@ -66,7 +66,7 @@ public class Repository {
         Model resultModel = ModelFactory.createDefaultModel();
         ResultSet r = mdStore.query("select distinct ?g ?state ?title ?description ?source "
                 + "{ graph ?g1 { "
-                + "   ?g <http://vocab.bris.ac.uk/data/dundry#state> ?state "
+                + "   ?g <http://vocab.bris.ac.uk/data/repository#state> ?state "
                 + "   OPTIONAL { ?g <http://purl.org/dc/terms/source> ?source } "
                 + "  } "
                 + "  graph ?g2 { "
@@ -119,7 +119,7 @@ public class Repository {
         Resource prov = ModelFactory.createDefaultModel().createResource(toInternalId(id));
         prov.addLiteral(DCTerms.dateSubmitted, Calendar.getInstance());
         prov.addProperty(DCTerms.creator, creator);
-        prov.addProperty(DundryVocab.state, "deposited");
+        prov.addProperty(RepositoryVocab.state, "deposited");
         
         // Create mutable and immutable graphs
         mdStore.create(toInternalId(id), subject.getModel()); // often a noop
