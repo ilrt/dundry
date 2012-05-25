@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.bristol.dundry.model.ResourceCollection;
 import uk.ac.bristol.dundry.tasks.JobBase;
-import uk.ac.bristol.dundry.vocabs.OpenVocab;
+import uk.ac.bristol.dundry.vocabs.DundryVocab;
 
 /**
  *
@@ -66,11 +66,14 @@ public class Repository {
         Model resultModel = ModelFactory.createDefaultModel();
         ResultSet r = mdStore.query("select distinct ?g ?state ?title ?description ?source "
                 + "{ graph ?g1 { "
-                + "?g "
-                + "   <http://purl.org/dc/terms/title> ?title ."
-                + "OPTIONAL { ?g <http://purl.org/dc/terms/source> ?source } "
-                + "OPTIONAL { ?g <http://purl.org/dc/terms/description> ?description } "
-                + "} }");
+                + "   ?g <http://vocab.bris.ac.uk/data/dundry#state> ?state "
+                + "   OPTIONAL { ?g <http://purl.org/dc/terms/source> ?source } "
+                + "  } "
+                + "  graph ?g2 { "
+                + "   ?g <http://purl.org/dc/terms/title> ?title ."
+                + "   OPTIONAL { ?g <http://purl.org/dc/terms/description> ?description } "
+                + "  } "
+                + "}");
         List<Resource> ids = new LinkedList<>();
         while (r.hasNext()) {
             QuerySolution nxt = r.next();
@@ -116,7 +119,7 @@ public class Repository {
         Resource prov = ModelFactory.createDefaultModel().createResource(toInternalId(id));
         prov.addLiteral(DCTerms.dateSubmitted, Calendar.getInstance());
         prov.addProperty(DCTerms.creator, creator);
-        prov.addProperty(OpenVocab.state, "deposited");
+        prov.addProperty(DundryVocab.state, "deposited");
         
         // Create mutable and immutable graphs
         mdStore.create(toInternalId(id), subject.getModel()); // often a noop
