@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.bristol.dundry.model.ResourceCollection;
 import uk.ac.bristol.dundry.tasks.JobBase;
+import uk.ac.bristol.dundry.vocabs.OpenVocab;
 
 /**
  *
@@ -63,10 +64,11 @@ public class Repository {
     
     public ResourceCollection getIds() {
         Model resultModel = ModelFactory.createDefaultModel();
-        ResultSet r = mdStore.query("select distinct ?g ?title ?description ?source "
+        ResultSet r = mdStore.query("select distinct ?g ?state ?title ?description ?source "
                 + "{ graph ?g1 { "
-                + "?g <http://purl.org/dc/terms/title> ?title ;"
-                + "   <http://purl.org/dc/terms/source> ?source . "
+                + "?g "
+                + "   <http://purl.org/dc/terms/title> ?title ."
+                + "OPTIONAL { ?g <http://purl.org/dc/terms/source> ?source } "
                 + "OPTIONAL { ?g <http://purl.org/dc/terms/description> ?description } "
                 + "} }");
         List<Resource> ids = new LinkedList<>();
@@ -75,7 +77,9 @@ public class Repository {
             // get item and copy to resultModel
             Resource item = nxt.getResource("g").inModel(resultModel);
             item.addProperty(RDFS.label, nxt.get("title"));
-            item.addProperty(DCTerms.source, nxt.get("source"));
+            //item.addProperty(OpenVocab.state, nxt.get("state"));
+            if (nxt.contains("source"))
+                item.addProperty(DCTerms.source, nxt.get("source"));
             if (nxt.contains("description"))
                 item.addProperty(DCTerms.description, nxt.get("description"));
             ids.add( item );
@@ -112,7 +116,7 @@ public class Repository {
         Resource prov = ModelFactory.createDefaultModel().createResource(toInternalId(id));
         prov.addLiteral(DCTerms.dateSubmitted, Calendar.getInstance());
         prov.addProperty(DCTerms.creator, creator);
-        /* TODO: add status deposit */
+        prov.addProperty(OpenVocab.state, "deposited");
         
         // Create mutable and immutable graphs
         mdStore.create(toInternalId(id), subject.getModel()); // often a noop
