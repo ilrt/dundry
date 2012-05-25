@@ -190,4 +190,19 @@ public class RdfResourceMappingProviderTest {
         expected = FileManager.get().loadModel("ex3.ttl");
         assertTrue("ex3 (empty id) json correct", expected.isIsomorphicWith(r.getModel()));
     }
+    
+    @Ignore // I'd like this to not explode :-(
+    @Test
+    public void testReadRegression() throws Exception {
+        RdfResourceMappingProvider i = get(
+                "contributor", "http://purl.org/dc/terms/contributor",
+                "source", "http://purl.org/dc/terms/source",
+                "title", "http://purl.org/dc/terms/title",
+                "description", "http://purl.org/dc/terms/description"
+                );
+        
+        InputStream in = this.getClass().getResourceAsStream("/boom.json");
+        Resource r = i.readFrom(Resource.class, null, null, MediaType.valueOf("application/json"), null, in);
+        assertNotNull(r);
+    }
 }
