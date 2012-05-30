@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package uk.ac.bristol.dundry.webresources.providers;
 
 import com.hp.hpl.jena.rdf.model.Literal;
@@ -204,5 +200,29 @@ public class RdfResourceMappingProviderTest {
         InputStream in = this.getClass().getResourceAsStream("/boom.json");
         Resource r = i.readFrom(Resource.class, null, null, MediaType.valueOf("application/json"), null, in);
         assertNotNull(r);
+    }
+    
+    @Test
+    public void testVocabInit() throws Exception {
+        RdfResourceMappingProvider i = new RdfResourceMappingProvider(
+                Arrays.asList("vocabs/dcterms.rdf"),
+                Collections.EMPTY_LIST
+                );
+        
+        InputStream in = this.getClass().getResourceAsStream("/ex1.json");
+        Resource r = i.readFrom(Resource.class, null, null, MediaType.valueOf("application/json"), null, in);
+        Model expected = FileManager.get().loadModel("ex1.ttl");
+                
+        assertTrue("ex1 json correct", expected.isIsomorphicWith(r.getModel()));
+        
+        in = this.getClass().getResourceAsStream("/ex2.json");
+        r = i.readFrom(Resource.class, null, null, MediaType.valueOf("application/json"), null, in);
+        expected = FileManager.get().loadModel("ex2.ttl");
+        assertTrue("ex2 (missing desc) json correct", expected.isIsomorphicWith(r.getModel()));
+        
+        in = this.getClass().getResourceAsStream("/ex3.json");
+        r = i.readFrom(Resource.class, null, null, MediaType.valueOf("application/json"), null, in);
+        expected = FileManager.get().loadModel("ex3.ttl");
+        assertTrue("ex3 (empty id) json correct", expected.isIsomorphicWith(r.getModel()));
     }
 }

@@ -6,6 +6,10 @@ import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.Maps;
 import com.google.common.io.CharStreams;
 import com.hp.hpl.jena.rdf.model.*;
+import com.hp.hpl.jena.util.FileManager;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import com.hp.hpl.jena.vocabulary.OWL;
+import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import java.io.*;
 import java.lang.annotation.Annotation;
@@ -55,7 +59,6 @@ public class RdfResourceMappingProvider
     final static XMLInputFactory IN_FAC = XMLInputFactory.newInstance();
     
     private final BiMap<String, Property> keyToProperty;
-    private final BiMap<Property, String> propertyToKey;
     private final List<String> asArrays;
     
     // '{"item":[]}' in bytes
@@ -65,7 +68,7 @@ public class RdfResourceMappingProvider
     /**
      * Create a provider (no array mapping)
      * 
-     * @param keyToProp key to property map
+     * @param k2p key to property map
      */
     public RdfResourceMappingProvider(Map<String, String> keyToProp) {
         this(keyToProp, Collections.EMPTY_LIST);
@@ -74,7 +77,7 @@ public class RdfResourceMappingProvider
     /**
      * Create a provider
      * 
-     * @param keyToProp key to property map
+     * @param k2p key to property map
      * @param asArrays keys to serialise as arrays in json
      */
     public RdfResourceMappingProvider(Map<String, String> keyToProp, List<String> asArrays) {
@@ -102,8 +105,53 @@ public class RdfResourceMappingProvider
         
         // Create a bimap from that map (so we can look up either way)
         keyToProperty = ImmutableBiMap.copyOf(k2p);
-        propertyToKey = keyToProperty.inverse();
     }
+    
+    /**
+     * Create a provider
+     * 
+     * @param vocabs list of vocabularies to use
+     * @param asArrays keys to serialise as arrays in json
+     */
+    public RdfResourceMappingProvider(List<String> vocabs, List<String> asArrays) {
+        
+        this.asArrays = asArrays;
+        Map<String, Property> k2p = new HashMap<>();
+        
+        // Default label mapping
+        k2p.put("label", RDFS.label);
+        
+        // Load each vocabulary, and then hunt for properties
+        for (String vocab: vocabs) {
+            Model vocabModel = FileManager.get().loadModel(vocab);
+            ResIterator propIt = vocabModel.listResourcesWithProperty(RDF.type, RDF.Property);
+            ResIterator objPropIt = vocabModel.listResourcesWithProperty(RDF.type, OWL.ObjectProperty);
+            ResIterator dtPropIt = vocabModel.listResourcesWithProperty(RDF.type, OWL.DatatypeProperty);
+            
+            ExtendedIterator<Resource> allProps = propIt.andThen(objPropIt).andThen(dtPropIt);
+            while (allProps.hasNext()) {
+                Property prop = allProps.next().as(Property.class);
+                String localName = prop.getLocalName();
+                
+                if (localName == null) log.error("Property <{}> has no local name", prop);
+                else if (k2p.containsValue(prop)) log.warn("Already have key for <{}>", prop);
+                else if (k2p.containsKey(localName)) {
+                    String nextKey = getAnotherKey(k2p, localName);
+                    log.warn("Mapping <{}> to '{}'", prop, nextKey);
+                    k2p.put(nextKey, prop);
+                } else k2p.put(localName, prop);
+            }
+        }
+        
+        keyToProperty = ImmutableBiMap.copyOf(k2p);
+    }
+    
+    // Find an unused key for a map, based on the param key.
+    private static String getAnotherKey(Map<String, ?> map, String key) {
+        int i = 1;
+        while (map.containsKey(key + i)) i++; // loop until we find one
+        return key + i;
+    } 
     
     /**
      * Write a resource and properties to a simple XML / JSON format,
@@ -125,7 +173,7 @@ public class RdfResourceMappingProvider
         
         // Step through each mappable property and extract values for resource
         // This ensures properties are grouped together, which is better (?)for 
-        for (Entry<Property, String> e: propertyToKey.entrySet()) {
+        for (Entry<Property, String> e: keyToProperty.inverse().entrySet()) {
             if (resource.hasProperty(e.getKey())) {
                 // Get values as a list
                 List<Statement> values = resource.listProperties(e.getKey()).toList();

@@ -1,0 +1,14 @@
+@base <http://vocab.bris.ac.uk/data/repository> .
+
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<#project>
+	a rdf:Property ;
+	rdfs:label "Project"@en ;
+	rdfs:comment "A project (typically a research project) associated with this item."@en .
+
+<#state>
+	a rdf:Property ;
+	rdfs:label "State"@en ;
+	rdfs:comment "The state of a deposit, for example in progress, published."@en .
