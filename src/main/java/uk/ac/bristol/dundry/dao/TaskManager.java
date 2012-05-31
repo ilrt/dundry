@@ -1,9 +1,14 @@
 package uk.ac.bristol.dundry.dao;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
+import com.hp.hpl.jena.rdf.model.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import static org.quartz.JobBuilder.newJob;
 import org.quartz.JobDetail;
+import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.impl.StdSchedulerFactory;
@@ -40,6 +45,18 @@ public class TaskManager {
         stuff.add("---- Listeners -----");
         stuff.addAll(scheduler.getListenerManager().getJobListeners());
         return stuff;
+    }
+    
+    public List<Resource> listTasks(String id) throws SchedulerException {
+        Set<JobKey> keys = scheduler.getJobKeys(GroupMatcher.jobGroupEquals(id));
+        Collections2.transform(keys, new Function<JobKey, Resource>() {
+
+            @Override
+            public Resource apply(JobKey f) {
+                scheduler.getJobDetail(f).
+            }
+            
+        })
     }
     
     /**
