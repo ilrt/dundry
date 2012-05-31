@@ -124,15 +124,27 @@ public class RdfResourceMappingProvider
         // Load each vocabulary, and then hunt for properties
         for (String vocab: vocabs) {
             Model vocabModel = FileManager.get().loadModel(vocab);
+            
+            // Look for properties in this model
             ResIterator propIt = vocabModel.listResourcesWithProperty(RDF.type, RDF.Property);
             ResIterator objPropIt = vocabModel.listResourcesWithProperty(RDF.type, OWL.ObjectProperty);
             ResIterator dtPropIt = vocabModel.listResourcesWithProperty(RDF.type, OWL.DatatypeProperty);
             
+            // Chain results together
             ExtendedIterator<Resource> allProps = propIt.andThen(objPropIt).andThen(dtPropIt);
+            
             while (allProps.hasNext()) {
                 Property prop = allProps.next().as(Property.class);
                 String localName = prop.getLocalName();
                 
+                // If localName (the putative key) is, in plural form, in asArrays
+                // use that instead
+                // (fits existing API, but not great. Ought to use property name)
+                if (asArrays.contains(plural(localName))) localName = plural(localName);
+                
+                // Cases: no local name, can't map.
+                // Value clash (is that possible?) x -> prop and y -> prop
+                // Key clash x -> prop1 and x -> prop2. We create x1, x2 ...
                 if (localName == null) log.error("Property <{}> has no local name", prop);
                 else if (k2p.containsValue(prop)) log.warn("Already have key for <{}>", prop);
                 else if (k2p.containsKey(localName)) {
@@ -144,6 +156,12 @@ public class RdfResourceMappingProvider
         }
         
         keyToProperty = ImmutableBiMap.copyOf(k2p);
+    }
+    
+    // VERY ropey pluraliser!
+    private static String plural(String name) {
+        if (name.endsWith("s")) return name;
+        else return name + "s";
     }
     
     // Find an unused key for a map, based on the param key.

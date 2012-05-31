@@ -118,7 +118,7 @@ public class Repository {
         
         Resource prov = ModelFactory.createDefaultModel().createResource(toInternalId(id));
         prov.addLiteral(DCTerms.dateSubmitted, Calendar.getInstance());
-        prov.addProperty(DCTerms.creator, creator);
+        prov.addProperty(RepositoryVocab.depositor, creator);
         prov.addProperty(RepositoryVocab.state, "deposited");
         
         // Create mutable and immutable graphs

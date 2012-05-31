@@ -18,6 +18,9 @@ public class RepositoryVocab {
     /** <p>Indicates the state of a resource in a workflow (e.g. in progress, published)</p> */
     public static final Property state = m_model.createProperty( "http://vocab.bris.ac.uk/data/repository#state" );
     
-    /** <p>Indicates the state of a resource in a workflow (e.g. in progress, published)</p> */
+    /** <p>The project associated with a deposit</p> */
     public static final Property project = m_model.createProperty( "http://vocab.bris.ac.uk/data/repository#project" );
+    
+    /** <p>The person who submitted this deposit</p> */
+    public static final Property depositor = m_model.createProperty( "http://vocab.bris.ac.uk/data/repository#depositor" );
 }

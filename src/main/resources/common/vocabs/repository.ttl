@@ -12,3 +12,8 @@
 	a rdf:Property ;
 	rdfs:label "State"@en ;
 	rdfs:comment "The state of a deposit, for example in progress, published."@en .
+
+<#depositor>
+	a rdf:Property ;
+	rdfs:label "Depositor"@en ;
+	rdfs:comment "The individual who made this deposit."@en .
