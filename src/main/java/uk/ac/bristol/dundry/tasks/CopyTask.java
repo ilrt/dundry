@@ -3,6 +3,7 @@ package uk.ac.bristol.dundry.tasks;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.logging.Level;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -29,8 +30,12 @@ public class CopyTask implements Job {
         Path to = (Path) jobData.get(TO);
         try {
             copyDirectory(from, to);
+            log.info("COPIED, now sleeping.....");
+            Thread.sleep(5 * 60 * 1000);
         } catch (IOException ex) {
             throw new JobExecutionException("Copy failed", ex);
+        } catch (InterruptedException ex) {
+            throw new JobExecutionException(ex);
         }
     }
         

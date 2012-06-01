@@ -2,10 +2,15 @@ package uk.ac.bristol.dundry.dao;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.DCTerms;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 import static org.quartz.JobBuilder.newJob;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
@@ -18,7 +23,9 @@ import org.quartz.listeners.JobChainingJobListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import uk.ac.bristol.dundry.model.ResourceCollection;
 import uk.ac.bristol.dundry.tasks.ChainTerminator;
+import uk.ac.bristol.dundry.vocabs.OPMV;
 
 /**
  *
@@ -47,16 +54,29 @@ public class TaskManager {
         return stuff;
     }
     
-    public List<Resource> listTasks(String id) throws SchedulerException {
+    public ResourceCollection listTasks(String id) throws SchedulerException {
+        final Model m = ModelFactory.createDefaultModel();
         Set<JobKey> keys = scheduler.getJobKeys(GroupMatcher.jobGroupEquals(id));
-        Collections2.transform(keys, new Function<JobKey, Resource>() {
+        Collection<Resource> tasks = 
+                Collections2.transform(keys, new Function<JobKey, Resource>() {
 
             @Override
             public Resource apply(JobKey f) {
-                scheduler.getJobDetail(f).
+                JobDetail detail;
+                try {
+                    detail = scheduler.getJobDetail(f);
+                } catch (SchedulerException ex) {
+                    throw new RuntimeException("Problem getting job detail", ex);
+                }
+                Resource job = m.createResource();
+                if (detail.getDescription() != null)
+                    job.addProperty(DCTerms.description, detail.getDescription());
+                job.addProperty(DCTerms.title, f.getName());
+                return job;
             }
-            
-        })
+        });
+        
+        return new ResourceCollection(tasks);
     }
     
     /**

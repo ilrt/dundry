@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.ac.bristol.dundry.dao.TaskManager;
+import uk.ac.bristol.dundry.model.ResourceCollection;
 
 /**
  *
@@ -35,8 +36,9 @@ public class Tasks {
         return Response.ok(r.toString()).build();
     }
     
+    @GET
     @Path("{repoId}")
-    public Response listTasksForRepo(@PathParam("repoId") String repoId) {
-        
+    public ResourceCollection listTasksForRepo(@PathParam("repoId") String repoId) throws SchedulerException {
+        return taskManager.listTasks(repoId);
     }
 }
