@@ -77,9 +77,10 @@ public class Deposit {
     @Path("{item}")
     @GET
     public Response retrieve(@PathParam("item") String item) {
-        Resource md = repository.getMetadata(item);
-        return (md.getModel().isEmpty()) ? Response.status(Status.NOT_FOUND).build() : 
-                Response.ok(md).build();
+        // Does item exist?
+        if (!repository.hasId(item)) return Response.status(Status.NOT_FOUND).build();
+        
+        return Response.ok(repository.getMetadata(item)).build();
     }
     
     @Path("{item}")
@@ -88,6 +89,10 @@ public class Deposit {
         if (log.isDebugEnabled()) {
             log.debug("Update: {} with {}", item, data.getModel());
         }
+        
+        // Does item exist?
+        if (!repository.hasId(item)) return Response.status(Status.NOT_FOUND).build();
+        
         repository.updateMetadata(item, data);
         return Response.ok().build();
     }
@@ -113,6 +118,10 @@ public class Deposit {
     @DELETE
     public Response delete(@PathParam("item") String item) {
         log.info("DELETE: {}", item);
+        
+        // Does item exist?
+        if (!repository.hasId(item)) return Response.status(Status.NOT_FOUND).build();
+        
         return Response.ok().build();
     }
 }
