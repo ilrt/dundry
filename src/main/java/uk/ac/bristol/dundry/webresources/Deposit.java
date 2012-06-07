@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.URI;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import org.quartz.JobDetail;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
@@ -76,7 +77,9 @@ public class Deposit {
     @Path("{item}")
     @GET
     public Response retrieve(@PathParam("item") String item) {
-        return Response.ok(repository.getMetadata(item)).build();
+        Resource md = repository.getMetadata(item);
+        return (md.getModel().isEmpty()) ? Response.status(Status.NOT_FOUND).build() : 
+                Response.ok(md).build();
     }
     
     @Path("{item}")
