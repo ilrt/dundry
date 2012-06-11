@@ -48,6 +48,7 @@
         </constructor-arg>
         <constructor-arg>
               <list>
+                  <value>uk.ac.bristol.dundry.tasks.IndexDepositTask</value>
                   <value>uk.ac.bristol.dundry.tasks.MDExtractTika</value>
                   <value>org.quartz.jobs.NoOpJob</value>
               </list>
