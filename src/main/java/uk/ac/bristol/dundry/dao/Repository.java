@@ -119,7 +119,7 @@ public class Repository {
         Resource prov = ModelFactory.createDefaultModel().createResource(toInternalId(id));
         prov.addLiteral(DCTerms.dateSubmitted, Calendar.getInstance());
         prov.addProperty(RepositoryVocab.depositor, creator);
-        prov.addProperty(RepositoryVocab.state, "deposited");
+        prov.addProperty(RepositoryVocab.state, "created");
         
         // Create mutable and immutable graphs
         mdStore.create(toInternalId(id), subject.getModel()); // often a noop
@@ -140,6 +140,10 @@ public class Repository {
         
         prov.addProperty(DCTerms.source, source);
         prov.addLiteral(DCTerms.dateSubmitted, Calendar.getInstance());
+        prov.removeAll(RepositoryVocab.state);
+        prov.addProperty(RepositoryVocab.state, "deposited");
+        
+        updateProvenanceMetadata(id, prov);
         
         // Add in default post-deposit tasks
         List<JobDetail> jobDetails = new ArrayList<>();
