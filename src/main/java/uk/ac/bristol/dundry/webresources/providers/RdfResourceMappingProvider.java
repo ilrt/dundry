@@ -180,8 +180,11 @@ public class RdfResourceMappingProvider
      * @throws XMLStreamException 
      */
     protected void map(Resource resource, XMLStreamWriter writer) throws XMLStreamException {
+        int valsWritten = 0; // Track number written to work around bug latter
+        
         // If present, write the id of the resource as id
         if (resource.isURIResource()) {
+            valsWritten += 1;
             writer.writeStartElement("id");
             // TODO: Not convinced toExternalId should be here. We ought to be passing
             // around relative uris. Hmm. Hmm.
@@ -196,6 +199,7 @@ public class RdfResourceMappingProvider
                 // Get values as a list
                 List<Statement> values = resource.listProperties(e.getKey()).toList();
                 for (Statement s: values) {
+                    valsWritten += 1;
                     writer.writeStartElement(e.getValue());
                     if (s.getObject().isResource()) {
                         map(s.getObject().asResource(), writer);
@@ -207,6 +211,15 @@ public class RdfResourceMappingProvider
                     writer.writeEndElement();
                 }                
             }
+        }
+        
+        // Work around for ActiveResource bug:
+        // If there is only one value in an array hash element it will flatten
+        // excessively. For example [ { "a": "1" } { "a": "2" } ] becomes [ "1", "2" ]
+        if (valsWritten == 1) {
+            writer.writeStartElement("ignore");
+            writer.writeCharacters("");
+            writer.writeEndElement();
         }
     }
 

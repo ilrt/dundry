@@ -77,7 +77,7 @@ public class RdfResourceMappingProviderTest {
         Resource r = makeResource("http://example.com/r");
         r.addLiteral(DCTerms.title, "the title");
         
-        assertEquals("{\"item\":{\"id\":\"http:\\/\\/example.com\\/r\"}}", map(i, r, "application/json"));
+        assertEquals("{\"item\":{\"id\":\"http:\\/\\/example.com\\/r\",\"ignore\":\"\"}}", map(i, r, "application/json"));
         
         i = get("title", DCTerms.title.getURI());
         
@@ -105,7 +105,7 @@ public class RdfResourceMappingProviderTest {
         r.addProperty(DCTerms.source, makeResource("http://example.com/b"));
         
         assertEquals("Repeated source",
-                "{\"item\":{\"id\":\"http:\\/\\/example.com\\/r\",\"source\":[{\"id\":\"http:\\/\\/example.com\\/b\"},{\"id\":\"http:\\/\\/example.com\\/a\"}]}}",
+                "{\"item\":{\"id\":\"http:\\/\\/example.com\\/r\",\"source\":[{\"id\":\"http:\\/\\/example.com\\/b\",\"ignore\":\"\"},{\"id\":\"http:\\/\\/example.com\\/a\",\"ignore\":\"\"}]}}",
                 map(i, r, "application/json")
                 );
     }
