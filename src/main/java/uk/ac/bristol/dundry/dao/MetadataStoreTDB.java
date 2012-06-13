@@ -6,6 +6,7 @@ package uk.ac.bristol.dundry.dao;
 
 import com.hp.hpl.jena.query.*;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.tdb.TDBFactory;
 
 /**
@@ -38,6 +39,12 @@ public class MetadataStoreTDB implements MetadataStore {
     
     @Override
     public void replaceData(String graphId, Model model) {
+        
+        System.err.println("Replace");
+        store.getNamedModel(graphId).write(System.err, "TTL");
+        System.err.println("With");
+        model.write(System.err, "TTL");
+        
         store.begin(ReadWrite.WRITE);
         try {
             store.getNamedModel(graphId).removeAll().add(model);
@@ -45,10 +52,17 @@ public class MetadataStoreTDB implements MetadataStore {
         } finally {
             store.end();
         }
+        System.err.println("Now");
+        store.getNamedModel(graphId).write(System.err, "TTL");
+        
     }
+    
     @Override
     public Model getData(String graphId) {
-        return store.getNamedModel(graphId);
+        // Return a copy of the data, to ensure modifications occur via
+        // replace data
+        Model copy = ModelFactory.createDefaultModel();
+        return copy.add(store.getNamedModel(graphId));
     }
 
     @Override

@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.bristol.dundry.model.ResourceCollection;
 import uk.ac.bristol.dundry.tasks.JobBase;
+import uk.ac.bristol.dundry.tasks.StateChanger;
 import uk.ac.bristol.dundry.vocabs.RepositoryVocab;
 
 /**
@@ -141,7 +142,7 @@ public class Repository {
         prov.addProperty(DCTerms.source, source);
         prov.addLiteral(DCTerms.dateSubmitted, Calendar.getInstance());
         prov.removeAll(RepositoryVocab.state);
-        prov.addProperty(RepositoryVocab.state, "deposited");
+        prov.addProperty(RepositoryVocab.state, "depositing");
         
         updateProvenanceMetadata(id, prov);
         
@@ -165,6 +166,18 @@ public class Repository {
             
             jobDetails.add(jobDetail);
         }
+        
+        // Add a final state changer at the end
+        JobDataMap stateChangeMap = new JobDataMap();
+        stateChangeMap.putAll(jobData); // standard stuff
+        stateChangeMap.put(StateChanger.TO_STATE, "deposited");
+        
+        JobDetail stateChangeJob = newJob(StateChanger.class)
+                .withIdentity("State changer", id)
+                .usingJobData(stateChangeMap)
+                .build();
+                
+        jobDetails.add(stateChangeJob);
         
         taskManager.executeJobsInOrder(id, jobDetails);
     }

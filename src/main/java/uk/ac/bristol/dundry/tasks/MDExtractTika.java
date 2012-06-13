@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import uk.ac.bristol.dundry.Util;
+import uk.ac.bristol.dundry.dao.Repository;
 
 /**
  *
@@ -47,7 +48,7 @@ public class MDExtractTika extends JobBase {
             );
     
     @Override
-    public void execute(Resource item, Resource prov, String id, Path root, JobDataMap jobData) {
+    public void execute(Repository repo, Resource item, Resource prov, String id, Path root, JobDataMap jobData) {
         try {
             Files.walkFileTree(root, new MDExtractVisitor(root, item, prov));
         } catch (IOException ex) {
@@ -104,7 +105,7 @@ public class MDExtractTika extends JobBase {
         Resource prov = ModelFactory.createDefaultModel().createResource("repo:" + id);
         Resource item = ModelFactory.createDefaultModel().createResource("repo:" + id);
         
-        job.execute(item, prov, id, Paths.get("/home/pldms/Development/Projects/2012/data.bris/dundry/working/example_2"), null);
+        job.execute(null, item, prov, id, Paths.get("/home/pldms/Development/Projects/2012/data.bris/dundry/working/example_2"), null);
         
         System.out.println("========== prov =========");
         prov.getModel().write(System.out, "TTL");

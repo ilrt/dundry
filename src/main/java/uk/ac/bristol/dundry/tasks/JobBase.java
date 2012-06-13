@@ -50,7 +50,7 @@ public abstract class JobBase implements Job {
                 new Object[] { this.getClass(), jobData.getString(ID), jobData.get(PATH) });
         }
         
-        execute(item, prov, 
+        execute(repo, item, prov, 
                 jobData.getString(ID), (Path) jobData.get(PATH), jobData);
         
         task.addLiteral(OPMV.wasEndedAt, Calendar.getInstance());
@@ -79,12 +79,13 @@ public abstract class JobBase implements Job {
      * in the publicly mutable store, the latter is only modifiable from within the
      * repository.
      * 
-     * @param item Mutable repository metadata
-     * @param prov Externally immutable metadata
+     * @param repo The repository. Be careful! If you're just adding data use item and prov.
+     * @param item Data which will be added to the mutable repo dataset
+     * @param prov Data which will be added to the externally immutable repo dataset
      * @param id Id of the repository
      * @param root Location of data in filesystem
      * @param jobData General runtime context
      */
-    abstract public void execute(Resource item, Resource prov, String id, Path root, JobDataMap jobData)
+    abstract public void execute(Repository repo, Resource item, Resource prov, String id, Path root, JobDataMap jobData)
             throws JobExecutionException;
 }

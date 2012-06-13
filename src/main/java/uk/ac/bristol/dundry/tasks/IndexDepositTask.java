@@ -14,6 +14,7 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.bristol.dundry.dao.Repository;
 
 /**
  * Go through a new deposit, pulling the structure into the metadata
@@ -25,7 +26,7 @@ public class IndexDepositTask extends JobBase {
     final static Logger log = LoggerFactory.getLogger(IndexDepositTask.class);
 
     @Override
-    public void execute(Resource item, Resource prov, String id, Path root, JobDataMap jobData) 
+    public void execute(Repository repo, Resource item, Resource prov, String id, Path root, JobDataMap jobData) 
             throws JobExecutionException
     {
         try {
