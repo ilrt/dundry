@@ -129,6 +129,27 @@ public class RepositoryTest {
         assertTrue(md.hasProperty(DCTerms.description));
     }
     
+    /*
+     * Check that mutations don't infect provenance
+     * I was really bitten by a bug here
+     */
+    @Test
+    public void testUpdateProvMutable() {
+        Resource md = instance.getMetadata("2");
+        
+        md.addProperty(DCTerms.available, "foo");
+        
+        instance.updateMetadata("2", md);
+        
+        md = instance.getProvenanceMetadata("2");
+        md.removeAll(DCTerms.description);
+        instance.updateProvenanceMetadata("2", md);
+        
+        assertFalse(instance.getProvenanceMetadata("2").hasProperty(DCTerms.description));
+        // This was failing due to a silly bug
+        assertFalse(instance.getMetadata("2").hasProperty(DCTerms.description));
+    }
+    
     /**
      * Test of toExternalId method, of class Repository.
      */

@@ -197,8 +197,9 @@ public class Repository {
         // Replace metadata with new information that's not in prov
         Model m = ModelFactory.createDefaultModel();
         m.add(r.getModel());
+        // Remove provenance info
         m.remove(mdStore.getData(internalId + "/prov"));
-        mdStore.replaceData(internalId, r.getModel());
+        mdStore.replaceData(internalId, m);
     }
     
     public Resource getProvenanceMetadata(String id) {
