@@ -40,11 +40,6 @@ public class MetadataStoreTDB implements MetadataStore {
     @Override
     public void replaceData(String graphId, Model model) {
         
-        System.err.println("Replace");
-        store.getNamedModel(graphId).write(System.err, "TTL");
-        System.err.println("With");
-        model.write(System.err, "TTL");
-        
         store.begin(ReadWrite.WRITE);
         try {
             store.getNamedModel(graphId).removeAll().add(model);
@@ -52,8 +47,6 @@ public class MetadataStoreTDB implements MetadataStore {
         } finally {
             store.end();
         }
-        System.err.println("Now");
-        store.getNamedModel(graphId).write(System.err, "TTL");
         
     }
     
