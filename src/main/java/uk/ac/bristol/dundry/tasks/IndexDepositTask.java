@@ -1,5 +1,6 @@
 package uk.ac.bristol.dundry.tasks;
 
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.DCTypes;
@@ -14,6 +15,7 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.bristol.dundry.Util;
 import uk.ac.bristol.dundry.dao.Repository;
 
 /**
@@ -92,14 +94,28 @@ public class IndexDepositTask extends JobBase {
                 // Parent is either top of stack or -- if absent -- root
                 Resource parent = (parents.isEmpty()) ? root : parents.peek();
 
-                Resource item = root.getModel().createResource(root.getURI() + "/" + relativePath.toString());
+                Resource item = Util.resolve(root, relativePath);
                 if (!RDFS.Resource.equals(type)) {
                     item.addProperty(RDF.type, type);
                 }
-
+                item.addProperty(RDFS.label, relativePath.getFileName().toString());
                 parent.addProperty(DCTerms.hasPart, item);
                 return item;
             }
         });
+    }
+    
+    public static void main(String[] args) throws JobExecutionException {
+        JobBase job = new IndexDepositTask();
+        String id = "123456789";
+        Resource prov = ModelFactory.createDefaultModel().createResource("repo:" + id);
+        Resource item = ModelFactory.createDefaultModel().createResource("repo:" + id);
+        
+        job.execute(null, item, prov, id, Paths.get("/home/pldms/Development/Projects/2012/data.bris/dundry/working/RDSF_MV/nfs3-exports/marfc-cregan-2011/ACRC_Test_Area/2011/"), null);
+        
+        System.out.println("========== prov =========");
+        prov.getModel().write(System.out, "TTL");
+        System.out.println("========== item =========");
+        item.getModel().write(System.out, "TTL");
     }
 }

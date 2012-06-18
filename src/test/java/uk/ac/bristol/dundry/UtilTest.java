@@ -36,7 +36,9 @@ public class UtilTest {
         assertEquals(r("http://example.com/foo/x/y"), Util.resolve(res, Paths.get("x/y")));
         // Contains a bad character
         assertEquals(r("http://example.com/foo/x/a%20space/y"), Util.resolve(res, Paths.get("x/a space/y")));
-        
+        // Treats repo:123abc as repo:123abc/
+        res = r("repo:1234abc");
+        assertEquals(r("repo:1234abc/foo/x/y"), Util.resolve(res, Paths.get("foo/x/y")));
         // Hurls on bnode
         thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage("Cannot resolve against a blank node");

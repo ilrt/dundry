@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.apache.tika.exception.TikaException;
@@ -40,12 +41,15 @@ public class MDExtractTika extends JobBase {
     static final org.slf4j.Logger log = LoggerFactory.getLogger(MDExtractTika.class);
     
     static final Map<String, Property> FIELD_MAPPING =
-            ImmutableMap.of(
-                HttpHeaders.CONTENT_TYPE, DCTerms.format,
-                DublinCore.COVERAGE, DCTerms.coverage,
-                DublinCore.TITLE, DCTerms.title,
-                DublinCore.MODIFIED, DCTerms.modified
-            );
+            new HashMap<String, Property>() {{
+                put(HttpHeaders.CONTENT_TYPE, DCTerms.format);
+                put(HttpHeaders.CONTENT_TYPE, DCTerms.format);
+                put(DublinCore.TITLE, DCTerms.title);
+                put(DublinCore.MODIFIED, DCTerms.modified);
+                put(DublinCore.DATE.getName(), DCTerms.date);
+                put(HttpHeaders.CONTENT_LENGTH, DCTerms.extent);
+            }};
+
     
     @Override
     public void execute(Repository repo, Resource item, Resource prov, String id, Path root, JobDataMap jobData) {
@@ -105,7 +109,7 @@ public class MDExtractTika extends JobBase {
         Resource prov = ModelFactory.createDefaultModel().createResource("repo:" + id);
         Resource item = ModelFactory.createDefaultModel().createResource("repo:" + id);
         
-        job.execute(null, item, prov, id, Paths.get("/home/pldms/Development/Projects/2012/data.bris/dundry/working/example_2"), null);
+        job.execute(null, item, prov, id, Paths.get("/home/pldms/Development/Projects/2012/data.bris/dundry/working/RDSF_MV/nfs3-exports/marfc-cregan-2011/ACRC_Test_Area/2011/"), null);
         
         System.out.println("========== prov =========");
         prov.getModel().write(System.out, "TTL");
