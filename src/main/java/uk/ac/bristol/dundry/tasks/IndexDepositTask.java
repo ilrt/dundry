@@ -48,9 +48,6 @@ public class IndexDepositTask extends JobBase {
      */
     private Path walkDirectory(final Path source, final Resource root) throws IOException {
 
-        // We relativise paths to the parent of source
-        final Path parent = source.getParent();
-
         return Files.walkFileTree(source, new SimpleFileVisitor<Path>() {
 
             // Keep track of parents as we walk the tree, so
@@ -59,7 +56,7 @@ public class IndexDepositTask extends JobBase {
 
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                Path rel = parent.relativize(file);
+                Path rel = source.relativize(file);
                 log.trace("Visit {}", file);
 
                 recordVisit(rel, RDFS.Resource); // we really don't know what it is
@@ -69,7 +66,7 @@ public class IndexDepositTask extends JobBase {
 
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                Path rel = parent.relativize(dir);
+                Path rel = source.relativize(dir);
 
                 // Record dir as a collection of resources
                 Resource item = recordVisit(rel, DCTypes.Collection);
