@@ -32,7 +32,10 @@ public class Util {
     public static Resource resolve(Resource a, Path b) {
         // if a is blank, then complain!
         if (a.isAnon()) throw new IllegalArgumentException("Cannot resolve against a blank node");
-                
+        
+        // A shortcut, which also avoids repo:1234 becoming repo:1234/
+        if (b.toString().isEmpty()) return a;
+        
         // Encode path elements carefully
         String encPath = b.toString().replaceAll(" ", "%20");
         

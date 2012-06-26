@@ -39,6 +39,8 @@ public class UtilTest {
         // Treats repo:123abc as repo:123abc/
         res = r("repo:1234abc");
         assertEquals(r("repo:1234abc/foo/x/y"), Util.resolve(res, Paths.get("foo/x/y")));
+        // Resolves repo:123abc "" to repo:123abc
+        assertEquals(r("repo:1234abc"), Util.resolve(res, Paths.get("")));
         // Hurls on bnode
         thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage("Cannot resolve against a blank node");

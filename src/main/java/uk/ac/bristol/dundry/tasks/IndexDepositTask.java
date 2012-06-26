@@ -88,15 +88,14 @@ public class IndexDepositTask extends JobBase {
              * @return item in database
              */
             private Resource recordVisit(Path relativePath, Resource type) {
-                // Parent is either top of stack or -- if absent -- root
-                Resource parent = (parents.isEmpty()) ? root : parents.peek();
-
                 Resource item = Util.resolve(root, relativePath);
                 if (!RDFS.Resource.equals(type)) {
                     item.addProperty(RDF.type, type);
                 }
                 item.addProperty(RDFS.label, relativePath.getFileName().toString());
-                parent.addProperty(DCTerms.hasPart, item);
+                // If we have a parent link parent to child
+                if (!parents.isEmpty()) parents.peek().addProperty(DCTerms.hasPart, item);
+                
                 return item;
             }
         });
@@ -108,7 +107,7 @@ public class IndexDepositTask extends JobBase {
         Resource prov = ModelFactory.createDefaultModel().createResource("repo:" + id);
         Resource item = ModelFactory.createDefaultModel().createResource("repo:" + id);
         
-        job.execute(null, item, prov, id, Paths.get("/home/pldms/Development/Projects/2012/data.bris/dundry/working/RDSF_MV/nfs3-exports/marfc-cregan-2011/ACRC_Test_Area/2011/"), null);
+        job.execute(null, item, prov, id, Paths.get("/home/pldms/Development/Projects/2012/data.bris/dundry/working/example/"), null);
         
         System.out.println("========== prov =========");
         prov.getModel().write(System.out, "TTL");

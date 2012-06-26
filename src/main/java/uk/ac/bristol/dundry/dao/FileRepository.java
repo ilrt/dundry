@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package uk.ac.bristol.dundry.dao;
 
 import java.io.IOException;
@@ -15,18 +11,20 @@ import java.nio.file.Paths;
  */
 public class FileRepository {
     
-    private final Path root;
+    private final Path depositRoot;
+    private final Path publishRoot;
     
-    public FileRepository(String base) {
-        root = Paths.get(base);
+    public FileRepository(String depositBase, String publishBase) {
+        depositRoot = Paths.get(depositBase);
+        publishRoot = Paths.get(publishBase);
     }
     
     public Path create(String id) throws IOException {
-        Path target = Files.createDirectory(root.resolve(id));
+        Path target = Files.createDirectory(depositRoot.resolve(id));
         return target;
     }
     
     public Path pathForId(String id) {
-        return root.resolve(id);
+        return depositRoot.resolve(id);
     }
 }
