@@ -44,10 +44,13 @@ public class Repository {
     private final FileRepository fileRepo;
     private final MetadataStore mdStore;
     private final List<Class<? extends Job>> defaultJobs;
+    private final String publishURLBase;
     
-    public Repository(FileRepository fileRepo, MetadataStore mdStore, List<String> postDepositJobClasses) {
+    public Repository(String publishURLBase, FileRepository fileRepo, MetadataStore mdStore, List<String> postDepositJobClasses) {
         this.fileRepo = fileRepo;
         this.mdStore = mdStore;
+        // ensure we just need to append id to base
+        this.publishURLBase = publishURLBase.endsWith("/") ? publishURLBase : publishURLBase + "/";
         
         // Load up job classes
         defaultJobs = new ArrayList<>();
@@ -216,6 +219,10 @@ public class Repository {
    
     public Path getPathForId(String id) {
         return fileRepo.pathForId(id);
+    }
+
+    public String getPublishedURL(String id) {
+        return publishURLBase + id;
     }
     
     /**
