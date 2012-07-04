@@ -39,7 +39,7 @@ public class RepositoryTest {
         MetadataStore mStore = new MetadataStoreDS(DatasetImpl.wrap(ds));
         FileRepository fr = mock(FileRepository.class);
         when(fr.create(anyString())).thenReturn(Paths.get("bar"));
-        when(fr.pathForId(anyString())).thenReturn(Paths.get("baz"));
+        when(fr.depositPathForId(anyString())).thenReturn(Paths.get("baz"));
         instance = new Repository("http://example.com/pubs/", fr, mStore, Collections.EMPTY_LIST);
         instance.taskManager = mock(TaskManager.class);
     }

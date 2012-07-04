@@ -106,7 +106,7 @@ public class Deposit {
         // Check we have something to add to
         if (!repository.hasId(item)) return Response.status(Response.Status.NOT_FOUND).build();
         
-        java.nio.file.Path repoDir = repository.getPathForId(item);
+        java.nio.file.Path repoDir = repository.getDepositPathForId(item);
         JobDetail depositTask = sourceFS.depositItem(source, item, repoDir);
         
         repository.makeDeposit(depositTask, item, source);

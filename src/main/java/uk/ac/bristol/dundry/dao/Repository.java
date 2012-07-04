@@ -25,7 +25,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.bristol.dundry.model.ResourceCollection;
+import uk.ac.bristol.dundry.tasks.DataCiteSubmit;
 import uk.ac.bristol.dundry.tasks.JobBase;
+import uk.ac.bristol.dundry.tasks.MoveTask;
 import uk.ac.bristol.dundry.tasks.StateChanger;
 import uk.ac.bristol.dundry.vocabs.RepositoryVocab;
 
@@ -35,10 +37,12 @@ import uk.ac.bristol.dundry.vocabs.RepositoryVocab;
  */
 public class Repository {
     
+    public enum State { Created, Depositing, Deposited, Publishing, Published }
+    
     static final Logger log = LoggerFactory.getLogger(Repository.class);
     
     // play it safe. radix of 36 is ideal 
-   static final int RADIX = Math.min(Character.MAX_RADIX, 36);
+    static final int RADIX = Math.min(Character.MAX_RADIX, 36);
     
     @Autowired protected TaskManager taskManager;
     private final FileRepository fileRepo;
@@ -84,7 +88,6 @@ public class Repository {
             // get item and copy to resultModel
             Resource item = nxt.getResource("g").inModel(resultModel);
             item.addProperty(RDFS.label, nxt.get("title"));
-            //item.addProperty(OpenVocab.state, nxt.get("state"));
             if (nxt.contains("source"))
                 item.addProperty(DCTerms.source, nxt.get("source"));
             if (nxt.contains("description"))
@@ -123,7 +126,7 @@ public class Repository {
         Resource prov = ModelFactory.createDefaultModel().createResource(toInternalId(id));
         prov.addLiteral(DCTerms.dateSubmitted, Calendar.getInstance());
         prov.addProperty(RepositoryVocab.depositor, creator);
-        prov.addProperty(RepositoryVocab.state, "created");
+        prov.addProperty(RepositoryVocab.state, State.Created.name());
         
         // Create mutable and immutable graphs
         mdStore.create(toInternalId(id), subject.getModel()); // often a noop
@@ -145,7 +148,7 @@ public class Repository {
         prov.addProperty(DCTerms.source, source);
         prov.addLiteral(DCTerms.dateSubmitted, Calendar.getInstance());
         prov.removeAll(RepositoryVocab.state);
-        prov.addProperty(RepositoryVocab.state, "depositing");
+        prov.addProperty(RepositoryVocab.state, State.Depositing.name());
         
         updateProvenanceMetadata(id, prov);
         
@@ -156,7 +159,7 @@ public class Repository {
         // Create context for these jobs
         JobDataMap jobData = new JobDataMap();
         jobData.putAll(ImmutableMap.of(
-                    JobBase.PATH, fileRepo.pathForId(id),
+                    JobBase.PATH, fileRepo.depositPathForId(id),
                     JobBase.REPOSITORY, this,
                     JobBase.ID, id));
         
@@ -173,7 +176,58 @@ public class Repository {
         // Add a final state changer at the end
         JobDataMap stateChangeMap = new JobDataMap();
         stateChangeMap.putAll(jobData); // standard stuff
-        stateChangeMap.put(StateChanger.TO_STATE, "deposited");
+        stateChangeMap.put(StateChanger.TO_STATE, State.Deposited.name());
+        
+        JobDetail stateChangeJob = newJob(StateChanger.class)
+                .withIdentity("State changer", id)
+                .usingJobData(stateChangeMap)
+                .build();
+                
+        jobDetails.add(stateChangeJob);
+        
+        taskManager.executeJobsInOrder(id, jobDetails);
+    }
+    
+    public void publish(String id) throws SchedulerException {
+        Resource prov = getProvenanceMetadata(id);
+        prov.addLiteral(DCTerms.date, Calendar.getInstance());
+        prov.removeAll(RepositoryVocab.state);
+        prov.addLiteral(RepositoryVocab.state, State.Publishing.name());
+        updateProvenanceMetadata(id, prov);
+        
+        // Add in default publish tasks
+        List<JobDetail> jobDetails = new ArrayList<>();
+        
+        // Create context for these jobs
+        JobDataMap jobData = new JobDataMap();
+        jobData.putAll(ImmutableMap.of(
+                    JobBase.PATH, fileRepo.depositPathForId(id),
+                    JobBase.REPOSITORY, this,
+                    JobBase.ID, id));
+        
+        JobDetail registerJob = newJob(DataCiteSubmit.class)
+                .withIdentity("Datacite submit", id)
+                .usingJobData(jobData)
+                .build();
+        
+        jobDetails.add(registerJob);
+        
+        JobDataMap moveMap = new JobDataMap();
+        moveMap.putAll(ImmutableMap.of(
+                MoveTask.FROM, getDepositPathForId(id),
+                MoveTask.TO, getPublishPathForId(id)
+                ));
+        JobDetail moveJob = newJob(MoveTask.class)
+                .withIdentity("Move", id)
+                .usingJobData(moveMap)
+                .build();
+        
+        jobDetails.add(moveJob);
+        
+        // Add a final state changer at the end
+        JobDataMap stateChangeMap = new JobDataMap();
+        stateChangeMap.putAll(jobData); // standard stuff
+        stateChangeMap.put(StateChanger.TO_STATE, State.Published.name());
         
         JobDetail stateChangeJob = newJob(StateChanger.class)
                 .withIdentity("State changer", id)
@@ -217,10 +271,14 @@ public class Repository {
         mdStore.replaceData(internalId + "/prov", r.getModel());
     }
    
-    public Path getPathForId(String id) {
-        return fileRepo.pathForId(id);
+    public Path getDepositPathForId(String id) {
+        return fileRepo.depositPathForId(id);
     }
-
+    
+    public Path getPublishPathForId(String id) {
+        return fileRepo.publishPathForId(id);
+    }
+    
     public String getPublishedURL(String id) {
         return publishURLBase + id;
     }

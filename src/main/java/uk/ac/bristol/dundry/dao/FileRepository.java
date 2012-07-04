@@ -24,7 +24,11 @@ public class FileRepository {
         return target;
     }
     
-    public Path pathForId(String id) {
+    public Path depositPathForId(String id) {
         return depositRoot.resolve(id);
+    }
+    
+    public Path publishPathForId(String id) {
+        return publishRoot.resolve(id);
     }
 }
