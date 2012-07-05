@@ -6,6 +6,9 @@ package uk.ac.bristol.dundry.dao;
 
 import com.hp.hpl.jena.query.*;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.sparql.core.DatasetImpl;
+import uk.ac.bristol.dundry.dao.MetadataStore;
 
 /**
  *
@@ -28,7 +31,7 @@ public class MetadataStoreDS implements MetadataStore {
 
     @Override
     public Model getData(String graphId) {
-        return store.getNamedModel(graphId);
+        return ModelFactory.createDefaultModel().add(store.getNamedModel(graphId));
     }
 
     @Override

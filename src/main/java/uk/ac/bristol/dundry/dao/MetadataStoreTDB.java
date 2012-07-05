@@ -54,8 +54,12 @@ public class MetadataStoreTDB implements MetadataStore {
     public Model getData(String graphId) {
         // Return a copy of the data, to ensure modifications occur via
         // replace data
-        Model copy = ModelFactory.createDefaultModel();
-        return copy.add(store.getNamedModel(graphId));
+        try {
+            store.begin(ReadWrite.READ);
+            return ModelFactory.createDefaultModel().add(store.getNamedModel(graphId));
+        } finally {
+            store.end();
+        }
     }
 
     @Override

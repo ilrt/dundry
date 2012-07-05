@@ -205,13 +205,6 @@ public class Repository {
                     JobBase.REPOSITORY, this,
                     JobBase.ID, id));
         
-        JobDetail registerJob = newJob(DataCiteSubmit.class)
-                .withIdentity("Datacite submit", id)
-                .usingJobData(jobData)
-                .build();
-        
-        jobDetails.add(registerJob);
-        
         JobDataMap moveMap = new JobDataMap();
         moveMap.putAll(ImmutableMap.of(
                 MoveTask.FROM, getDepositPathForId(id),
@@ -223,6 +216,13 @@ public class Repository {
                 .build();
         
         jobDetails.add(moveJob);
+        
+        JobDetail registerJob = newJob(DataCiteSubmit.class)
+                .withIdentity("Datacite submit", id)
+                .usingJobData(jobData)
+                .build();
+        
+        jobDetails.add(registerJob);
         
         // Add a final state changer at the end
         JobDataMap stateChangeMap = new JobDataMap();
