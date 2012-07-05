@@ -36,10 +36,10 @@
     </bean>
     
     <bean class="uk.ac.bristol.dundry.dao.Repository">
-        <constructor-arg>${repo.publishbase}</constructor-arg>
+        <constructor-arg value="${repo.publishbase}"/>
         <constructor-arg>
             <bean class="uk.ac.bristol.dundry.dao.FileRepository">
-                <constructor-arg value="${repo.depodir}"/>
+                <constructor-arg value="${repo.depositdir}"/>
                 <constructor-arg value="${repo.pubdir}"/>
             </bean>
         </constructor-arg>

@@ -97,7 +97,8 @@ public class Deposit {
         return Response.ok().build();
     }
     
-    @Path("{item}")
+    // Add source to deposit
+    @Path("{item}/source")
     @POST
     @Consumes("application/x-www-form-urlencoded")
     public Response addContent(@PathParam("item") String item, @FormParam("source") String source) throws SchedulerException {
@@ -110,6 +111,20 @@ public class Deposit {
         JobDetail depositTask = sourceFS.depositItem(source, item, repoDir);
         
         repository.makeDeposit(depositTask, item, source);
+        
+        return Response.ok().build();
+    }
+    
+    // Publish
+    @Path("{item}/publish")
+    @POST
+    public Response publish(@PathParam("item") String item) throws SchedulerException {
+        log.info("Publish item {}", item);
+        
+        // Check we have something to add to
+        if (!repository.hasId(item)) return Response.status(Response.Status.NOT_FOUND).build();
+                
+        repository.publish(item);
         
         return Response.ok().build();
     }
