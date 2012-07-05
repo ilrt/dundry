@@ -64,13 +64,14 @@ public class MetadataStoreTDB implements MetadataStore {
 
     @Override
     public ResultSet query(String query) {
-        QueryExecution qe = QueryExecutionFactory.create(query, store);
+        QueryExecution qe = null;
         try {
             store.begin(ReadWrite.READ);
+            qe = QueryExecutionFactory.create(query, store);
             ResultSet r = qe.execSelect();
             return ResultSetFactory.copyResults(r);
         } finally {
-            qe.close();
+            if (qe != null) qe.close();
             store.end();
         }
     }

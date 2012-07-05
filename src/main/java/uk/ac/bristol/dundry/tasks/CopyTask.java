@@ -30,12 +30,10 @@ public class CopyTask implements Job {
         Path to = (Path) jobData.get(TO);
         try {
             copyDirectory(from, to);
-            log.info("COPIED, now sleeping.....");
-            Thread.sleep(30 * 1000);
+            //log.info("COPIED, now sleeping.....");
+            //Thread.sleep(30 * 1000);
         } catch (IOException ex) {
             throw new JobExecutionException("Copy failed", ex);
-        } catch (InterruptedException ex) {
-            throw new JobExecutionException(ex);
         }
     }
         

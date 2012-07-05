@@ -56,11 +56,9 @@ public abstract class JobBase implements Job {
         task.addLiteral(OPMV.wasEndedAt, Calendar.getInstance());
         
         // Update provenance (bad name) data
-        System.out.printf("Prov size: %s\n", prov.getModel().size());
         if (prov.getModel().size() > 0) {
             Resource currProv = repo.getProvenanceMetadata(id);
             currProv.getModel().add(prov.getModel());
-            System.out.printf("Curr Prov size: %s\n", currProv.getModel().size());
             repo.updateProvenanceMetadata(id, currProv);
         }
         
