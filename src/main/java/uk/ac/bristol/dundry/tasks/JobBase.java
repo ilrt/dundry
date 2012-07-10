@@ -24,7 +24,6 @@ public abstract class JobBase implements Job {
     
     public final static String REPOSITORY = "jobs-base-repository";
     public final static String ID = "jobs-base-id";
-    public final static String PATH = "jobs-base-path";
     
     /**
      * Job execution which wraps a more convenient interface for dundry, which
@@ -35,7 +34,10 @@ public abstract class JobBase implements Job {
     @Override
     final public void execute(JobExecutionContext jec) throws JobExecutionException {
         JobDataMap jobData = jec.getMergedJobDataMap();
+        
+        
         Repository repo = (Repository) jobData.get(REPOSITORY);
+        
         String id = jobData.getString(ID);
         Resource prov = ModelFactory.createDefaultModel().createResource(Repository.toInternalId(id));
         Resource item = ModelFactory.createDefaultModel().createResource(Repository.toInternalId(id));
@@ -46,12 +48,11 @@ public abstract class JobBase implements Job {
         task.addProperty(OPMV.used, this.getClass().getCanonicalName());
         
         if (log.isDebugEnabled()) {
-            log.debug("Running job {} with arguments: ID => '{}' PATH => '{}'",
-                new Object[] { this.getClass(), jobData.getString(ID), jobData.get(PATH) });
+            log.debug("Running job {} with arguments: ID => '{}'",
+                this.getClass(), jobData.getString(ID));
         }
         
-        execute(repo, item, prov, 
-                jobData.getString(ID), (Path) jobData.get(PATH), jobData);
+        execute(repo, item, prov, id, repo.getDepositPathForId(id), jobData);
         
         task.addLiteral(OPMV.wasEndedAt, Calendar.getInstance());
         

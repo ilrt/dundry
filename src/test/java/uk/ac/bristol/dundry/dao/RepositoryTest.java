@@ -40,7 +40,7 @@ public class RepositoryTest {
         FileRepository fr = mock(FileRepository.class);
         when(fr.create(anyString())).thenReturn(Paths.get("bar"));
         when(fr.depositPathForId(anyString())).thenReturn(Paths.get("baz"));
-        instance = new Repository("http://example.com/pubs/", fr, mStore, Collections.EMPTY_LIST);
+        instance = new Repository("http://example.com/pubs/", fr, mStore, Collections.EMPTY_LIST, Collections.EMPTY_LIST, null);
         instance.taskManager = mock(TaskManager.class);
     }
     

@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
 import static org.quartz.JobBuilder.newJob;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
@@ -25,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import uk.ac.bristol.dundry.model.ResourceCollection;
 import uk.ac.bristol.dundry.tasks.ChainTerminator;
-import uk.ac.bristol.dundry.vocabs.OPMV;
 
 /**
  *
