@@ -154,21 +154,26 @@ public class Repository {
      * deposit)
      */
     public void makeDeposit(JobDetail depositTask, String id, String source) throws SchedulerException {
-
-        startProcess(id, DCTerms.dateSubmitted,
+        Resource prov = getProvenanceMetadata(id);
+        prov.addProperty(DCTerms.source, source);
+        prov.addLiteral(DCTerms.dateSubmitted, Calendar.getInstance());
+        
+        startProcess(id, prov,
                 State.Depositing, State.Deposited,
                 Collections.singletonList(depositTask), postDepositJobs, jobProperties);
     }
 
     public void publish(String id) throws SchedulerException {;
-        
+        Resource prov = getProvenanceMetadata(id);
+        prov.addLiteral(DCTerms.date, Calendar.getInstance());
+    
         // Add the move task. This is the primary task.
         List<Class<? extends Job>> jobs = new ArrayList<>();
         jobs.add(MoveTask.class);
         jobs.addAll(prePublishJobs);
         
         // Include move task properties at the end
-        startProcess(id, DCTerms.date,
+        startProcess(id, prov,
                 State.Publishing, State.Published, Collections.EMPTY_LIST,
                 jobs, jobProperties, 
                 MoveTask.FROM, getDepositPathForId(id).toAbsolutePath().toString(),
@@ -179,7 +184,7 @@ public class Repository {
      * Start a process to move between states.
      * Less abstractly, kick off tasks that will result in deposit or publication
      * @param id ID of the deposit
-     * @param timeStampProp Property to use when recording this action
+     * @param prov Provenance metadata to store (a bit hacky?)
      * @param startState State during this process (e.g. Depositing)
      * @param endState State at end of this process (e.g. Deposited)
      * @param jobsToRun External jobs to run (will run first)
@@ -187,7 +192,7 @@ public class Repository {
      * @param jobParams Externally provided parameters
      * @param otherParams Any other parameters (in pairs)
      */
-    private void startProcess(String id, Property timeStampProp,
+    private void startProcess(String id, Resource prov,
             State startState, State endState,
             List<JobDetail> jobsToRun,
             List<Class<? extends Job>> jobs, Properties jobParams,
@@ -225,11 +230,10 @@ public class Repository {
                 .withIdentity("state changer", id)
                 .usingJobData(jobData).build());
         
-        // Go to start state, timestamp
-        Resource prov = getProvenanceMetadata(id);
+        // Go to start state, store provenance
+        // Not keen on this going over a method boundary, but simplifies things
         prov.removeAll(RepositoryVocab.state);
         prov.addLiteral(RepositoryVocab.state, startState.name());
-        prov.addLiteral(timeStampProp, Calendar.getInstance());
         updateProvenanceMetadata(id, prov);
         
         // Make it so

@@ -34,7 +34,7 @@ public class MakeTorrentTask extends JobBase {
             Torrent torrent = Torrent.create(
                     publishedPath.toFile(), listContent(publishedPath), 
                     new URI(tracker), "dundry");
-            File torrentFile = root.resolve(id + ".torrent").toFile();
+            File torrentFile = publishedPath.resolve(id + ".torrent").toFile();
             torrent.save(torrentFile);
         } catch (NoSuchAlgorithmException | InterruptedException | IOException | URISyntaxException ex) {
             throw new JobExecutionException("Creating torrent failed", ex);
