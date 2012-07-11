@@ -318,7 +318,7 @@ public class Repository {
             try {
                 Class<?> job = Repository.class.getClassLoader().loadClass(jobClassName);
                 if (Job.class.isAssignableFrom(job)) {
-                    postDepositJobs.add((Class<? extends Job>) job);
+                    jobs.add((Class<? extends Job>) job);
                 } else {
                     log.error("Class <{}> is not a Job. Ignoring.", jobClassName);
                 }
