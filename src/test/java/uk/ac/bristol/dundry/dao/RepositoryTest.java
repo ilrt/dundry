@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.Properties;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import static org.mockito.Matchers.anyList;
@@ -40,7 +41,8 @@ public class RepositoryTest {
         FileRepository fr = mock(FileRepository.class);
         when(fr.create(anyString())).thenReturn(Paths.get("bar"));
         when(fr.depositPathForId(anyString())).thenReturn(Paths.get("baz"));
-        instance = new Repository("http://example.com/pubs/", fr, mStore, Collections.EMPTY_LIST, Collections.EMPTY_LIST, null);
+        instance = new Repository("http://example.com/pubs/", fr, mStore, 
+                Collections.EMPTY_LIST, Collections.EMPTY_LIST, new Properties());
         instance.taskManager = mock(TaskManager.class);
     }
     
