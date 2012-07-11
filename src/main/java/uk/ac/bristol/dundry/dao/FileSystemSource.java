@@ -54,7 +54,10 @@ public class FileSystemSource {
         Path sourcePath = getPath(sourceItemId);
         // Create context for these jobs
         JobDataMap jobData = new JobDataMap();
-        jobData.putAll(ImmutableMap.of(CopyTask.FROM, sourcePath, CopyTask.TO, depositLocation)); 
+        jobData.putAll(
+                ImmutableMap.of(
+                    CopyTask.FROM, sourcePath.toAbsolutePath().toString(),
+                    CopyTask.TO, depositLocation.toAbsolutePath().toString())); 
         return newJob(CopyTask.class)
                     .withIdentity(CopyTask.class.getName(), depositId)
                     .usingJobData(jobData)

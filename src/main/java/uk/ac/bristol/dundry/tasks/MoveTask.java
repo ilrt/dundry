@@ -25,10 +25,10 @@ public class MoveTask implements Job {
     @Override
     public void execute(JobExecutionContext jec) throws JobExecutionException {
         JobDataMap jobData = jec.getMergedJobDataMap();
-        Path from = (Path) jobData.get(FROM);
-        Path to = (Path) jobData.get(TO);
+        String from = jobData.getString(FROM);
+        String to = jobData.getString(TO);
         try {
-            Files.move(from, to);
+            Files.move(Paths.get(from), Paths.get(to));
         } catch (IOException ex) {
             throw new JobExecutionException("Move failed", ex);
         }

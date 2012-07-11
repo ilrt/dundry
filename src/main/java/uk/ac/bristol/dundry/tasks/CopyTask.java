@@ -26,10 +26,10 @@ public class CopyTask implements Job {
     @Override
     public void execute(JobExecutionContext jec) throws JobExecutionException {
         JobDataMap jobData = jec.getMergedJobDataMap();
-        Path from = (Path) jobData.get(FROM);
-        Path to = (Path) jobData.get(TO);
+        String from = jobData.getString(FROM);
+        String to = jobData.getString(TO);
         try {
-            copyDirectory(from, to);
+            copyDirectory(Paths.get(from), Paths.get(to));
             //log.info("COPIED, now sleeping.....");
             //Thread.sleep(30 * 1000);
         } catch (IOException ex) {
