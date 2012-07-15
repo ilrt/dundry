@@ -67,6 +67,10 @@
         </constructor-arg>
     </bean>
     
+    <bean class="uk.ac.bristol.dundry.dao.BTTracking">
+        <constructor-arg value="${repo.pubdir}"/>
+    </bean>
+    
     <bean class="uk.ac.bristol.dundry.webresources.providers.RdfResourceMappingProvider"
         scope="singleton">
         <constructor-arg>
