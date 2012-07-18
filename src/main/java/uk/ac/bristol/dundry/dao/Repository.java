@@ -79,7 +79,7 @@ public class Repository {
 
     public ResourceCollection getIds() {
         Model resultModel = ModelFactory.createDefaultModel();
-        ResultSet r = mdStore.query("select distinct ?g ?state ?title ?description ?source "
+        ResultSet r = mdStore.query("select distinct ?g ?state ?title ?description ?source ?project"
                 + "{ graph ?g1 { "
                 + "   ?g <http://vocab.bris.ac.uk/data/repository#state> ?state "
                 + "   OPTIONAL { ?g <http://purl.org/dc/terms/source> ?source } "
@@ -87,6 +87,7 @@ public class Repository {
                 + "  graph ?g2 { "
                 + "   ?g <http://purl.org/dc/terms/title> ?title ."
                 + "   OPTIONAL { ?g <http://purl.org/dc/terms/description> ?description } "
+                + "   OPTIONAL { ?g <http://vocab.bris.ac.uk/data/repository#project> ?project } "
                 + "  } "
                 + "}");
         List<Resource> ids = new LinkedList<>();
@@ -95,11 +96,15 @@ public class Repository {
             // get item and copy to resultModel
             Resource item = nxt.getResource("g").inModel(resultModel);
             item.addProperty(RDFS.label, nxt.get("title"));
+            item.addProperty(RepositoryVocab.state, nxt.get("state"));
             if (nxt.contains("source")) {
                 item.addProperty(DCTerms.source, nxt.get("source"));
             }
             if (nxt.contains("description")) {
                 item.addProperty(DCTerms.description, nxt.get("description"));
+            }
+            if (nxt.contains("project")) {
+                item.addProperty(RepositoryVocab.project, nxt.get("project"));
             }
             ids.add(item);
         }
