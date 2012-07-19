@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import javax.annotation.PreDestroy;
 import static org.quartz.JobBuilder.newJob;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
@@ -39,6 +40,12 @@ public class TaskManager {
     public TaskManager() throws SchedulerException {
         this.scheduler = StdSchedulerFactory.getDefaultScheduler();
         this.scheduler.start();
+    }
+    
+    @PreDestroy
+    public void destroy() throws SchedulerException {
+        log.info("Shutting down task manager");
+        scheduler.shutdown();
     }
     
     public /*List<JobExecutionContext>*/ List<Object> listAllTasks() throws SchedulerException {

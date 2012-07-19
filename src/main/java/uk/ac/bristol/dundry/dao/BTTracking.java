@@ -13,6 +13,7 @@ import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import javax.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -44,6 +45,18 @@ public class BTTracking {
     
     public ConcurrentMap<String, TrackedTorrent> getTorrents() {
         return trackedTorrents;
+    }
+    
+    @PreDestroy
+    public void destroy() throws InterruptedException {
+        log.info("Shutting down tracker");
+        
+        purger.interrupt();
+        purger.join();
+        
+        for (Client client: clients.values()) {
+            client.stop();
+        }
     }
     
     /**
@@ -114,10 +127,11 @@ public class BTTracking {
                 try {
                     Thread.sleep(30 * 1000);
                 } catch (InterruptedException ex) {
-                    log.error("Purger sleep disturbed", ex);
+                    log.info("Purger shutting down");
+                    return;
                 }
 
-                log.info("checking unfresh peers");
+                log.debug("checking unfresh peers");
                 for (TrackedTorrent torrent : torrents.values()) {
                     torrent.collectUnfreshPeers();
                 }
