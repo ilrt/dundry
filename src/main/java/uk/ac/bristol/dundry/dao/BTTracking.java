@@ -29,6 +29,7 @@ public class BTTracking {
     final Thread purger;
     private final ConcurrentMap<String, TrackedTorrent> trackedTorrents;
     private final ConcurrentMap<String, Client> clients;
+    private final ConcurrentMap<Path, Boolean> seenTorrentFiles;
     private final InetAddress address;
     private final String publishBase;
 
@@ -39,6 +40,7 @@ public class BTTracking {
         log.info("Address is {}", address.getHostAddress());
         trackedTorrents = new ConcurrentHashMap<>();
         clients = new ConcurrentHashMap<>();
+        seenTorrentFiles = new ConcurrentHashMap<>();
         loadNewTorrents(Paths.get(publishBase));
         purger = new Thread(new Purger(), "Torrent client purger");
         purger.start(); // may not be a good idea? Could quartz do this work instead?
@@ -81,8 +83,9 @@ public class BTTracking {
         }
 
         TrackedTorrent tracked = new TrackedTorrent(torrent);
-
-        trackedTorrents.put(torrentFile.toAbsolutePath().toString(), tracked);
+        
+        seenTorrentFiles.put(torrentFile.toAbsolutePath(), Boolean.TRUE);
+        trackedTorrents.put(tracked.getHexInfoHash(), tracked);
 
         Client client = new Client(address, shared);
         clients.put(torrent.getHexInfoHash(), client);
@@ -106,7 +109,7 @@ public class BTTracking {
                 Path torrentFile = findTorrent(pubDir, pubDir, base);
                 
                 if (torrentFile != null && 
-                        !trackedTorrents.containsKey(torrentFile.toAbsolutePath().toString())) {
+                        !seenTorrentFiles.containsKey(torrentFile.toAbsolutePath())) {
 
                     addTorrent(torrentFile, base);
                 }
