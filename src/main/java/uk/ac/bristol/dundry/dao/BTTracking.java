@@ -43,6 +43,7 @@ public class BTTracking {
         seenTorrentFiles = new ConcurrentHashMap<>();
         loadNewTorrents(Paths.get(publishBase));
         purger = new Thread(new Purger(), "Torrent client purger");
+        purger.setDaemon(true);
         purger.start(); // may not be a good idea? Could quartz do this work instead?
     }
 
