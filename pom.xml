@@ -12,6 +12,7 @@
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <netbeans.hint.deploy.server>gfv3ee6</netbeans.hint.deploy.server>
     </properties>
     
     <profiles>
@@ -261,7 +262,7 @@
         <dependency>
             <groupId>com.turn.ttorrent</groupId>
             <artifactId>ttorrent</artifactId>
-            <version>1.1.2</version>
+            <version>1.1.3-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
