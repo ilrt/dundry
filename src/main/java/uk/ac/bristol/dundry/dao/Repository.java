@@ -36,7 +36,7 @@ public class Repository {
     static final Logger log = LoggerFactory.getLogger(Repository.class);
     
     public enum State {
-        Created, Depositing, Deposited, Publishing, Published
+        Created, Depositing, Deposited, Publishing, Published, Deleted
     }
     
     // play it safe. radix of 36 is ideal 
@@ -89,6 +89,7 @@ public class Repository {
                 + "   OPTIONAL { ?g <http://purl.org/dc/terms/description> ?description } "
                 + "   OPTIONAL { ?g <http://vocab.bris.ac.uk/data/repository#project> ?project } "
                 + "  } "
+                + "  FILTER (?state != \"Deleted\") "
                 + "}");
         List<Resource> ids = new LinkedList<>();
         while (r.hasNext()) {
@@ -151,14 +152,16 @@ public class Repository {
     }
 
     /**
-     * Make a deposit in the
+     * Put content into the repository
      *
      * @param depositTask
      * @param id The repository id
      * @param source An identifier for the source (will be recorded with
      * deposit)
      */
-    public void makeDeposit(JobDetail depositTask, String id, String source) throws SchedulerException {
+    public void makeDeposit(JobDetail depositTask, String id, String source) throws SchedulerException { 
+        ensureState(id, EnumSet.of(State.Created));
+        
         Resource prov = getProvenanceMetadata(id);
         prov.addProperty(DCTerms.source, source);
         prov.addLiteral(DCTerms.dateSubmitted, Calendar.getInstance());
@@ -168,7 +171,9 @@ public class Repository {
                 Collections.singletonList(depositTask), postDepositJobs, jobProperties);
     }
 
-    public void publish(String id) throws SchedulerException {;
+    public void publish(String id) throws SchedulerException {
+        ensureState(id, EnumSet.of(State.Deposited));
+        
         Resource prov = getProvenanceMetadata(id);
         prov.addLiteral(DCTerms.date, Calendar.getInstance());
     
@@ -184,7 +189,20 @@ public class Repository {
                 MoveTask.FROM, getDepositPathForId(id).toAbsolutePath().toString(),
                 MoveTask.TO, getPublishPathForId(id).toAbsolutePath().toString());
     }
-
+    
+    /**
+     * Soft-delete a record.
+     * @param id The repository id
+     */
+    public void delete(String id) {
+        ensureState(id, EnumSet.of(State.Created, State.Deposited));
+        
+        Resource prov = getProvenanceMetadata(id);
+        prov.removeAll(RepositoryVocab.state);
+        prov.addLiteral(RepositoryVocab.state, State.Deleted.name());
+        updateProvenanceMetadata(id, prov);
+    }
+    
     /**
      * Start a process to move between states.
      * Less abstractly, kick off tasks that will result in deposit or publication
@@ -337,5 +355,22 @@ public class Repository {
         }
 
         return jobs;
+    }
+    
+    /**
+     * Check whether the state of id is one of allowed
+     * @param id
+     * @param allowed 
+     */
+    private void ensureState(String id, EnumSet<State> allowed) {
+        String state = getProvenanceMetadata(id).
+                getRequiredProperty(RepositoryVocab.state).getString();
+        
+        if (!allowed.contains(State.valueOf(state))) 
+            throw new IllegalArgumentException(String.format(
+                    "Not permitted in current state <%s> (allowed %s)",
+                    state,
+                    allowed
+                    ));
     }
 }

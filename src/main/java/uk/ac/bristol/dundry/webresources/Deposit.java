@@ -137,6 +137,8 @@ public class Deposit {
         // Does item exist?
         if (!repository.hasId(item)) return Response.status(Status.NOT_FOUND).build();
         
+        repository.delete(item);
+        
         return Response.ok().build();
     }
 }
