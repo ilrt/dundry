@@ -306,7 +306,17 @@ public class Repository {
     public String getPublishedURL(String id) {
         return publishURLBase + id;
     }
-
+    
+    /**
+     * Returns the status of a deposit
+     * @param id
+     * @return 
+     */
+    public State getState(String id) {
+        Resource r = getProvenanceMetadata(id);
+        return State.valueOf(r.getRequiredProperty(RepositoryVocab.state).getString());
+    }
+    
     /**
      * Takes an id and makes it suitable for external use by stripping off
      * leading 'repo:' if present
