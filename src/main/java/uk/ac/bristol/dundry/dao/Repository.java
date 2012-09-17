@@ -373,10 +373,8 @@ public class Repository {
      * @param allowed 
      */
     private void ensureState(String id, EnumSet<State> allowed) {
-        String state = getProvenanceMetadata(id).
-                getRequiredProperty(RepositoryVocab.state).getString();
-        
-        if (!allowed.contains(State.valueOf(state))) 
+        State state = this.getState(id);
+        if (!allowed.contains(state)) 
             throw new IllegalArgumentException(String.format(
                     "Not permitted in current state <%s> (allowed %s)",
                     state,

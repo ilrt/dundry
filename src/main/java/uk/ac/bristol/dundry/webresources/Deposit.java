@@ -83,6 +83,15 @@ public class Deposit {
         return Response.ok(repository.getMetadata(item)).build();
     }
     
+    @Path("{item}/state")
+    @GET
+    public Response retrieveState(@PathParam("item") String item) {
+        // Does item exist?
+        if (!repository.hasId(item)) return Response.status(Status.NOT_FOUND).build();
+        
+        return Response.ok(repository.getState(item).name()).build();
+    }
+    
     @Path("{item}")
     @PUT
     public Response update(@PathParam("item") String item, Resource data) {
