@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.ac.bristol.dundry.dao.FileSystemSource;
 import uk.ac.bristol.dundry.dao.Repository;
+import uk.ac.bristol.dundry.model.Value;
 
 /**
  *
@@ -89,7 +90,7 @@ public class Deposit {
         // Does item exist?
         if (!repository.hasId(item)) return Response.status(Status.NOT_FOUND).build();
         
-        return Response.ok(repository.getState(item).name()).build();
+        return Response.ok(new Value(repository.getState(item))).build();
     }
     
     @Path("{item}")

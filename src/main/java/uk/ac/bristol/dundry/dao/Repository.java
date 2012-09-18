@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.Map.Entry;
+import javax.xml.bind.annotation.XmlRootElement;
 import org.quartz.Job;
 import static org.quartz.JobBuilder.newJob;
 import org.quartz.JobDataMap;
@@ -35,8 +36,8 @@ public class Repository {
     
     static final Logger log = LoggerFactory.getLogger(Repository.class);
     
-    public enum State {
-        Created, Depositing, Deposited, Publishing, Published, Deleted
+    public static enum State {
+        Created, Depositing, Deposited, Publishing, Published, Deleted       
     }
     
     // play it safe. radix of 36 is ideal 
