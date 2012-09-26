@@ -10,3 +10,19 @@
 	sgen:input <opmv-20101006.ttl>;
 	sgen:encoding "TURTLE";
 .
+
+[] a sgen:Config ;
+	sgen:owl true;
+	sgen:package "uk.ac.bristol.dundry.vocabs";
+	sgen:output "src/main/java";
+	sgen:classname "RepositoryVocab";
+	sgen:input <repository.ttl>;
+.
+
+[] a sgen:Config ;
+	sgen:owl true;
+	sgen:package "uk.ac.bristol.dundry.vocabs";
+	sgen:output "src/main/java";
+	sgen:classname "Bibo";
+	sgen:input <bibo.xml.owl>;
+.

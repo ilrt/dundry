@@ -78,6 +78,7 @@
                 <value>vocabs/dcterms.rdf</value>
                 <value>vocabs/repository.ttl</value>
                 <value>vocabs/opmv-20101006.ttl</value>
+                <value>vocabs/bibo.xml.owl</value>
             </list>
         </constructor-arg>
         <constructor-arg>
@@ -85,7 +86,9 @@
                 <value>contributors</value>
                 <value>creators</value>
                 <value>subjects</value>
+                <value>identifiers</value>
                 <value>references</value>
+                <value>isReferencedBy</value>
             </list>
         </constructor-arg>
     </bean>

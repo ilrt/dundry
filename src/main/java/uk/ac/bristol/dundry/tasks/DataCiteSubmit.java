@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.bristol.dundry.dao.MetadataStoreDS;
 import uk.ac.bristol.dundry.dao.Repository;
+import uk.ac.bristol.dundry.vocabs.Bibo;
 
 /**
  *
@@ -70,7 +71,7 @@ public class DataCiteSubmit extends JobBase {
             if ((sc / 100) != 2) {
                 log.info("Request failed ({}): {}\n", sc, res);
             } else {
-                prov.addProperty(DCTerms.identifier, doi);
+                prov.addProperty(Bibo.doi, doi);
                 log.info("Request succeeded ({}): {}\n", sc, res);
             }
             

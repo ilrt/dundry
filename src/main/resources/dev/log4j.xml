@@ -39,7 +39,12 @@
         <logger name="java.sql">
                 <level value="debug" />
         </logger>
-
+        
+        <!-- ttorrent logs info messages constantly -->
+        <logger name="com.turn.ttorrent">
+            <level value="warn" />
+        </logger>
+        
 	<!-- Root Logger -->
 	<root>
 		<priority value="info" />
