@@ -172,7 +172,7 @@ public class Repository {
                 Collections.singletonList(depositTask), postDepositJobs, jobProperties);
     }
 
-    public void publish(String id) throws SchedulerException {
+    public void publish(String id, String target) throws SchedulerException {
         ensureState(id, EnumSet.of(State.Deposited));
         
         Resource prov = getProvenanceMetadata(id);
