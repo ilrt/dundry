@@ -1,15 +1,15 @@
 @prefix sgen: <http://jena.hpl.hp.com/2003/04/schemagen#> .
 @prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
 
-[] a sgen:Config ;
-	sgen:owl true;
-	sgen:package "uk.ac.bristol.dundry.vocabs";
-	sgen:output "src/main/java";
-	sgen:classname "OPMV";
-	# local copy of <http://open-biomed.sourceforge.net/opmv/opmv-20101006.owl>
-	sgen:input <opmv-20101006.ttl>;
-	sgen:encoding "TURTLE";
-.
+#[] a sgen:Config ;
+#	sgen:owl true;
+#	sgen:package "uk.ac.bristol.dundry.vocabs";
+#	sgen:output "src/main/java";
+#	sgen:classname "OPMV";
+#	# local copy of <http://open-biomed.sourceforge.net/opmv/opmv-20101006.owl>
+#	sgen:input <opmv-20101006.ttl>;
+#	sgen:encoding "TURTLE";
+#.
 
 [] a sgen:Config ;
 	sgen:owl true;
@@ -19,10 +19,10 @@
 	sgen:input <repository.ttl>;
 .
 
-[] a sgen:Config ;
-	sgen:owl true;
-	sgen:package "uk.ac.bristol.dundry.vocabs";
-	sgen:output "src/main/java";
-	sgen:classname "Bibo";
-	sgen:input <bibo.xml.owl>;
-.
+#[] a sgen:Config ;
+#	sgen:owl true;
+#	sgen:package "uk.ac.bristol.dundry.vocabs";
+#	sgen:output "src/main/java";
+#	sgen:classname "Bibo";
+#	sgen:input <bibo.xml.owl>;
+#.

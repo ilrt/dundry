@@ -17,3 +17,8 @@
 	a rdf:Property ;
 	rdfs:label "Depositor"@en ;
 	rdfs:comment "The individual who made this deposit."@en .
+
+<#base-directory>
+	a rdf:Property ;
+	rdfs:label "Base directory"@en ;
+	rdfs:comment "The base directory for file storage associated with this deposit."@en .
