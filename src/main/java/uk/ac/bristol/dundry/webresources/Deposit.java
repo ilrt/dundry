@@ -128,14 +128,13 @@ public class Deposit {
     // Publish
     @Path("{item}/publish")
     @POST
-    @Consumes("application/x-www-form-urlencoded")
-    public Response publish(@PathParam("item") String item, @FormParam("target") String target) throws SchedulerException {
-        log.info("Publish item {} to {}", item, target);
+    public Response publish(@PathParam("item") String item) throws SchedulerException {
+        log.info("Publish item {}", item);
         
         // Check we have something to add to
         if (!repository.hasId(item)) return Response.status(Response.Status.NOT_FOUND).build();
                 
-        repository.publish(item, target);
+        repository.publish(item);
         
         return Response.ok().build();
     }
