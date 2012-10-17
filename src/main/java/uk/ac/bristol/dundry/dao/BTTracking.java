@@ -104,6 +104,12 @@ public class BTTracking {
     private void loadNewTorrents(Path base)
             throws IOException, NoSuchAlgorithmException {
         log.info("Looking for new torrents in {}", base);
+        
+        if (!Files.exists(base)) {
+            log.warn("Cannot scan <{}> for new torrents. Doesn't exist.", base);
+            return;
+        }
+        
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(base)) {
             for (Path pubDir : stream) {
                 // Find a torrent for this dir if possible

@@ -135,21 +135,23 @@ public class Repository {
         String id = baseEncoded.replace("-", ""); // remove sign bits
 
         // Now we have an id rename the subject
-        ResourceUtils.renameResource(subject, toInternalId(id));
+        Resource renamed = ResourceUtils.renameResource(subject, toInternalId(id));
         
         // Get base dir. It is allowed to be missing if using absolute repo paths
-        String base = (subject.hasProperty(RepositoryVocab.base_directory)) ?
-                subject.getProperty(RepositoryVocab.base_directory).getString() :
+        String base = (renamed.hasProperty(RepositoryVocab.base_directory)) ?
+                renamed.getProperty(RepositoryVocab.base_directory).getString() :
                 null;
+        
         Path repoDir = fileRepo.create(id, base);
 
         Resource prov = ModelFactory.createDefaultModel().createResource(toInternalId(id));
         prov.addLiteral(DCTerms.dateSubmitted, Calendar.getInstance());
         prov.addProperty(RepositoryVocab.depositor, creator);
+        if (base != null) prov.addProperty(RepositoryVocab.base_directory, base);
         prov.addProperty(RepositoryVocab.state, State.Created.name());
 
         // Create mutable and immutable graphs
-        mdStore.create(toInternalId(id), subject.getModel()); // often a noop
+        mdStore.create(toInternalId(id), renamed.getModel()); // often a noop
         mdStore.create(toInternalId(id) + "/prov", prov.getModel());
 
         return id;

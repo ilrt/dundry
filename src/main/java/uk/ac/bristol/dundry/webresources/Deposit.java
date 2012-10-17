@@ -68,7 +68,11 @@ public class Deposit {
     @Consumes("application/json")
     public Response create(Resource record) throws IOException, SchedulerException {
         
-        log.info("Create deposit: {}", record.getModel());
+        log.info("Create from record title: {} desc: {} base: {}", new Object[]{
+            record.getProperty(DCTerms.title),
+            record.getProperty(DCTerms.description),
+            record.getProperty(RepositoryVocab.base_directory)
+        });
                 
         // TODO: username
         String id = repository.create("unknown", record);
