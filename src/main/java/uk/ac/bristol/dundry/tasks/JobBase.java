@@ -11,7 +11,9 @@ import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.bristol.dundry.dao.Repository;
+import uk.ac.bristol.dundry.dao.Repository.State;
 import uk.ac.bristol.dundry.vocabs.OPMV;
+import uk.ac.bristol.dundry.vocabs.RepositoryVocab;
 
 /**
  * Useful base class which should be used for all dundry tasks.
@@ -51,8 +53,13 @@ public abstract class JobBase implements Job {
             log.debug("Running job {} with arguments: ID => '{}'",
                 this.getClass(), jobData.getString(ID));
         }
+        // If state is _not_ published location is given by deposit path
+        State state = repo.getState(id);
         
-        execute(repo, item, prov, id, repo.getDepositPathForId(id), jobData);
+        Path currentPath = (state == State.Published) ?
+                repo.getPublishPathForId(id) : repo.getDepositPathForId(id);
+        
+        execute(repo, item, prov, id, currentPath, jobData);
         
         task.addLiteral(OPMV.wasEndedAt, Calendar.getInstance());
         

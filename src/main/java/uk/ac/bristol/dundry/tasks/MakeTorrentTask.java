@@ -29,8 +29,8 @@ public class MakeTorrentTask extends JobBase {
     public void execute(Repository repo, Resource item, Resource prov, String id,
             Path root, JobDataMap jobData) throws JobExecutionException {
         try {
-            makeTorrentFile(repo.getPublishPathForId(id),
-                    repo.getPublishPathForId(id).resolve(id + ".torrent"),
+            makeTorrentFile(root,
+                    root.resolve(id + ".torrent"),
                     jobData.getString("torrent.tracker"));
         } catch (NoSuchAlgorithmException | InterruptedException |
                 IOException | URISyntaxException ex) {

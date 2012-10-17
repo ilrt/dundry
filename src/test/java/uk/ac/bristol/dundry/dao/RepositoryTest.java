@@ -39,8 +39,8 @@ public class RepositoryTest {
         RiotLoader.read(in, ds, Lang.TRIG, "http://example.com/ds");
         MetadataStore mStore = new MetadataStoreDS(DatasetImpl.wrap(ds));
         FileRepository fr = mock(FileRepository.class);
-        when(fr.create(anyString())).thenReturn(Paths.get("bar"));
-        when(fr.depositPathForId(anyString())).thenReturn(Paths.get("baz"));
+        when(fr.create(anyString(), anyString())).thenReturn(Paths.get("bar"));
+        when(fr.depositPathForId(anyString(), anyString())).thenReturn(Paths.get("baz"));
         instance = new Repository("http://example.com/pubs/", fr, mStore, 
                 Collections.EMPTY_LIST, Collections.EMPTY_LIST, new Properties());
         instance.taskManager = mock(TaskManager.class);

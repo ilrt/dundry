@@ -10,25 +10,35 @@ import java.nio.file.Paths;
  * @author Damian Steer <d.steer@bris.ac.uk>
  */
 public class FileRepository {
+    private final String depositPath;
+    private final String publishPath;
     
-    private final Path depositRoot;
-    private final Path publishRoot;
-    
-    public FileRepository(String depositBase, String publishBase) {
-        depositRoot = Paths.get(depositBase);
-        publishRoot = Paths.get(publishBase);
+    /**
+     * Create a file repository
+     * deposit and publish path may include formatting characters
+     * which will use the deposit's base value in calculating the path
+     * @param depositPath
+     * @param publishPath 
+     */
+    public FileRepository(String depositPath, String publishPath) {
+        this.depositPath = depositPath;
+        this.publishPath = publishPath; 
     }
     
-    public Path create(String id) throws IOException {
-        Path target = Files.createDirectory(depositRoot.resolve(id));
+    public Path create(String id, String base) throws IOException {
+        Path target = Files.createDirectory(getPath(depositPath, base, id));
         return target;
     }
     
-    public Path depositPathForId(String id) {
-        return depositRoot.resolve(id);
+    public Path depositPathForId(String id, String base) {
+        return getPath(depositPath, base, id);
     }
     
-    public Path publishPathForId(String id) {
-        return publishRoot.resolve(id);
+    public Path publishPathForId(String id, String base) {
+        return getPath(publishPath, base, id);
     }
+    
+    private Path getPath(String pathFormat, String base, String id) {
+        return Paths.get(String.format(pathFormat, base), id); 
+   }
 }

@@ -4,8 +4,8 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.util.ResourceUtils;
 import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.RDFS;
@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.Map.Entry;
-import javax.xml.bind.annotation.XmlRootElement;
 import org.quartz.Job;
 import static org.quartz.JobBuilder.newJob;
 import org.quartz.JobDataMap;
@@ -137,8 +136,12 @@ public class Repository {
 
         // Now we have an id rename the subject
         ResourceUtils.renameResource(subject, toInternalId(id));
-
-        Path repoDir = fileRepo.create(id);
+        
+        // Get base dir. It is allowed to be missing if using absolute repo paths
+        String base = (subject.hasProperty(RepositoryVocab.base_directory)) ?
+                subject.getProperty(RepositoryVocab.base_directory).getString() :
+                null;
+        Path repoDir = fileRepo.create(id, base);
 
         Resource prov = ModelFactory.createDefaultModel().createResource(toInternalId(id));
         prov.addLiteral(DCTerms.dateSubmitted, Calendar.getInstance());
@@ -177,7 +180,7 @@ public class Repository {
         
         Resource prov = getProvenanceMetadata(id);
         prov.addLiteral(DCTerms.date, Calendar.getInstance());
-    
+        
         // Add the move task. This is the primary task.
         List<Class<? extends Job>> jobs = new ArrayList<>();
         jobs.add(MoveTask.class);
@@ -297,11 +300,12 @@ public class Repository {
     }
 
     public Path getDepositPathForId(String id) {
-        return fileRepo.depositPathForId(id);
+        return fileRepo.depositPathForId(id, getBase(id));
     }
 
     public Path getPublishPathForId(String id) {
-        return fileRepo.publishPathForId(id);
+        String base = getProvenanceMetadata(id).getRequiredProperty(RepositoryVocab.base_directory).getString();
+        return fileRepo.publishPathForId(id, getBase(id));
     }
 
     public String getPublishedURL(String id) {
@@ -316,6 +320,12 @@ public class Repository {
     public State getState(String id) {
         Resource r = getProvenanceMetadata(id);
         return State.valueOf(r.getRequiredProperty(RepositoryVocab.state).getString());
+    }
+    
+    public String getBase(String id) {
+        Resource r = getProvenanceMetadata(id);
+        Statement base = r.getProperty(RepositoryVocab.base_directory);
+        return (base == null) ? null : base.getString();
     }
     
     /**

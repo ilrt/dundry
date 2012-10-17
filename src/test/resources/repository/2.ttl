@@ -1,4 +1,5 @@
 @prefix : <http://example.com/#> .
 @prefix dc: <http://purl.org/dc/terms/> .
+@prefix repo: <http://vocab.bris.ac.uk/data/repository#> .
 
-<repo:2> dc:title "2" ; dc:description "2"
+<repo:2> dc:title "2" ; dc:description "2" ; repo:state "Created" .

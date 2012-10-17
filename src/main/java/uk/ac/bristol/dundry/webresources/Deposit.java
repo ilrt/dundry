@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import uk.ac.bristol.dundry.dao.FileSystemSource;
 import uk.ac.bristol.dundry.dao.Repository;
 import uk.ac.bristol.dundry.model.Value;
+import uk.ac.bristol.dundry.vocabs.RepositoryVocab;
 
 /**
  *
@@ -49,14 +50,16 @@ public class Deposit {
     @Consumes("application/x-www-form-urlencoded")
     public Response create(
             @FormParam("title") String title,
-            @FormParam("description") String description) throws IOException, SchedulerException {
+            @FormParam("description") String description,
+            @FormParam("base") String base) throws IOException, SchedulerException {
                 
-        log.info("Create title: {} desc: {}", title, description);
+        log.info("Create title: {} desc: {} base: {}", new String[]{title, description, base});
         
         Model model = ModelFactory.createDefaultModel();
         Resource record = model.createResource();
         record.addProperty(DCTerms.title, title);
         record.addProperty(DCTerms.description, description);
+        record.addProperty(RepositoryVocab.base_directory, base);
         
         return create(record);
     }
