@@ -47,7 +47,7 @@ public class CopyTask implements Job {
      */
     protected Path copyDirectory(final Path from, final Path to) throws IOException {
         
-        log.info("Copy {} to {}", from, to);
+        log.debug("Copy {} to {}", from, to);
         
         // We relativise paths to the parent of from
         // So /ex/a/b becomes /ex/a and we copy b directory

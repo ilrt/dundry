@@ -4,7 +4,6 @@ import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.core.DatasetImpl;
-import com.hp.hpl.jena.vocabulary.DCTerms;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Path;

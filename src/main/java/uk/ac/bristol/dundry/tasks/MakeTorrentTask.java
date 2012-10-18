@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.bristol.dundry.dao.Repository;
 
 /**
@@ -24,13 +26,16 @@ import uk.ac.bristol.dundry.dao.Repository;
  * @author Damian Steer <d.steer@bris.ac.uk>
  */
 public class MakeTorrentTask extends JobBase {
-
+    
+    final static Logger log = LoggerFactory.getLogger(MakeTorrentTask.class);
+    
     @Override
     public void execute(Repository repo, Resource item, Resource prov, String id,
             Path root, JobDataMap jobData) throws JobExecutionException {
         try {
-            makeTorrentFile(root,
-                    root.resolve(id + ".torrent"),
+            Path torrentPath = root.resolve(id + ".torrent");
+            log.debug("Make torrent file {} from <{}>", torrentPath, root);
+            makeTorrentFile(root, torrentPath,
                     jobData.getString("torrent.tracker"));
         } catch (NoSuchAlgorithmException | InterruptedException |
                 IOException | URISyntaxException ex) {

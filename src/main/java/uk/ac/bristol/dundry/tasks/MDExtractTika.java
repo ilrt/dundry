@@ -54,6 +54,7 @@ public class MDExtractTika extends JobBase {
     @Override
     public void execute(Repository repo, Resource item, Resource prov, String id, Path root, JobDataMap jobData) {
         try {
+            log.debug("Extract metadata from <{}>", root);
             Files.walkFileTree(root, new MDExtractVisitor(root, item, prov));
         } catch (IOException ex) {
             log.error("Error extracting metadata under {}: {}", root, ex);

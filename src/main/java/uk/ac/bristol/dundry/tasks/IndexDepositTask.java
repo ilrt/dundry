@@ -32,6 +32,7 @@ public class IndexDepositTask extends JobBase {
             throws JobExecutionException
     {
         try {
+            log.debug("Indexing directory: <{}>", root);
             walkDirectory(root, prov);
         } catch (IOException ex) {
             throw new JobExecutionException("Index walk failed", ex);

@@ -28,6 +28,7 @@ public class MoveTask implements Job {
         String from = jobData.getString(FROM);
         String to = jobData.getString(TO);
         try {
+            log.debug("Move <{}> to <{}>", Paths.get(from), Paths.get(to));
             Files.move(Paths.get(from), Paths.get(to));
         } catch (IOException ex) {
             throw new JobExecutionException("Move failed", ex);
