@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import uk.ac.bristol.dundry.dao.Repository;
 import uk.ac.bristol.dundry.dao.Repository.State;
 import uk.ac.bristol.dundry.vocabs.OPMV;
-import uk.ac.bristol.dundry.vocabs.RepositoryVocab;
 
 /**
  * Useful base class which should be used for all dundry tasks.
@@ -53,10 +52,10 @@ public abstract class JobBase implements Job {
             log.debug("Running job {} with arguments: ID => '{}'",
                 this.getClass(), jobData.getString(ID));
         }
-        // If state is _not_ published location is given by deposit path
+        // If state is _not_ published / ing location is given by deposit path
         State state = repo.getState(id);
         
-        Path currentPath = (state == State.Published) ?
+        Path currentPath = (state == State.Publishing || state == State.Published) ?
                 repo.getPublishPathForId(id) : repo.getDepositPathForId(id);
         
         execute(repo, item, prov, id, currentPath, jobData);

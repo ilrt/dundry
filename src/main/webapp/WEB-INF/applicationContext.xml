@@ -60,6 +60,7 @@
               <list>
                   <value>uk.ac.bristol.dundry.tasks.DataCiteSubmit</value>
                   <value>uk.ac.bristol.dundry.tasks.MakeTorrentTask</value>
+                  <value>uk.ac.bristol.dundry.tasks.SymLinkTask</value>
               </list>
         </constructor-arg>
         <constructor-arg>
@@ -68,7 +69,7 @@
     </bean>
     
     <bean class="uk.ac.bristol.dundry.dao.BTTracking">
-        <constructor-arg value="${repo.pubdir}"/>
+        <constructor-arg value="${torrent.scandir}"/>
     </bean>
     
     <bean class="uk.ac.bristol.dundry.webresources.providers.RdfResourceMappingProvider"
