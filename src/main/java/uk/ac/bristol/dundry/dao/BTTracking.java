@@ -73,6 +73,13 @@ public class BTTracking {
     public void addTorrent(Path torrentFile, Path base) throws IOException, NoSuchAlgorithmException {
         log.info("Adding torrent {}", torrentFile);
         
+        // Ensure we are using real paths -- no relative and / or symlink
+        // nonsense
+        torrentFile = torrentFile.toRealPath();
+        base = base.toRealPath();
+        
+        log.debug("Loading torrent <{}> using base <{}>", torrentFile, base);
+        
         // Load as a seeder
         Torrent torrent = Torrent.load(torrentFile.toFile(), base.toFile(), true);
 
@@ -115,16 +122,17 @@ public class BTTracking {
                 // Find a torrent for this dir if possible
                 Path torrentFile = findTorrent(pubDir, pubDir, base);
                 
+                // Check real path to avoid relative and sym link issues
                 if (torrentFile != null && 
-                        !seenTorrentFiles.containsKey(torrentFile.toAbsolutePath())) {
-
-                    addTorrent(torrentFile, base);
+                        !seenTorrentFiles.containsKey(torrentFile.toRealPath())) {
+                    // Real path-ify to avoid case where base contains symlinks
+                    addTorrent(torrentFile, pubDir.toRealPath().getParent());
                 }
             }
         }
     }
 
-    private Path findTorrent(Path forDir, Path... locations) {
+    private Path findTorrent(Path forDir, Path... locations) throws IOException {
         Path toFind = Paths.get(forDir.getFileName().toString() + ".torrent");
 
         for (Path location : locations) {
