@@ -5,17 +5,21 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
-import org.quartz.JobDetail;
-import uk.ac.bristol.dundry.model.Tree;
-import uk.ac.bristol.dundry.tasks.CopyTask;
 import static org.quartz.JobBuilder.newJob;
 import org.quartz.JobDataMap;
+import org.quartz.JobDetail;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import uk.ac.bristol.dundry.model.Tree;
+import uk.ac.bristol.dundry.tasks.CopyTask;
 
 /**
  *
  * @author Damian Steer <d.steer@bris.ac.uk>
  */
 public class FileSystemSource {
+    
+    final static Logger log = LoggerFactory.getLogger(FileSystemSource.class);
     
     public final static Tree<String> NONE = new Tree<>();
     
@@ -70,7 +74,7 @@ public class FileSystemSource {
      * @return 
      */
     public Path getRelativePath(Path path) {
-        return root.relativize(path);
+        return root.resolve(path);
     }
     
     /**
@@ -80,7 +84,9 @@ public class FileSystemSource {
      * @throws IOException 
      */
     public Tree<String> getTreeAt(String base) throws IOException {
-        return getTreeAt(getPath(base));
+        Path path = getPath(base);
+        log.debug("Get path contents for <{}> ({})", base, path);
+        return getTreeAt(path);
     }
     
     /**

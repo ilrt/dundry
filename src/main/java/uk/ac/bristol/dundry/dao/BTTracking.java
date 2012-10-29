@@ -110,7 +110,7 @@ public class BTTracking {
      */
     private void loadNewTorrents(Path base)
             throws IOException, NoSuchAlgorithmException {
-        log.info("Looking for new torrents in {}", base);
+        log.debug("Looking for new torrents in {}", base);
         
         if (!Files.exists(base)) {
             log.warn("Cannot scan <{}> for new torrents. Doesn't exist.", base);
