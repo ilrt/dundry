@@ -48,7 +48,7 @@ public class Tree<T> {
     }
     
     private StringBuilder buildString(String indent, StringBuilder in) {
-        in.append(indent).append("[").append(node.toString()).append("]\n");
+        in.append(indent).append("[").append(node).append("]\n");
         for (Tree<T> c: children) c.buildString(indent + " ", in);
         return in;
     }
