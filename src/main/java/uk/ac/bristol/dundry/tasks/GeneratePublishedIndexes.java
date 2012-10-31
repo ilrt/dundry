@@ -45,8 +45,11 @@ public class GeneratePublishedIndexes extends JobBase {
         String footerFilename = jobData.getString("indexpublish.footerfilename");
         String rdfFilename = jobData.getString("indexpublish.rdffilename");
         
-        log.info("Generate index for publishing: {} {} {} {} {} {} {}",
+        log.info("Generate index for publishing: '{}' <{}> <{}> <{}> <{}> <{}> <{}>",
                 new String[]{id, templateBase, headerTemplate, footerTemplate, headerFilename, footerFilename, rdfFilename});
+        
+        // Get item metadata
+        Resource metadata = repo.getMetadata(id);
         
         // Make a freemarker configuration
         Configuration conf = new Configuration();
@@ -55,9 +58,9 @@ public class GeneratePublishedIndexes extends JobBase {
         
         // Our model for rendering
         Map<String, String> model = ImmutableMap.of(
-            "title", getValue(item, DCTerms.title), 
-            "description", getValue(item, DCTerms.description),
-            "doi", getValue(item, Bibo.doi)
+            "title", getValue(metadata, DCTerms.title), 
+            "description", getValue(metadata, DCTerms.description),
+            "doi", getValue(metadata, Bibo.doi)
         );
         
         // Write header and footer
@@ -68,7 +71,7 @@ public class GeneratePublishedIndexes extends JobBase {
         Path rdfOutputTarget = root.resolve(rdfFilename);
         try (OutputStream out = Files.newOutputStream(rdfOutputTarget)) {
             log.debug("Writing mode to {}", rdfOutputTarget); 
-            item.getModel().write(out, "RDF/XML-ABBREV", item.getURI());
+            metadata.getModel().write(out, "RDF/XML-ABBREV", item.getURI());
         } catch (IOException ex) {
             log.error("Issue writing rdf file", ex);
             throw new JobExecutionException("Problem writing rdf file", ex);
@@ -98,9 +101,9 @@ public class GeneratePublishedIndexes extends JobBase {
         Model data = ModelFactory.createDefaultModel();
         Resource r = data.createResource("repo:xkjkj989890asd");
         
-        r.addLiteral(DCTerms.title, "Test title");
-        r.addLiteral(DCTerms.description, "And this is a description");
-        //r.addLiteral(Bibo.doi, "10.142/xkjkj989890asd");
+        r.addProperty(DCTerms.title, "Test title");
+        r.addProperty(DCTerms.description, "And this is a description");
+        //r.addProperty(Bibo.doi, "10.142/xkjkj989890asd");
         
         GeneratePublishedIndexes instance = new GeneratePublishedIndexes();
         
