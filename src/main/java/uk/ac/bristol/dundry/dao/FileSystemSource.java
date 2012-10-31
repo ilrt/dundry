@@ -74,7 +74,7 @@ public class FileSystemSource {
      * @return 
      */
     public Path getRelativePath(Path path) {
-        return root.resolve(path);
+        return root.relativize(path);
     }
     
     /**
@@ -114,5 +114,13 @@ public class FileSystemSource {
         }
         
         return new Tree(label, subDirs);
-    } 
+    }
+    
+    public static void main(String... args) throws IOException {
+        FileSystemSource instance = new FileSystemSource("test-fs");
+        Path p = instance.getPath("test-fs/RDSF_MV/nfs3-exports/marfc-cregan-2011/ACRC_Test_Area/export/Data-Bris/The Advisory Circle");
+        System.err.println(p);
+        Tree<String> t = instance.getTreeAt("test-fs/RDSF_MV/nfs3-exports/marfc-cregan-2011/ACRC_Test_Area/export/Data-Bris");
+        System.err.println(t);
+    }
 }
