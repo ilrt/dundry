@@ -67,8 +67,8 @@ public class BTTracker {
         @Context HttpServletRequest req
             ) throws UnsupportedEncodingException, IOException, MessageValidationException {
         
-        log.debug("info {} peer {} ip {} port {} up {} down {} left {} event {} numwant {} compact {} nopeerid {}",
-                new Object[]{infoHashBroken, peerIdBroken, ip, port, uploaded, downloaded, left, eventName, numwant, compact, noPeerId});
+        //log.debug("info {} peer {} ip {} port {} up {} down {} left {} event {} numwant {} compact {} nopeerid {}",
+        //        new Object[]{infoHashBroken, peerIdBroken, ip, port, uploaded, downloaded, left, eventName, numwant, compact, noPeerId});
          
         // Fix up request params
         
@@ -79,6 +79,8 @@ public class BTTracker {
         String infoHash = Hex.encodeHex(getParam("info_hash", rawQuery));
         byte[] peerId = getParam("peer_id", rawQuery);
         String peerIdHash = Hex.encodeHex(peerId);
+        
+        if (log.isDebugEnabled()) log.debug("peer {} ip {} port {}", new Object[] {peerIdHash, ip, port});
         
         if (ip.isEmpty()) {
             // TODO: I seem to have an ipv6 issue with loopback
