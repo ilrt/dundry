@@ -24,7 +24,7 @@ public class SymLinkTask extends JobBase {
     final static Logger log = LoggerFactory.getLogger(SymLinkTask.class);
     
     // Liberal permission for link
-    final static FileAttribute<Set<PosixFilePermission>> PERMISSION = asFileAttribute(fromString("rwxrwxr-x"));
+    //final static FileAttribute<Set<PosixFilePermission>> PERMISSION = asFileAttribute(fromString("rwxrwxr-x"));
     
     public final static String LINK_BASE = "symlink.base";
     
@@ -36,7 +36,7 @@ public class SymLinkTask extends JobBase {
         Path target = root.toAbsolutePath(); // play it safe here
         log.debug("Link <{}> to <{}>", target, link);
         try {
-            Files.createSymbolicLink(link, target, PERMISSION);
+            Files.createSymbolicLink(link, target); //, PERMISSION);
         } catch (IOException ex) {
             log.error("Issue linking " + target + " to " + link, ex);
         }
