@@ -31,9 +31,9 @@ import uk.ac.bristol.dundry.vocabs.Bibo;
  * 
  * @author pldms
  */
-public class GeneratePublishedIndexes extends JobBase {
+public class GenerateApacheIndexes extends JobBase {
     
-    final static Logger log = LoggerFactory.getLogger(GeneratePublishedIndexes.class);
+    final static Logger log = LoggerFactory.getLogger(GenerateApacheIndexes.class);
     
     @Override
     public void execute(Repository repo, Resource item, Resource prov, String id, Path root, JobDataMap jobData) throws JobExecutionException {
@@ -53,7 +53,7 @@ public class GeneratePublishedIndexes extends JobBase {
         
         // Make a freemarker configuration
         Configuration conf = new Configuration();
-        conf.setClassForTemplateLoading(GeneratePublishedIndexes.class, templateBase);
+        conf.setClassForTemplateLoading(GenerateApacheIndexes.class, templateBase);
         conf.setObjectWrapper(new DefaultObjectWrapper());
         
         // Our model for rendering
@@ -105,7 +105,7 @@ public class GeneratePublishedIndexes extends JobBase {
         r.addProperty(DCTerms.description, "And this is a description");
         //r.addProperty(Bibo.doi, "10.142/xkjkj989890asd");
         
-        GeneratePublishedIndexes instance = new GeneratePublishedIndexes();
+        GenerateApacheIndexes instance = new GenerateApacheIndexes();
         
         JobDataMap jd = new JobDataMap();
         jd.put("indexpublish.templatebase", "/templates");
