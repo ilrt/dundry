@@ -61,8 +61,8 @@
                   <value>uk.ac.bristol.dundry.tasks.DataCiteSubmit</value>
                   <value>uk.ac.bristol.dundry.tasks.MakeTorrentTask</value>
                   <value>uk.ac.bristol.dundry.tasks.SymLinkTask</value>
-                  <value>uk.ac.bristol.dundry.tasks.EnsurePublicPermissions</value>
                   <value>uk.ac.bristol.dundry.tasks.GenerateApacheIndexes</value>
+                  <value>uk.ac.bristol.dundry.tasks.EnsurePublicPermissions</value>
               </list>
         </constructor-arg>
         <constructor-arg>
