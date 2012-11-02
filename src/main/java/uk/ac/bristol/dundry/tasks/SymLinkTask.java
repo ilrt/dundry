@@ -5,10 +5,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.FileAttribute;
-import java.nio.file.attribute.PosixFilePermission;
-import static java.nio.file.attribute.PosixFilePermissions.*;
-import java.util.Set;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
@@ -23,9 +19,6 @@ public class SymLinkTask extends JobBase {
     
     final static Logger log = LoggerFactory.getLogger(SymLinkTask.class);
     
-    // Liberal permission for link
-    //final static FileAttribute<Set<PosixFilePermission>> PERMISSION = asFileAttribute(fromString("rwxrwxr-x"));
-    
     public final static String LINK_BASE = "symlink.base";
     
     @Override
@@ -36,7 +29,7 @@ public class SymLinkTask extends JobBase {
         Path target = root.toAbsolutePath(); // play it safe here
         log.debug("Link <{}> to <{}>", target, link);
         try {
-            Files.createSymbolicLink(link, target); //, PERMISSION);
+            Files.createSymbolicLink(link, target);
         } catch (IOException ex) {
             log.error("Issue linking " + target + " to " + link, ex);
         }
