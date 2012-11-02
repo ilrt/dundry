@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Task to copy from one directory to another. That's it.
+ * Task to move from one directory to another. That's it.
  * 
  * @author pldms
  */
