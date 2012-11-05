@@ -8,7 +8,9 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.sparql.core.DatasetImpl;
+import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.hp.hpl.jena.vocabulary.DCTerms;
+import com.hp.hpl.jena.vocabulary.RDFS;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
@@ -120,6 +122,12 @@ public class DataCiteSubmit extends JobBase {
         writer.writeAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
         writer.writeAttribute("xsi:schemaLocation", "http://datacite.org/schema/kernel-2.2 http://schema.datacite.org/meta/kernel-2.2/metadata.xsd");
         
+        // DOI
+        writer.writeStartElement("identifier");
+        writer.writeAttribute("identifierType", "doi");
+        writer.writeCharacters(doi);
+        writer.writeEndElement();
+        
         // Titles
         writer.writeStartElement("titles");
         write(item, DCTerms.title, "title", writer);
@@ -131,7 +139,47 @@ public class DataCiteSubmit extends JobBase {
         write(item, DCTerms.description, "description", writer);
         writer.writeEndElement();
         
+        // Subjects
+        writer.writeStartElement("subjects");
+        write(item, DCTerms.subject, "subject", writer);
+        writer.writeEndElement();
         
+        // Identifiers
+        writer.writeStartElement("alternateIdentifiers");
+        write(item, DCTerms.identifier, "alternateIdentifier", writer);
+        writer.writeEndElement();
+        
+        // Dates
+        writer.writeStartElement("dates");
+        write(item, DCTerms.valid, "date", writer, "dateType", "Valid");
+        write(item, DCTerms.created, "date", writer, "dateType", "Created");
+        writer.writeEndElement();
+        
+        write(item, DCTerms.issued, "date", writer, "publicationYear", "Available");
+        
+        // Language
+        write(item, DCTerms.language, "language", writer);
+        
+        // Publisher
+        write(item, DCTerms.publisher, "publisher", writer);
+        
+        // Related publications
+        writer.writeStartElement("relatedIdentifiers");
+        write(item, DCTerms.references, "relatedIdentifier", writer, 
+                "relationType", "Cites", "relatedIdentifierType", "URN");
+        write(item, DCTerms.isReferencedBy, "relatedIdentifier", writer, 
+                "relationType", "IsCitedBy", "relatedIdentifierType", "URN");
+        writer.writeEndElement();
+        
+        // Creators
+        writer.writeStartElement("creators");
+        writeNamed(item, DCTerms.creator, "creator", "creatorName", writer);
+        writer.writeEndElement();
+        
+        // Contributors
+        writer.writeStartElement("contributors");
+        writeNamed(item, DCTerms.contributor, "contributor", "contributorName", writer);
+        writer.writeEndElement();
         
         // Close root and document
         writer.writeEndElement();
@@ -165,7 +213,44 @@ public class DataCiteSubmit extends JobBase {
             writer.writeEndElement();
         }
     }
-
+    
+    /**
+     * Write out a composite entity -- name + identifier
+     * identifier element is always 'nameIdentifier'
+     * 
+     * For creators and contributors currently
+     * 
+     * @param item
+     * @param property
+     * @param containerElem
+     * @param nameElem
+     * @param writer
+     * @throws XMLStreamException 
+     */
+    private void writeNamed(Resource item, Property property, String containerElem, 
+            String nameElem, XMLStreamWriter writer) throws XMLStreamException {
+        StmtIterator si = item.listProperties(property);
+        while (si.hasNext()) {
+            writer.writeStartElement(containerElem);
+            
+            Resource namedThing = si.next().getResource();
+            
+            // Provide identifier if available
+            if (namedThing.isURIResource()) {
+                writer.writeStartElement("nameIdentifier");
+                writer.writeAttribute("nameIdentifierScheme", "URN");
+                writer.writeCharacters(namedThing.getURI());
+                writer.writeEndElement();
+            }
+            
+            // Write out possible names
+            write(item, FOAF.name, nameElem, writer);
+            write(item, DCTerms.title, nameElem, writer);
+            write(item, RDFS.label, nameElem, writer);
+            
+            writer.writeEndElement();
+        }
+    }
     
     private String toString(RDFNode object) {
         if (object.isURIResource()) return object.asResource().getURI();
