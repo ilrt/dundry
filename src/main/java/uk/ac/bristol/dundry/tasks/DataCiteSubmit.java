@@ -124,8 +124,13 @@ public class DataCiteSubmit extends JobBase {
         
         // DOI
         writer.writeStartElement("identifier");
-        writer.writeAttribute("identifierType", "doi");
+        writer.writeAttribute("identifierType", "DOI");
         writer.writeCharacters(doi);
+        writer.writeEndElement();
+        
+        // Creators
+        writer.writeStartElement("creators");
+        writeNamed(item, DCTerms.creator, "creator", "creatorName", writer);
         writer.writeEndElement();
         
         // Titles
@@ -134,58 +139,76 @@ public class DataCiteSubmit extends JobBase {
         write(item, DCTerms.alternative, "title", writer, "titleType", "Alternative");
         writer.writeEndElement();
         
-        // Description
-        writer.writeStartElement("descriptions");
-        write(item, DCTerms.description, "description", writer);
-        writer.writeEndElement();
+        // Publisher
+        write(item, DCTerms.publisher, "publisher", writer);
+        
+        // Publication year
+        write(item, DCTerms.issued, "publicationYear", writer);
+        
+        // Contributors
+        writeNamedContained("contributors", item, DCTerms.contributor, "contributor", "contributorName", writer);
         
         // Subjects
-        writer.writeStartElement("subjects");
-        write(item, DCTerms.subject, "subject", writer);
-        writer.writeEndElement();
+        writeContained("subjects", item, DCTerms.subject, "subject", writer);
         
         // Identifiers
-        writer.writeStartElement("alternateIdentifiers");
-        write(item, DCTerms.identifier, "alternateIdentifier", writer);
-        writer.writeEndElement();
+        writeContained("alternateIdentifiers", item, DCTerms.identifier, "alternateIdentifier", writer);
         
         // Dates
-        writer.writeStartElement("dates");
-        write(item, DCTerms.valid, "date", writer, "dateType", "Valid");
-        write(item, DCTerms.created, "date", writer, "dateType", "Created");
-        writer.writeEndElement();
-        
-        write(item, DCTerms.issued, "date", writer, "publicationYear", "Available");
+        if (item.hasProperty(DCTerms.valid) || item.hasProperty(DCTerms.created)) {
+            writer.writeStartElement("dates");
+            write(item, DCTerms.valid, "date", writer, "dateType", "Valid");
+            write(item, DCTerms.created, "date", writer, "dateType", "Created");
+            writer.writeEndElement();
+        }
         
         // Language
         write(item, DCTerms.language, "language", writer);
         
-        // Publisher
-        write(item, DCTerms.publisher, "publisher", writer);
-        
         // Related publications
-        writer.writeStartElement("relatedIdentifiers");
-        write(item, DCTerms.references, "relatedIdentifier", writer, 
+        if (item.hasProperty(DCTerms.references) || item.hasProperty(DCTerms.isReferencedBy)) {
+            writer.writeStartElement("relatedIdentifiers");
+            write(item, DCTerms.references, "relatedIdentifier", writer, 
                 "relationType", "Cites", "relatedIdentifierType", "URN");
-        write(item, DCTerms.isReferencedBy, "relatedIdentifier", writer, 
+            write(item, DCTerms.isReferencedBy, "relatedIdentifier", writer, 
                 "relationType", "IsCitedBy", "relatedIdentifierType", "URN");
-        writer.writeEndElement();
+            writer.writeEndElement();
+        }
         
-        // Creators
-        writer.writeStartElement("creators");
-        writeNamed(item, DCTerms.creator, "creator", "creatorName", writer);
-        writer.writeEndElement();
+        // Rights
+        write(item, DCTerms.rights, "rights", writer);
         
-        // Contributors
-        writer.writeStartElement("contributors");
-        writeNamed(item, DCTerms.contributor, "contributor", "contributorName", writer);
-        writer.writeEndElement();
+        // Description
+        writeContained("descriptions", item, DCTerms.description, "description", writer, "descriptionType", "Abstract");
         
         // Close root and document
         writer.writeEndElement();
         writer.writeEndDocument();
         
         writer.flush();
+    }
+    
+    // Wrapper for write which will include a containing element if there's anything
+    // to write
+    private void writeContained(String container,
+            Resource item, Property property, String element, 
+            XMLStreamWriter writer, String... attVals) throws XMLStreamException {
+        if (item.hasProperty(property)) {
+            writer.writeStartElement(container);
+            write(item, property, element, writer,attVals);
+            writer.writeEndElement();
+        }
+    }
+    
+    // As above, but for writeNamed
+    private void writeNamedContained(String container,
+            Resource item, Property property, String containerElem, String nameElem, 
+            XMLStreamWriter writer) throws XMLStreamException {
+        if (item.hasProperty(property)) {
+            writer.writeStartElement(container);
+            writeNamed(item, property, containerElem, nameElem, writer);
+            writer.writeEndElement();
+        }
     }
     
     /**
@@ -235,6 +258,11 @@ public class DataCiteSubmit extends JobBase {
             
             Resource namedThing = si.next().getResource();
             
+            // Write out possible names
+            write(namedThing, FOAF.name, nameElem, writer);
+            write(namedThing, DCTerms.title, nameElem, writer);
+            write(namedThing, RDFS.label, nameElem, writer);
+            
             // Provide identifier if available
             if (namedThing.isURIResource()) {
                 writer.writeStartElement("nameIdentifier");
@@ -242,11 +270,6 @@ public class DataCiteSubmit extends JobBase {
                 writer.writeCharacters(namedThing.getURI());
                 writer.writeEndElement();
             }
-            
-            // Write out possible names
-            write(item, FOAF.name, nameElem, writer);
-            write(item, DCTerms.title, nameElem, writer);
-            write(item, RDFS.label, nameElem, writer);
             
             writer.writeEndElement();
         }

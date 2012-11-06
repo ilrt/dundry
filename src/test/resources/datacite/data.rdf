@@ -1,0 +1,101 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://purl.org/dc/terms/"
+    xmlns:j.3="http://purl.org/dc/dcmitype/"
+    xmlns:j.2="http://purl.org/net/opmv/ns#"
+    xmlns:j.1="http://vocab.bris.ac.uk/data/repository#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+  <j.3:Collection rdf:about="http://example.com/res">
+    <j.2:wasGeneratedBy rdf:parseType="Resource">
+      <j.2:wasStartedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+      >2012-11-02T15:43:52.677Z</j.2:wasStartedAt>
+      <j.2:used>uk.ac.bristol.dundry.tasks.SymLinkTask</j.2:used>
+      <j.2:wasEndedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+      >2012-11-02T15:43:52.694Z</j.2:wasEndedAt>
+    </j.2:wasGeneratedBy>
+    <j.0:creator>
+      <rdf:Description rdf:about="http://example.com/people/9265">
+        <rdfs:label>Simon Price</rdfs:label>
+      </rdf:Description>
+    </j.0:creator>
+    <j.0:creator>
+      <rdf:Description rdf:about="http://example.com/people/17484">
+        <rdfs:label>Robert Cregan</rdfs:label>
+      </rdf:Description>
+    </j.0:creator>
+    <j.0:dateSubmitted rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+    >2012-11-02T15:43:43.971Z</j.0:dateSubmitted>
+    <j.0:title>Check damn templates!</j.0:title>
+    <j.2:wasGeneratedBy rdf:parseType="Resource">
+      <j.2:wasStartedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+      >2012-11-02T15:43:45.563Z</j.2:wasStartedAt>
+      <j.2:used>uk.ac.bristol.dundry.tasks.MDExtractTika</j.2:used>
+      <j.2:wasEndedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+      >2012-11-02T15:43:45.872Z</j.2:wasEndedAt>
+    </j.2:wasGeneratedBy>
+    <j.0:language>eng</j.0:language>
+    <rdfs:label></rdfs:label>
+    <j.0:source>RDSF_MV/nfs3-exports/marfc-cregan-2011/Data_Bris_Test/export/Data-Bris/linux-2.6.27.tar.gz</j.0:source>
+    <j.2:wasGeneratedBy rdf:parseType="Resource">
+      <j.2:wasStartedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+      >2012-11-02T15:43:51.293Z</j.2:wasStartedAt>
+      <j.2:used>uk.ac.bristol.dundry.tasks.DataCiteSubmit</j.2:used>
+      <j.2:wasEndedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+      >2012-11-02T15:43:51.781Z</j.2:wasEndedAt>
+    </j.2:wasGeneratedBy>
+    <j.1:base-directory>/RDSF_MV/nfs3-exports/marfc-cregan-2011/Data_Bris_Test</j.1:base-directory>
+    <j.1:depositor>unknown</j.1:depositor>
+    <j.1:project>Data_Bris_Test</j.1:project>
+    <j.1:state rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Publishing</j.1:state>
+    <j.0:creator>
+      <rdf:Description rdf:about="http://example.com/people/164712">
+        <rdfs:label>Caroline Gardiner</rdfs:label>
+      </rdf:Description>
+    </j.0:creator>
+    <j.2:wasGeneratedBy rdf:parseType="Resource">
+      <j.2:wasStartedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+      >2012-11-02T15:43:51.821Z</j.2:wasStartedAt>
+      <j.2:used>uk.ac.bristol.dundry.tasks.MakeTorrentTask</j.2:used>
+      <j.2:wasEndedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+      >2012-11-02T15:43:52.619Z</j.2:wasEndedAt>
+    </j.2:wasGeneratedBy>
+    <j.0:publisher>University of Bristol</j.0:publisher>
+    <j.0:issued>2012</j.0:issued>
+    <j.0:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+    >2012-11-02T15:43:51.237Z</j.0:date>
+    <j.0:dateSubmitted rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+    >2012-11-02T15:43:24.437Z</j.0:dateSubmitted>
+    <j.2:wasGeneratedBy rdf:parseType="Resource">
+      <j.2:wasStartedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+      >2012-11-02T15:43:45.506Z</j.2:wasStartedAt>
+      <j.2:used>uk.ac.bristol.dundry.tasks.IndexDepositTask</j.2:used>
+      <j.2:wasEndedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+      >2012-11-02T15:43:45.519Z</j.2:wasEndedAt>
+    </j.2:wasGeneratedBy>
+    <j.0:creator>
+      <rdf:Description rdf:about="http://example.com/people/157883">
+        <rdfs:label>Damian Steer</rdfs:label>
+      </rdf:Description>
+    </j.0:creator>
+    <j.0:creator>
+      <rdf:Description rdf:about="http://example.com/people/14217">
+        <rdfs:label>Philip Cross</rdfs:label>
+      </rdf:Description>
+    </j.0:creator>
+    <j.0:description>A test project to  check the permission and quota issues associated with the data.bris project</j.0:description>
+    <j.0:hasPart>
+      <rdf:Description rdf:about="repo:16o6ls8w6l0md1oufmorwt8tbj/linux-2.6.27.tar.gz">
+        <rdfs:label>linux-2.6.27.tar.gz</rdfs:label>
+        <j.0:format>application/x-gzip</j.0:format>
+      </rdf:Description>
+    </j.0:hasPart>
+    <j.2:wasGeneratedBy rdf:parseType="Resource">
+      <j.2:wasStartedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+      >2012-11-02T15:43:45.942Z</j.2:wasStartedAt>
+      <j.2:used>uk.ac.bristol.dundry.tasks.StateChanger</j.2:used>
+      <j.2:wasEndedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+      >2012-11-02T15:43:45.989Z</j.2:wasEndedAt>
+    </j.2:wasGeneratedBy>
+  </j.3:Collection>
+</rdf:RDF>
