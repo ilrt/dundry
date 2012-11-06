@@ -6,7 +6,6 @@ import com.sun.xml.internal.txw2.output.IndentingXMLStreamWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
-import java.net.URL;
 import javax.xml.XMLConstants;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
@@ -14,7 +13,6 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.BeforeClass;
@@ -32,6 +30,7 @@ public class DataCiteSubmitTest {
     @BeforeClass
     public static void setUpXML() throws SAXException, MalformedURLException {
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        // use local version to avoid network
         schema = factory.newSchema(DataCiteSubmitTest.class.getClassLoader().getResource("datacite/metadata.xsd"));
         //schema = factory.newSchema(new URL("http://schema.datacite.org/meta/kernel-2.2/metadata.xsd"));
         xof = XMLOutputFactory.newInstance();
