@@ -2,7 +2,7 @@ package uk.ac.bristol.dundry.tasks;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.util.FileManager;
-import com.sun.xml.internal.txw2.output.IndentingXMLStreamWriter;
+//import com.sun.xml.internal.txw2.output.IndentingXMLStreamWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
@@ -44,7 +44,8 @@ public class DataCiteSubmitTest {
         Model data = FileManager.get().loadModel("datacite/data.rdf");
         
         StringWriter out = new StringWriter();
-        XMLStreamWriter writer = new IndentingXMLStreamWriter(xof.createXMLStreamWriter(out));
+        XMLStreamWriter writer = xof.createXMLStreamWriter(out);
+                //new IndentingXMLStreamWriter(xof.createXMLStreamWriter(out));
         
         instance.toDataCite(data.getResource("http://example.com/res"), doi, writer);
                 

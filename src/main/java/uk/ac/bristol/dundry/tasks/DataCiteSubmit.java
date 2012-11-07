@@ -8,7 +8,7 @@ import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.RDFS;
-import com.sun.xml.internal.txw2.output.IndentingXMLStreamWriter;
+//import com.sun.xml.internal.txw2.output.IndentingXMLStreamWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
@@ -106,8 +106,9 @@ public class DataCiteSubmit extends JobBase {
             String doi, Resource item) throws XMLStreamException, IOException {
 
         StringWriter out = new StringWriter();
-        XMLStreamWriter writer = new IndentingXMLStreamWriter(xof.createXMLStreamWriter(out));
-
+        XMLStreamWriter writer = xof.createXMLStreamWriter(out);
+        //new IndentingXMLStreamWriter(xof.createXMLStreamWriter(out));
+        
         // Write datacite md record to string
         toDataCite(item, doi, writer);
 

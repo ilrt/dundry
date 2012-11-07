@@ -81,7 +81,27 @@ public class Repository {
             jobProperties.setProperty((String) secret.getKey(), (String) secret.getValue());
         }
     }
-
+    
+    /**
+     * The heart of the repository (no sensitive properties)
+     *
+     * @param publishURLBase The base url where publications will appear
+     * @param fileRepo The
+     * @param mdStore The metadata store
+     * @param postDepositJobClasses A list of classes (implementing Job) which
+     * will be run when content is added
+     * @param prePublishJobClasses A list of classes which will be run
+     * pre-publication
+     * @param jobProperties Parameters that will be passed to the jobs
+     */
+    public Repository(String publishURLBase, FileRepository fileRepo, MetadataStore mdStore,
+            List<String> postDepositJobClasses,
+            List<String> prePublishJobClasses,
+            Properties jobProperties) {
+        this(publishURLBase, fileRepo, mdStore, postDepositJobClasses, 
+                prePublishJobClasses, jobProperties, new Properties());
+    }
+    
     public ResourceCollection getIds() {
         Model resultModel = ModelFactory.createDefaultModel();
         ResultSet r = mdStore.query("select distinct ?g ?state ?title ?description ?source ?project"
