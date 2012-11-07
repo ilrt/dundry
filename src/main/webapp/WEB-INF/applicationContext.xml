@@ -68,6 +68,11 @@
         <constructor-arg>
             <util:properties location="classpath:task.properties"/>
         </constructor-arg>
+        <!-- This will be merged with the previous, but is intended for sensitive
+            information to be excluded from scms -->
+        <constructor-arg>
+            <util:properties location="classpath:sensitive.properties"/>
+        </constructor-arg>
     </bean>
     
     <bean class="uk.ac.bristol.dundry.dao.BTTracking">

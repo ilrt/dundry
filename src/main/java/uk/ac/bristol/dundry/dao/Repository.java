@@ -63,11 +63,13 @@ public class Repository {
      * @param prePublishJobClasses A list of classes which will be run
      * pre-publication
      * @param jobProperties Parameters that will be passed to the jobs
+     * @param sensitiveProperties Parameters that will be added to the jobProperties
      */
     public Repository(String publishURLBase, FileRepository fileRepo, MetadataStore mdStore,
             List<String> postDepositJobClasses,
             List<String> prePublishJobClasses,
-            Properties jobProperties) {
+            Properties jobProperties,
+            Properties sensitiveProperties) {
         this.fileRepo = fileRepo;
         this.mdStore = mdStore;
         // ensure we just need to append id to base
@@ -75,6 +77,9 @@ public class Repository {
         this.postDepositJobs = getJobsFromClassNames(postDepositJobClasses);
         this.prePublishJobs = getJobsFromClassNames(prePublishJobClasses);
         this.jobProperties = jobProperties;
+        for (Entry<Object, Object> secret: sensitiveProperties.entrySet()) {
+            jobProperties.setProperty((String) secret.getKey(), (String) secret.getValue());
+        }
     }
 
     public ResourceCollection getIds() {
