@@ -8,12 +8,12 @@ import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.RDFS;
-//import com.sun.xml.internal.txw2.output.IndentingXMLStreamWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.Properties;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -39,10 +39,10 @@ import uk.ac.bristol.dundry.vocabs.Bibo;
  * @author Damian Steer <d.steer@bris.ac.uk>
  */
 public class DataCiteSubmit extends JobBase {
-
+    
     final static Logger log = LoggerFactory.getLogger(DataCiteSubmit.class);
     final static XMLOutputFactory xof = XMLOutputFactory.newInstance();
-
+    
     @Override
     public void execute(Repository repo, Resource item, Resource prov, String id, Path root, JobDataMap jobData) throws JobExecutionException {
         String username = jobData.getString("datacite.username");
@@ -54,7 +54,7 @@ public class DataCiteSubmit extends JobBase {
         submit(username, password, endpoint, doiprefix, testing,
                 id, repo.getPublishedURL(id), repo.getMetadata(id), prov);
     }
-    
+
     // Broken out for testing purposes
     public void submit(String username, String password, String endpoint,
             String doiprefix, boolean testing, String id, String url,
@@ -68,17 +68,17 @@ public class DataCiteSubmit extends JobBase {
             // see https://test.datacite.org/mds/static/apidoc
 
             DefaultHttpClient httpClient = new DefaultHttpClient();
-
+            
             CredentialsProvider cp = new BasicCredentialsProvider();
-
+            
             cp.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
-
+            
             httpClient.setCredentialsProvider(cp);
             
             handleResponse(submitMetadata(httpClient, mdEndpoint, doi, item));
             handleResponse(submitDOI(httpClient, doiEndpoint, doi, url));
             prov.addProperty(Bibo.doi, doi);
-
+            
         } catch (MalformedURLException ex) {
             throw new JobExecutionException("URL is malformed", ex);
         } catch (IOException ex) {
@@ -87,52 +87,57 @@ public class DataCiteSubmit extends JobBase {
             throw new JobExecutionException("Problem writing metadata record xml for datacite", ex);
         }
     }
-    
+
     // Handle the result of an http request
     private void handleResponse(HttpResponse response) throws JobExecutionException, IOException {
-        int sc = response.getStatusLine().getStatusCode();
-        if ((sc / 100) != 2) {
-            log.error("Request failed: {} ({})\n{}", new Object[] {
-                    response.getStatusLine().getReasonPhrase(), sc, 
-                    EntityUtils.toString(response.getEntity()) });
-            throw new JobExecutionException("Error with datacite: " + response.getStatusLine().getReasonPhrase());
-        } else if (log.isDebugEnabled()) { // log the response if debugging
-            log.debug("Request succeeded ({}):\n{}\n", sc, EntityUtils.toString(response.getEntity()));
+        try {
+            int sc = response.getStatusLine().getStatusCode();
+            if ((sc / 100) != 2) {
+                log.error("Request failed: {} ({})\n{}", new Object[]{
+                            response.getStatusLine().getReasonPhrase(), sc,
+                            EntityUtils.toString(response.getEntity())});
+                throw new JobExecutionException("Error with datacite: " + response.getStatusLine().getReasonPhrase());
+            } else if (log.isDebugEnabled()) { // log the response if debugging
+                log.debug("Request succeeded ({}):\n{}\n", sc, EntityUtils.toString(response.getEntity()));
+            }
+        } finally {
+            // Ensure connection is finished with
+            EntityUtils.consume(response.getEntity());
         }
     }
-    
+
     // Submit datacite metadata
     public HttpResponse submitMetadata(DefaultHttpClient client, String endpoint,
             String doi, Resource item) throws XMLStreamException, IOException {
-
+        
         StringWriter out = new StringWriter();
         XMLStreamWriter writer = xof.createXMLStreamWriter(out);
         //new IndentingXMLStreamWriter(xof.createXMLStreamWriter(out));
-        
+
         // Write datacite md record to string
         toDataCite(item, doi, writer);
-
+        
         log.debug("Submitting to datacite <{}>: \n{}\n", endpoint, out.toString());
-
+        
         AbstractHttpEntity content = new StringEntity(out.toString(), StandardCharsets.UTF_8);
         content.setContentType("application/xml");
-
+        
         HttpPost post = new HttpPost(endpoint);
         post.setEntity(content);
-
+        
         return client.execute(post);
     }
-    
+
     // Point DOI at url
     public HttpResponse submitDOI(DefaultHttpClient client, String endpoint,
             String doi, String url) throws IOException {
         String message = String.format("doi=%s\nurl=%s\n", doi, url);
-
+        
         log.debug("Submitting to datacite <{}>: \n{}\n", endpoint, message);
-
+        
         AbstractHttpEntity content = new StringEntity(message, StandardCharsets.UTF_8);
         content.setContentType("text/plain");
-
+        
         HttpPost post = new HttpPost(endpoint);
         post.setEntity(content);
         return client.execute(post);
@@ -211,7 +216,7 @@ public class DataCiteSubmit extends JobBase {
         // Close root and document
         writer.writeEndElement();
         writer.writeEndDocument();
-
+        
         writer.flush();
     }
 
@@ -259,7 +264,7 @@ public class DataCiteSubmit extends JobBase {
 
             // Write value
             writer.writeCharacters(toString(si.next().getObject()));
-
+            
             writer.writeEndElement();
         }
     }
@@ -282,7 +287,7 @@ public class DataCiteSubmit extends JobBase {
         StmtIterator si = item.listProperties(property);
         while (si.hasNext()) {
             writer.writeStartElement(containerElem);
-
+            
             Resource namedThing = si.next().getResource();
 
             // Write out possible names
@@ -297,11 +302,11 @@ public class DataCiteSubmit extends JobBase {
                 writer.writeCharacters(namedThing.getURI());
                 writer.writeEndElement();
             }
-
+            
             writer.writeEndElement();
         }
     }
-
+    
     private String toString(RDFNode object) {
         if (object.isURIResource()) {
             return object.asResource().getURI();
@@ -312,14 +317,26 @@ public class DataCiteSubmit extends JobBase {
         }
     }
     
-    public static void main(String[] args) throws JobExecutionException {
-                
+    public static void main(String[] args) throws JobExecutionException, IOException {
+        
+        Properties p = new Properties();
+        p.load(DataCiteSubmit.class.getResourceAsStream("/sensitive.properties"));
+        
+        String user = p.getProperty("datacite.username");
+        String pass = p.getProperty("datacite.password");
+        
+        if (null == user || null == pass) {
+            System.err.printf("Missing username and / or password (%s,%s)\n",
+                    user, pass);
+            System.exit(1);
+        }
+        
         DataCiteSubmit instance = new DataCiteSubmit();
         
-        Resource item = FileManager.get().loadModel("/home/pldms/Development/Projects/2012/data.bris/dundry/src/test/resources/datacite/data.rdf").
+        Resource item = FileManager.get().loadModel("/Users/pldms/Development/Projects/2012/dundry/src/test/resources/datacite/data.rdf").
                 getResource("http://example.com/res");
         
-        instance.submit("XXX", "XXX", "https://test.datacite.org/mds/", "10.5072/bris.", false,
+        instance.submit(user, pass, "https://test.datacite.org/mds/", "10.5072/bris.", false,
                 "16o6ls8w6l0md1oufmorwt8tbj", "http://data-bris.acrc.bris.ac.uk/datasets/16o6ls8w6l0md1oufmorwt8tbj/", item, item);
         
     }
