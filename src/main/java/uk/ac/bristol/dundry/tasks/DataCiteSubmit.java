@@ -131,7 +131,8 @@ public class DataCiteSubmit extends JobBase {
     // Point DOI at url
     public HttpResponse submitDOI(DefaultHttpClient client, String endpoint,
             String doi, String url) throws IOException {
-        String message = String.format("doi=%s\nurl=%s\n", doi, url);
+        // Trailing slash is a work around for a proxy issue
+        String message = String.format("doi=%s\nurl=%s\n", doi, url + "/");
         
         log.debug("Submitting to datacite <{}>: \n{}\n", endpoint, message);
         
