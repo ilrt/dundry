@@ -336,7 +336,7 @@ public class Repository {
     }
 
     public String getPublishedURL(String id) {
-        return publishURLBase + id;
+        return publishURLBase + id + "/";
     }
     
     /**
