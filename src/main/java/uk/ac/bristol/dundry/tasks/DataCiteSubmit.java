@@ -168,7 +168,7 @@ public class DataCiteSubmit extends JobBase {
         // Titles
         writer.writeStartElement("titles");
         write(item, DCTerms.title, "title", writer);
-        write(item, DCTerms.alternative, "title", writer, "titleType", "Alternative");
+        write(item, DCTerms.alternative, "title", writer, "titleType", "AlternativeTitle");
         writer.writeEndElement();
 
         // Publisher
@@ -176,16 +176,7 @@ public class DataCiteSubmit extends JobBase {
 
         // Publication year
         write(item, DCTerms.issued, "publicationYear", writer);
-
-        // Contributors
-        writeNamedContained("contributors", item, DCTerms.contributor, "contributor", "contributorName", writer);
-
-        // Subjects
-        writeContained("subjects", item, DCTerms.subject, "subject", writer);
-
-        // Identifiers
-        writeContained("alternateIdentifiers", item, DCTerms.identifier, "alternateIdentifier", writer);
-
+        
         // Dates
         if (item.hasProperty(DCTerms.valid) || item.hasProperty(DCTerms.created)) {
             writer.writeStartElement("dates");
@@ -193,9 +184,19 @@ public class DataCiteSubmit extends JobBase {
             write(item, DCTerms.created, "date", writer, "dateType", "Created");
             writer.writeEndElement();
         }
-
+        
+        // Subjects
+        writeContained("subjects", item, DCTerms.subject, "subject", writer);
+        
+        // Contributors
+        writeNamedContained("contributors", item, DCTerms.contributor,
+                "contributor", "contributorName", writer, "contributorType", "Researcher");
+        
         // Language
         write(item, DCTerms.language, "language", writer);
+        
+        // Identifiers
+        writeContained("alternateIdentifiers", item, DCTerms.identifier, "alternateIdentifier", writer, "alternateIdentifierType", "");
 
         // Related publications
         if (item.hasProperty(DCTerms.references) || item.hasProperty(DCTerms.isReferencedBy)) {
@@ -212,7 +213,7 @@ public class DataCiteSubmit extends JobBase {
 
         // Description
         writeContained("descriptions", item, DCTerms.description, "description", writer, "descriptionType", "Abstract");
-
+        
         // Close root and document
         writer.writeEndElement();
         writer.writeEndDocument();
@@ -235,10 +236,10 @@ public class DataCiteSubmit extends JobBase {
     // As above, but for writeNamed
     private void writeNamedContained(String container,
             Resource item, Property property, String containerElem, String nameElem,
-            XMLStreamWriter writer) throws XMLStreamException {
+            XMLStreamWriter writer, String... attVals) throws XMLStreamException {
         if (item.hasProperty(property)) {
             writer.writeStartElement(container);
-            writeNamed(item, property, containerElem, nameElem, writer);
+            writeNamed(item, property, containerElem, nameElem, writer, attVals);
             writer.writeEndElement();
         }
     }
@@ -283,10 +284,15 @@ public class DataCiteSubmit extends JobBase {
      * @throws XMLStreamException
      */
     private void writeNamed(Resource item, Property property, String containerElem,
-            String nameElem, XMLStreamWriter writer) throws XMLStreamException {
+            String nameElem, XMLStreamWriter writer, String... attVals) throws XMLStreamException {
         StmtIterator si = item.listProperties(property);
         while (si.hasNext()) {
             writer.writeStartElement(containerElem);
+            
+            // Write attributes out
+            for (int i = 0; i < attVals.length; i += 2) {
+                writer.writeAttribute(attVals[i], attVals[i + 1]);
+            }
             
             Resource namedThing = si.next().getResource();
 

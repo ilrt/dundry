@@ -5,97 +5,385 @@
     xmlns:j.2="http://purl.org/net/opmv/ns#"
     xmlns:j.1="http://vocab.bris.ac.uk/data/repository#"
     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-  <j.3:Collection rdf:about="http://example.com/res">
+  <j.3:Collection rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o">
     <j.2:wasGeneratedBy rdf:parseType="Resource">
       <j.2:wasStartedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
-      >2012-11-02T15:43:52.677Z</j.2:wasStartedAt>
-      <j.2:used>uk.ac.bristol.dundry.tasks.SymLinkTask</j.2:used>
+      >2012-11-21T12:29:53.485Z</j.2:wasStartedAt>
+      <j.2:used>uk.ac.bristol.dundry.tasks.MDExtractTika</j.2:used>
       <j.2:wasEndedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
-      >2012-11-02T15:43:52.694Z</j.2:wasEndedAt>
+      >2012-11-21T12:29:53.809Z</j.2:wasEndedAt>
     </j.2:wasGeneratedBy>
+    <rdfs:label></rdfs:label>
+    <j.0:publisher>University of Bristol</j.0:publisher>
+    <j.0:language>eng</j.0:language>
+    <j.0:available>2012-11-23</j.0:available>
     <j.0:creator>
-      <rdf:Description rdf:about="http://example.com/people/9265">
-        <rdfs:label>Simon Price</rdfs:label>
+      <rdf:Description rdf:about="http://example.com/people/109976">
+        <rdfs:label>David Williams</rdfs:label>
       </rdf:Description>
     </j.0:creator>
+    <j.0:identifier>id1</j.0:identifier>
+    <j.0:issued>2012</j.0:issued>
+    <j.0:alternative>Or: a full piece of metadata</j.0:alternative>
+    <j.0:subject>fake</j.0:subject>
+    <j.0:references>
+      <rdf:Description rdf:about="http://data.bris.ac.uk/publications/34">
+        <rdfs:label>34: Focus on dinosaurs</rdfs:label>
+      </rdf:Description>
+    </j.0:references>
+    <j.2:wasGeneratedBy rdf:parseType="Resource">
+      <j.2:wasStartedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+      >2012-11-21T12:29:53.876Z</j.2:wasStartedAt>
+      <j.2:used>uk.ac.bristol.dundry.tasks.StateChanger</j.2:used>
+      <j.2:wasEndedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+      >2012-11-21T12:29:53.92Z</j.2:wasEndedAt>
+    </j.2:wasGeneratedBy>
     <j.0:creator>
       <rdf:Description rdf:about="http://example.com/people/17484">
         <rdfs:label>Robert Cregan</rdfs:label>
       </rdf:Description>
     </j.0:creator>
     <j.0:dateSubmitted rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
-    >2012-11-02T15:43:43.971Z</j.0:dateSubmitted>
-    <j.0:title>Check damn templates!</j.0:title>
-    <j.2:wasGeneratedBy rdf:parseType="Resource">
-      <j.2:wasStartedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
-      >2012-11-02T15:43:45.563Z</j.2:wasStartedAt>
-      <j.2:used>uk.ac.bristol.dundry.tasks.MDExtractTika</j.2:used>
-      <j.2:wasEndedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
-      >2012-11-02T15:43:45.872Z</j.2:wasEndedAt>
-    </j.2:wasGeneratedBy>
-    <j.0:language>eng</j.0:language>
-    <rdfs:label></rdfs:label>
-    <j.0:source>RDSF_MV/nfs3-exports/marfc-cregan-2011/Data_Bris_Test/export/Data-Bris/linux-2.6.27.tar.gz</j.0:source>
-    <j.2:wasGeneratedBy rdf:parseType="Resource">
-      <j.2:wasStartedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
-      >2012-11-02T15:43:51.293Z</j.2:wasStartedAt>
-      <j.2:used>uk.ac.bristol.dundry.tasks.DataCiteSubmit</j.2:used>
-      <j.2:wasEndedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
-      >2012-11-02T15:43:51.781Z</j.2:wasEndedAt>
-    </j.2:wasGeneratedBy>
-    <j.1:base-directory>/RDSF_MV/nfs3-exports/marfc-cregan-2011/Data_Bris_Test</j.1:base-directory>
+    >2012-11-21T12:29:34.076Z</j.0:dateSubmitted>
     <j.1:depositor>unknown</j.1:depositor>
-    <j.1:project>Data_Bris_Test</j.1:project>
+    <j.0:creator>
+      <rdf:Description rdf:about="http://example.com/people/165309">
+        <rdfs:label>Callum Wright</rdfs:label>
+      </rdf:Description>
+    </j.0:creator>
+    <j.0:isReferencedBy>
+      <rdf:Description rdf:about="http://data.bris.ac.uk/publications/234">
+        <rdfs:label>234: Negotiating the New in the French Novel: Building Contexts for Fictional Worlds.</rdfs:label>
+      </rdf:Description>
+    </j.0:isReferencedBy>
+    <j.0:creator>
+      <rdf:Description rdf:about="http://example.com/people/2794">
+        <rdfs:label>Ian Stewart</rdfs:label>
+      </rdf:Description>
+    </j.0:creator>
     <j.1:state rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >Publishing</j.1:state>
+    <j.2:wasGeneratedBy rdf:parseType="Resource">
+      <j.2:wasStartedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+      >2012-11-21T12:30:09.901Z</j.2:wasStartedAt>
+      <j.2:used>uk.ac.bristol.dundry.tasks.MakeTorrentTask</j.2:used>
+      <j.2:wasEndedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+      >2012-11-21T12:30:09.96Z</j.2:wasEndedAt>
+    </j.2:wasGeneratedBy>
+    <j.0:identifier>id2</j.0:identifier>
     <j.0:creator>
       <rdf:Description rdf:about="http://example.com/people/164712">
         <rdfs:label>Caroline Gardiner</rdfs:label>
       </rdf:Description>
     </j.0:creator>
+    <j.0:contributor>
+      <rdf:Description rdf:about="http://data.bris.ac.uk/people/252954">
+        <rdfs:label>Bailey, C</rdfs:label>
+      </rdf:Description>
+    </j.0:contributor>
+    <j.0:subject>haggis</j.0:subject>
+    <j.0:contributor>
+      <rdf:Description rdf:about="http://data.bris.ac.uk/people/11912">
+        <rdfs:label>Tredgold, J</rdfs:label>
+      </rdf:Description>
+    </j.0:contributor>
+    <j.0:description>A ACRC project to test the practicalities of various export types.</j.0:description>
     <j.2:wasGeneratedBy rdf:parseType="Resource">
       <j.2:wasStartedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
-      >2012-11-02T15:43:51.821Z</j.2:wasStartedAt>
-      <j.2:used>uk.ac.bristol.dundry.tasks.MakeTorrentTask</j.2:used>
-      <j.2:wasEndedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
-      >2012-11-02T15:43:52.619Z</j.2:wasEndedAt>
-    </j.2:wasGeneratedBy>
-    <j.0:publisher>University of Bristol</j.0:publisher>
-    <j.0:issued>2012</j.0:issued>
-    <j.0:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
-    >2012-11-02T15:43:51.237Z</j.0:date>
-    <j.0:dateSubmitted rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
-    >2012-11-02T15:43:24.437Z</j.0:dateSubmitted>
-    <j.2:wasGeneratedBy rdf:parseType="Resource">
-      <j.2:wasStartedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
-      >2012-11-02T15:43:45.506Z</j.2:wasStartedAt>
+      >2012-11-21T12:29:53.417Z</j.2:wasStartedAt>
       <j.2:used>uk.ac.bristol.dundry.tasks.IndexDepositTask</j.2:used>
       <j.2:wasEndedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
-      >2012-11-02T15:43:45.519Z</j.2:wasEndedAt>
+      >2012-11-21T12:29:53.434Z</j.2:wasEndedAt>
     </j.2:wasGeneratedBy>
-    <j.0:creator>
-      <rdf:Description rdf:about="http://example.com/people/157883">
-        <rdfs:label>Damian Steer</rdfs:label>
-      </rdf:Description>
-    </j.0:creator>
-    <j.0:creator>
-      <rdf:Description rdf:about="http://example.com/people/14217">
-        <rdfs:label>Philip Cross</rdfs:label>
-      </rdf:Description>
-    </j.0:creator>
-    <j.0:description>A test project to  check the permission and quota issues associated with the data.bris project</j.0:description>
-    <j.0:hasPart>
-      <rdf:Description rdf:about="repo:16o6ls8w6l0md1oufmorwt8tbj/linux-2.6.27.tar.gz">
-        <rdfs:label>linux-2.6.27.tar.gz</rdfs:label>
-        <j.0:format>application/x-gzip</j.0:format>
-      </rdf:Description>
-    </j.0:hasPart>
+    <j.1:project>ACRC_Test_Area</j.1:project>
+    <j.0:identifier>id3</j.0:identifier>
+    <j.0:dateSubmitted rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+    >2012-11-21T12:29:53.324Z</j.0:dateSubmitted>
+    <j.1:base-directory>/RDSF_MV/nfs3-exports/marfc-cregan-2011/ACRC_Test_Area</j.1:base-directory>
     <j.2:wasGeneratedBy rdf:parseType="Resource">
       <j.2:wasStartedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
-      >2012-11-02T15:43:45.942Z</j.2:wasStartedAt>
-      <j.2:used>uk.ac.bristol.dundry.tasks.StateChanger</j.2:used>
+      >2012-11-21T12:30:09.998Z</j.2:wasStartedAt>
+      <j.2:used>uk.ac.bristol.dundry.tasks.SymLinkTask</j.2:used>
       <j.2:wasEndedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
-      >2012-11-02T15:43:45.989Z</j.2:wasEndedAt>
+      >2012-11-21T12:30:10.01Z</j.2:wasEndedAt>
     </j.2:wasGeneratedBy>
+    <j.0:title>For Jasper</j.0:title>
+    <j.0:subject>test</j.0:subject>
+    <j.0:creator>
+      <rdf:Description rdf:about="http://example.com/people/154171">
+        <rdfs:label>Paige Lacesso</rdfs:label>
+      </rdf:Description>
+    </j.0:creator>
+    <j.0:rights>GPL</j.0:rights>
+    <j.0:source>RDSF_MV/nfs3-exports/marfc-cregan-2011/ACRC_Test_Area/export/Data-Bris/java/uk/ac/bristol/dundry</j.0:source>
+    <j.0:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+    >2012-11-21T12:30:09.27Z</j.0:date>
+    <j.0:isReferencedBy>
+      <rdf:Description rdf:about="http://data.bris.ac.uk/publications/1235">
+        <rdfs:label>1235: The Gypsy and the State:  The ethnic cleansing of British Society</rdfs:label>
+      </rdf:Description>
+    </j.0:isReferencedBy>
+    <j.0:hasPart>
+      <j.3:Collection rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry">
+        <rdfs:label>dundry</rdfs:label>
+        <j.0:hasPart>
+          <j.3:Collection rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/model">
+            <rdfs:label>model</rdfs:label>
+            <j.0:hasPart>
+              <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/model/ResourceCollection.java">
+                <rdfs:label>ResourceCollection.java</rdfs:label>
+                <j.0:format>text/plain</j.0:format>
+              </rdf:Description>
+            </j.0:hasPart>
+            <j.0:hasPart>
+              <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/model/Tree.java">
+                <rdfs:label>Tree.java</rdfs:label>
+                <j.0:format>text/plain</j.0:format>
+              </rdf:Description>
+            </j.0:hasPart>
+            <j.0:hasPart>
+              <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/model/Value.java">
+                <rdfs:label>Value.java</rdfs:label>
+                <j.0:format>text/plain</j.0:format>
+              </rdf:Description>
+            </j.0:hasPart>
+          </j.3:Collection>
+        </j.0:hasPart>
+        <j.0:hasPart>
+          <j.3:Collection rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/filters">
+            <rdfs:label>filters</rdfs:label>
+            <j.0:hasPart>
+              <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/filters/URIExtensionConneg.java">
+                <rdfs:label>URIExtensionConneg.java</rdfs:label>
+                <j.0:format>text/plain</j.0:format>
+              </rdf:Description>
+            </j.0:hasPart>
+          </j.3:Collection>
+        </j.0:hasPart>
+        <j.0:hasPart>
+          <j.3:Collection rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/vocabs">
+            <rdfs:label>vocabs</rdfs:label>
+            <j.0:hasPart>
+              <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/vocabs/RepositoryVocab.java">
+                <rdfs:label>RepositoryVocab.java</rdfs:label>
+                <j.0:format>text/plain</j.0:format>
+              </rdf:Description>
+            </j.0:hasPart>
+            <j.0:hasPart>
+              <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/vocabs/Bibo.java">
+                <rdfs:label>Bibo.java</rdfs:label>
+                <j.0:format>text/plain</j.0:format>
+              </rdf:Description>
+            </j.0:hasPart>
+            <j.0:hasPart>
+              <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/vocabs/OPMV.java">
+                <rdfs:label>OPMV.java</rdfs:label>
+                <j.0:format>text/plain</j.0:format>
+              </rdf:Description>
+            </j.0:hasPart>
+          </j.3:Collection>
+        </j.0:hasPart>
+        <j.0:hasPart>
+          <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/Util.java">
+            <rdfs:label>Util.java</rdfs:label>
+            <j.0:format>text/plain</j.0:format>
+          </rdf:Description>
+        </j.0:hasPart>
+        <j.0:hasPart>
+          <j.3:Collection rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/dao">
+            <j.0:hasPart>
+              <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/dao/MetadataStore.java">
+                <rdfs:label>MetadataStore.java</rdfs:label>
+                <j.0:format>text/plain</j.0:format>
+              </rdf:Description>
+            </j.0:hasPart>
+            <j.0:hasPart>
+              <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/dao/TaskManager.java">
+                <rdfs:label>TaskManager.java</rdfs:label>
+                <j.0:format>text/plain</j.0:format>
+              </rdf:Description>
+            </j.0:hasPart>
+            <j.0:hasPart>
+              <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/dao/MetadataStoreDS.java">
+                <rdfs:label>MetadataStoreDS.java</rdfs:label>
+                <j.0:format>text/plain</j.0:format>
+              </rdf:Description>
+            </j.0:hasPart>
+            <j.0:hasPart>
+              <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/dao/BTTracking.java">
+                <rdfs:label>BTTracking.java</rdfs:label>
+                <j.0:format>text/plain</j.0:format>
+              </rdf:Description>
+            </j.0:hasPart>
+            <j.0:hasPart>
+              <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/dao/FileRepository.java">
+                <rdfs:label>FileRepository.java</rdfs:label>
+                <j.0:format>text/plain</j.0:format>
+              </rdf:Description>
+            </j.0:hasPart>
+            <j.0:hasPart>
+              <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/dao/MetadataStoreTDB.java">
+                <rdfs:label>MetadataStoreTDB.java</rdfs:label>
+                <j.0:format>text/plain</j.0:format>
+              </rdf:Description>
+            </j.0:hasPart>
+            <j.0:hasPart>
+              <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/dao/FileSystemSource.java">
+                <rdfs:label>FileSystemSource.java</rdfs:label>
+                <j.0:format>text/plain</j.0:format>
+              </rdf:Description>
+            </j.0:hasPart>
+            <rdfs:label>dao</rdfs:label>
+            <j.0:hasPart>
+              <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/dao/Repository.java">
+                <rdfs:label>Repository.java</rdfs:label>
+                <j.0:format>text/plain</j.0:format>
+              </rdf:Description>
+            </j.0:hasPart>
+          </j.3:Collection>
+        </j.0:hasPart>
+        <j.0:hasPart>
+          <j.3:Collection rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/tasks">
+            <j.0:hasPart>
+              <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/tasks/MakeTorrentTask.java">
+                <rdfs:label>MakeTorrentTask.java</rdfs:label>
+                <j.0:format>text/plain</j.0:format>
+              </rdf:Description>
+            </j.0:hasPart>
+            <j.0:hasPart>
+              <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/tasks/IndexDepositTask.java">
+                <rdfs:label>IndexDepositTask.java</rdfs:label>
+                <j.0:format>text/plain</j.0:format>
+              </rdf:Description>
+            </j.0:hasPart>
+            <rdfs:label>tasks</rdfs:label>
+            <j.0:hasPart>
+              <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/tasks/DataCiteSubmit.java">
+                <rdfs:label>DataCiteSubmit.java</rdfs:label>
+                <j.0:format>text/plain</j.0:format>
+              </rdf:Description>
+            </j.0:hasPart>
+            <j.0:hasPart>
+              <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/tasks/CopyTask.java">
+                <rdfs:label>CopyTask.java</rdfs:label>
+                <j.0:format>text/plain</j.0:format>
+              </rdf:Description>
+            </j.0:hasPart>
+            <j.0:hasPart>
+              <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/tasks/EnsurePublicPermissions.java">
+                <rdfs:label>EnsurePublicPermissions.java</rdfs:label>
+                <j.0:format>text/plain</j.0:format>
+              </rdf:Description>
+            </j.0:hasPart>
+            <j.0:hasPart>
+              <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/tasks/SymLinkTask.java">
+                <rdfs:label>SymLinkTask.java</rdfs:label>
+                <j.0:format>text/plain</j.0:format>
+              </rdf:Description>
+            </j.0:hasPart>
+            <j.0:hasPart>
+              <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/tasks/ChainTerminator.java">
+                <rdfs:label>ChainTerminator.java</rdfs:label>
+                <j.0:format>text/plain</j.0:format>
+              </rdf:Description>
+            </j.0:hasPart>
+            <j.0:hasPart>
+              <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/tasks/MDExtractTika.java">
+                <rdfs:label>MDExtractTika.java</rdfs:label>
+                <j.0:format>text/plain</j.0:format>
+              </rdf:Description>
+            </j.0:hasPart>
+            <j.0:hasPart>
+              <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/tasks/StateChanger.java">
+                <rdfs:label>StateChanger.java</rdfs:label>
+                <j.0:format>text/plain</j.0:format>
+              </rdf:Description>
+            </j.0:hasPart>
+            <j.0:hasPart>
+              <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/tasks/MoveTask.java">
+                <rdfs:label>MoveTask.java</rdfs:label>
+                <j.0:format>text/plain</j.0:format>
+              </rdf:Description>
+            </j.0:hasPart>
+            <j.0:hasPart>
+              <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/tasks/JobBase.java">
+                <rdfs:label>JobBase.java</rdfs:label>
+                <j.0:format>text/plain</j.0:format>
+              </rdf:Description>
+            </j.0:hasPart>
+            <j.0:hasPart>
+              <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/tasks/GenerateApacheIndexes.java">
+                <rdfs:label>GenerateApacheIndexes.java</rdfs:label>
+                <j.0:format>text/plain</j.0:format>
+              </rdf:Description>
+            </j.0:hasPart>
+          </j.3:Collection>
+        </j.0:hasPart>
+        <j.0:hasPart>
+          <j.3:Collection rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/webresources">
+            <rdfs:label>webresources</rdfs:label>
+            <j.0:hasPart>
+              <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/webresources/BTTracker.java">
+                <rdfs:label>BTTracker.java</rdfs:label>
+                <j.0:format>text/plain</j.0:format>
+              </rdf:Description>
+            </j.0:hasPart>
+            <j.0:hasPart>
+              <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/webresources/Source.java">
+                <rdfs:label>Source.java</rdfs:label>
+                <j.0:format>text/plain</j.0:format>
+              </rdf:Description>
+            </j.0:hasPart>
+            <j.0:hasPart>
+              <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/webresources/Deposit.java">
+                <rdfs:label>Deposit.java</rdfs:label>
+                <j.0:format>text/plain</j.0:format>
+              </rdf:Description>
+            </j.0:hasPart>
+            <j.0:hasPart>
+              <j.3:Collection rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/webresources/providers">
+                <rdfs:label>providers</rdfs:label>
+                <j.0:hasPart>
+                  <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/webresources/providers/RdfMediaType.java">
+                    <rdfs:label>RdfMediaType.java</rdfs:label>
+                    <j.0:format>text/plain</j.0:format>
+                  </rdf:Description>
+                </j.0:hasPart>
+                <j.0:hasPart>
+                  <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/webresources/providers/JenaModelRdfProvider.java">
+                    <rdfs:label>JenaModelRdfProvider.java</rdfs:label>
+                    <j.0:format>text/plain</j.0:format>
+                  </rdf:Description>
+                </j.0:hasPart>
+                <j.0:hasPart>
+                  <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/webresources/providers/JenaResourceRdfProvider.java">
+                    <rdfs:label>JenaResourceRdfProvider.java</rdfs:label>
+                    <j.0:format>text/plain</j.0:format>
+                  </rdf:Description>
+                </j.0:hasPart>
+                <j.0:hasPart>
+                  <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/webresources/providers/RdfResourceMappingProvider.java">
+                    <rdfs:label>RdfResourceMappingProvider.java</rdfs:label>
+                    <j.0:format>text/plain</j.0:format>
+                  </rdf:Description>
+                </j.0:hasPart>
+                <j.0:hasPart>
+                  <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/webresources/providers/ByteBufferProvider.java">
+                    <rdfs:label>ByteBufferProvider.java</rdfs:label>
+                    <j.0:format>text/plain</j.0:format>
+                  </rdf:Description>
+                </j.0:hasPart>
+              </j.3:Collection>
+            </j.0:hasPart>
+            <j.0:hasPart>
+              <rdf:Description rdf:about="repo:x1ckc8vct9oy1fuxraq4lii7o/dundry/webresources/Tasks.java">
+                <rdfs:label>Tasks.java</rdfs:label>
+                <j.0:format>text/plain</j.0:format>
+              </rdf:Description>
+            </j.0:hasPart>
+          </j.3:Collection>
+        </j.0:hasPart>
+      </j.3:Collection>
+    </j.0:hasPart>
   </j.3:Collection>
 </rdf:RDF>

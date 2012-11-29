@@ -47,7 +47,7 @@ public class DataCiteSubmitTest {
         XMLStreamWriter writer = xof.createXMLStreamWriter(out);
                 //new IndentingXMLStreamWriter(xof.createXMLStreamWriter(out));
         
-        instance.toDataCite(data.getResource("http://example.com/res"), doi, writer);
+        instance.toDataCite(data.getResource("repo:x1ckc8vct9oy1fuxraq4lii7o"), doi, writer);
                 
         // Validate
         Validator validator = schema.newValidator();
