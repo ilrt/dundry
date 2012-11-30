@@ -109,7 +109,8 @@ public class FileSystemSource {
             Files.newDirectoryStream(start)) 
         {
             for (Path p : ds) {
-                subDirs.add(getTreeAt(p));
+                // Check here in case we have a sym link to nothingness
+                if (Files.exists(p)) subDirs.add(getTreeAt(p));
             }
         }
         
@@ -118,9 +119,9 @@ public class FileSystemSource {
     
     public static void main(String... args) throws IOException {
         FileSystemSource instance = new FileSystemSource("test-fs");
-        Path p = instance.getPath("test-fs/RDSF_MV/nfs3-exports/marfc-cregan-2011/ACRC_Test_Area/export/Data-Bris/The Advisory Circle");
-        System.err.println(p);
-        Tree<String> t = instance.getTreeAt("test-fs/RDSF_MV/nfs3-exports/marfc-cregan-2011/ACRC_Test_Area/export/Data-Bris");
-        System.err.println(t);
+        Path p = instance.getPath("/RDSF_MV/nfs3-exports/marfc-cregan-2011/ACRC_Test_Area/export/Data-Bris");
+        System.out.println(p);
+        Tree<String> t = instance.getTreeAt("/RDSF_MV/nfs3-exports/marfc-cregan-2011/ACRC_Test_Area/export/Data-Bris");
+        System.out.println(t);
     }
 }
