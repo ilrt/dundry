@@ -191,7 +191,8 @@ public class Repository {
      * deposit)
      */
     public void makeDeposit(JobDetail depositTask, String id, String source) throws SchedulerException { 
-        ensureState(id, EnumSet.of(State.Created));
+        // We permit additions even in deposited state
+        ensureState(id, EnumSet.of(State.Created, State.Deposited));
         
         Resource prov = getProvenanceMetadata(id);
         prov.addProperty(DCTerms.source, source);
