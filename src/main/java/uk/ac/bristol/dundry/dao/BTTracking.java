@@ -32,16 +32,18 @@ public class BTTracking {
     private final ConcurrentMap<Path, Boolean> seenTorrentFiles;
     private final InetAddress address;
     private final String publishBase;
+    private final boolean seedTorrents;
 
-    public BTTracking(String publishBase) throws IOException, NoSuchAlgorithmException {
-        log.info("Starting up bittorrent");
+    public BTTracking(String publishBase, boolean seedTorrents) throws IOException, NoSuchAlgorithmException {
+        log.info("Starting up bittorrent. Seed torrents? {}", seedTorrents);
         this.publishBase = publishBase;
+        this.seedTorrents = seedTorrents;
         address = InetAddress.getLocalHost();
         log.info("Address is {}", address.getHostAddress());
         trackedTorrents = new ConcurrentHashMap<>();
         clients = new ConcurrentHashMap<>();
         seenTorrentFiles = new ConcurrentHashMap<>();
-        loadNewTorrents(Paths.get(publishBase));
+        if (seedTorrents) loadNewTorrents(Paths.get(publishBase));
         purger = new Thread(new Purger(), "Torrent client purger");
         purger.setDaemon(true);
         purger.start(); // may not be a good idea? Could quartz do this work instead?
@@ -161,8 +163,9 @@ public class BTTracking {
                 for (TrackedTorrent torrent : trackedTorrents.values()) {
                     torrent.collectUnfreshPeers();
                 }
+                
                 try {
-                    loadNewTorrents(Paths.get(publishBase));
+                    if (seedTorrents) loadNewTorrents(Paths.get(publishBase));
                 } catch ( IOException | NoSuchAlgorithmException ex) {
                     log.error("Issue finding new torrents", ex);
                 }
