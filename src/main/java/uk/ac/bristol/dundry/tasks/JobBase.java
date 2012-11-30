@@ -35,8 +35,11 @@ public abstract class JobBase implements Job {
     @Override
     final public void execute(JobExecutionContext jec) throws JobExecutionException {
         JobDataMap jobData = jec.getMergedJobDataMap();
-        
-        
+        execute(jobData);
+    }
+    
+    // Convenience for running jobs outside quartz
+    public void execute(JobDataMap jobData) throws JobExecutionException {
         Repository repo = (Repository) jobData.get(REPOSITORY);
         
         String id = jobData.getString(ID);

@@ -419,4 +419,28 @@ public class Repository {
                     allowed
                     ));
     }
+    
+    /**
+     * A special 'out of band, be careful' way to run tasks
+     * For admins only! Task may not work properly, depending on state of the
+     * deposit (e.g. files may be not be in expected positions)
+     * @param taskClassnames 
+     */
+    public void executeTasks(String id, List<String> taskClassnames) throws Exception {
+        List<Class<? extends Job>> jobs = getJobsFromClassNames(taskClassnames);
+        
+        JobDataMap jobData = new JobDataMap();
+        jobData.put(JobBase.ID, id);
+        jobData.put(JobBase.REPOSITORY, this);
+        
+        // Copy in job params
+        for (Entry<Object, Object> e : jobProperties.entrySet()) {
+            jobData.put((String) e.getKey(), (String) e.getValue());
+        }
+        
+        for (Class<? extends Job> job: jobs) {
+            JobBase inst = (JobBase) job.newInstance();
+            inst.execute(jobData);
+        }
+   }
 }

@@ -1,11 +1,13 @@
 package uk.ac.bristol.dundry.webresources;
 
+import com.google.common.base.Joiner;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.DCTerms;
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -155,6 +157,20 @@ public class Deposit {
         if (!repository.hasId(item)) return Response.status(Status.NOT_FOUND).build();
         
         repository.delete(item);
+        
+        return Response.ok().build();
+    }
+    
+    @Path("{item}/run")
+    @POST
+    @Consumes("application/x-www-form-urlencoded")
+    public Response runTasks(@PathParam("item") String item, @FormParam("class") List<String> classes) throws Exception {
+        log.info("Run tasks: {} [{}]", item, Joiner.on(" , ").join(classes));
+        
+        // Does item exist?
+        if (!repository.hasId(item)) return Response.status(Status.NOT_FOUND).build();
+        
+        repository.executeTasks(item, classes);
         
         return Response.ok().build();
     }
