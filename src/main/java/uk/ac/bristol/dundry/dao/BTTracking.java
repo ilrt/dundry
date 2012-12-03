@@ -129,8 +129,13 @@ public class BTTracking {
                 // Check real path to avoid relative and sym link issues
                 if (torrentFile != null && 
                         !seenTorrentFiles.containsKey(torrentFile.toRealPath())) {
-                    // Real path-ify to avoid case where base contains symlinks
-                    addTorrent(torrentFile, pubDir.toRealPath().getParent());
+                    try {
+                        // Real path-ify to avoid case where base contains symlinks
+                        addTorrent(torrentFile, pubDir.toRealPath().getParent());
+                    } catch (Exception e) {
+                        // Log issues and move on
+                        log.error("Issue loading {}: {}", torrentFile, e);
+                    }
                 }
             }
         }
@@ -148,7 +153,7 @@ public class BTTracking {
 
         return null;
     }
-
+    
     class Purger implements Runnable {
 
         @Override
