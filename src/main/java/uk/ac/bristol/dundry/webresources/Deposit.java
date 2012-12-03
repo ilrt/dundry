@@ -165,13 +165,14 @@ public class Deposit {
     @POST
     @Consumes("application/x-www-form-urlencoded")
     public Response runTasks(@PathParam("item") String item, @FormParam("class") List<String> classes) throws Exception {
-        log.info("Run tasks: {} [{}]", item, Joiner.on(" , ").join(classes));
+        String classSummary = Joiner.on(" , ").join(classes);
+        log.info("Run tasks: {} [{}]", item, classSummary);
         
         // Does item exist?
         if (!repository.hasId(item)) return Response.status(Status.NOT_FOUND).build();
         
         repository.executeTasks(item, classes);
         
-        return Response.ok().build();
+        return Response.ok("That all seems to have worked\n" + classSummary + "\n").build();
     }
 }
