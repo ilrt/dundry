@@ -98,15 +98,15 @@ public class BTTracker {
         
         TrackedTorrent tt = trackedTorrents.get(infoHash);
         
-        Map<String, TrackedPeer> peers = tt.getPeers();
-        if (!peers.containsKey(peerIdHash) && event != RequestEvent.STARTED) {
-            String allPeers = Joiner.on(" , ").join(peers.keySet());
-            log.warn("Peer {} is unknown. I know [{}].", peerIdHash, allPeers);
+        // If we've missed a peer's STARTED event (e.g. we've restarted) then
+        // carry on regardless.
+        if (!tt.getPeers().containsKey(peerIdHash) && event != RequestEvent.STARTED) {
+            log.warn("Peer {} is unknown (and already started). Trying to continue.", peerIdHash);
             
-            // I think we seem sometimes miss started events?
-            if (event == RequestEvent.NONE) event = RequestEvent.STARTED;
+            // Create the peer
+            tt.addPeer(new TrackedPeer(tt, ip, port, ByteBuffer.wrap(peerId)));
         }
-                        
+        
         TrackedPeer peer = tt.update(
                             event,
                             ByteBuffer.wrap(peerId), 

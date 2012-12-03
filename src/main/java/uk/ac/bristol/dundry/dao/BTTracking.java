@@ -43,7 +43,7 @@ public class BTTracking {
         trackedTorrents = new ConcurrentHashMap<>();
         clients = new ConcurrentHashMap<>();
         seenTorrentFiles = new ConcurrentHashMap<>();
-        if (seedTorrents) loadNewTorrents(Paths.get(publishBase));
+        loadNewTorrents(Paths.get(publishBase));
         purger = new Thread(new Purger(), "Torrent client purger");
         purger.setDaemon(true);
         purger.start(); // may not be a good idea? Could quartz do this work instead?
@@ -97,11 +97,13 @@ public class BTTracking {
         seenTorrentFiles.put(torrentFile.toAbsolutePath(), Boolean.TRUE);
         trackedTorrents.put(tracked.getHexInfoHash(), tracked);
 
-        Client client = new Client(address, shared);
-        clients.put(torrent.getHexInfoHash(), client);
-        client.share();
-
-        log.info("Sharing {}", torrentFile);
+        if (seedTorrents) {
+            Client client = new Client(address, shared);
+            clients.put(torrent.getHexInfoHash(), client);
+            client.share();
+        
+            log.info("Seeding {}", torrentFile);
+        }
     }
 
     /**
@@ -165,7 +167,7 @@ public class BTTracking {
                 }
                 
                 try {
-                    if (seedTorrents) loadNewTorrents(Paths.get(publishBase));
+                    loadNewTorrents(Paths.get(publishBase));
                 } catch ( IOException | NoSuchAlgorithmException ex) {
                     log.error("Issue finding new torrents", ex);
                 }
