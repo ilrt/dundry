@@ -55,10 +55,19 @@ public class MakeTorrentTask extends JobBase {
         final List<File> files = new ArrayList<>();
 
         Files.walkFileTree(parent, new SimpleFileVisitor<Path>() {
-
+            
+            @Override
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
+                if (dir.getFileName().startsWith(".")) return FileVisitResult.SKIP_SUBTREE;
+                else return FileVisitResult.CONTINUE;
+            }
+            
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                files.add(file.toFile());
+                Path name = file.getFileName();
+                
+                // Skip torrent files and hidden files
+                if (!name.endsWith(".torrent") && !name.startsWith(".")) files.add(file.toFile());
                 return FileVisitResult.CONTINUE;
             }
         });
