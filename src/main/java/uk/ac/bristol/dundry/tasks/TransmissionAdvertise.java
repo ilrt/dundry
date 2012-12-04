@@ -3,8 +3,6 @@ package uk.ac.bristol.dundry.tasks;
 import com.hp.hpl.jena.rdf.model.Resource;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionException;
 import org.slf4j.LoggerFactory;
