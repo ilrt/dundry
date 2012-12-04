@@ -19,7 +19,9 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.bristol.dundry.Util;
 import uk.ac.bristol.dundry.dao.Repository;
+import uk.ac.bristol.dundry.vocabs.RepositoryVocab;
 
 /**
  *
@@ -33,10 +35,13 @@ public class MakeTorrentTask extends JobBase {
     public void execute(Repository repo, Resource item, Resource prov, String id,
             Path root, JobDataMap jobData) throws JobExecutionException {
         try {
-            Path torrentPath = root.resolve(id + ".torrent");
-            log.debug("Make torrent file {} from <{}>", torrentPath, root);
-            makeTorrentFile(root, torrentPath,
+            Path torrentPath = Paths.get(id + ".torrent");
+            Path fullPath = root.resolve(torrentPath);
+            log.debug("Make torrent file {} from <{}>", fullPath, root);
+            makeTorrentFile(root, fullPath,
                     jobData.getString("torrent.tracker"));
+            Resource torrentRes = Util.resolve(item, torrentPath);
+            prov.addProperty(RepositoryVocab.torrent, torrentRes);
         } catch (NoSuchAlgorithmException | InterruptedException |
                 IOException | URISyntaxException ex) {
             throw new JobExecutionException("Issue creating torrent", ex);
