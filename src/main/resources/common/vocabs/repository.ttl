@@ -22,3 +22,8 @@
 	a rdf:Property ;
 	rdfs:label "Base directory"@en ;
 	rdfs:comment "The base directory for file storage associated with this deposit."@en .
+
+<#torrent>
+        a rdf:Property ;
+        rdfs:label "Torrent file"@en ;
+        rdfs:comment "A torrent corresponding to this deposit."@en .
