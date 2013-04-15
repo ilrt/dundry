@@ -120,16 +120,16 @@ public class Deposit {
     @Path("{item}/source")
     @POST
     @Consumes("application/x-www-form-urlencoded")
-    public Response addContent(@PathParam("item") String item, @FormParam("source") String source) throws SchedulerException {
-        log.info("Add content from source {} to {}", source, item);
+    public Response addContent(@PathParam("item") String item, @FormParam("source[]") List<String> sources) throws SchedulerException {
+        log.info("Add content from source {} to {}", sources, item);
         
         // Check we have something to add to
         if (!repository.hasId(item)) return Response.status(Response.Status.NOT_FOUND).build();
         
         java.nio.file.Path repoDir = repository.getDepositPathForId(item);
-        JobDetail depositTask = sourceFS.depositItem(source, item, repoDir);
+        JobDetail depositTask = sourceFS.depositItem(sources, item, repoDir);
         
-        repository.makeDeposit(depositTask, item, source);
+        repository.makeDeposit(depositTask, item, sources);
         
         return Response.ok().build();
     }

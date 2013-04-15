@@ -3,7 +3,6 @@ package uk.ac.bristol.dundry.tasks;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.logging.Level;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -26,10 +25,10 @@ public class CopyTask implements Job {
     @Override
     public void execute(JobExecutionContext jec) throws JobExecutionException {
         JobDataMap jobData = jec.getMergedJobDataMap();
-        String from = jobData.getString(FROM);
+        String[] fromPaths = jobData.getString(FROM).split("\n");
         String to = jobData.getString(TO);
         try {
-            copyDirectory(Paths.get(from), Paths.get(to));
+            for (String from: fromPaths) copyDirectory(Paths.get(from), Paths.get(to));
             //log.info("COPIED, now sleeping.....");
             //Thread.sleep(30 * 1000);
         } catch (IOException ex) {

@@ -49,18 +49,28 @@ public class FileSystemSource {
     }
     
     /**
-     * Deposit an item (
-     * @param itemId
-     * @param depositLocation
-     * @return 
+     * Deposit item(s) in deposit location
+     * @param sourceItemIds sources 
+     * @param repository deposit id
+     * @param depositLocation target
+     * @return Job that will copy items across
      */
-    public JobDetail depositItem(String sourceItemId, String depositId, Path depositLocation) {
-        Path sourcePath = getPath(sourceItemId);
+    public JobDetail depositItem(List<String> sourceItemIds, String depositId, Path depositLocation) {
+        // Encode source paths for job, separated by '\n'
+        StringBuilder sourcePaths = new StringBuilder();
+        boolean first = true;
+        for (String sourceItemId: sourceItemIds) {
+            Path sourcePath = getPath(sourceItemId).toAbsolutePath();
+            if (!first) sourcePaths.append("\n");
+            else first = false;
+            sourcePaths.append(sourcePath.toString());
+        }
+        
         // Create context for these jobs
         JobDataMap jobData = new JobDataMap();
         jobData.putAll(
                 ImmutableMap.of(
-                    CopyTask.FROM, sourcePath.toAbsolutePath().toString(),
+                    CopyTask.FROM, sourcePaths.toString(),
                     CopyTask.TO, depositLocation.toAbsolutePath().toString())); 
         return newJob(CopyTask.class)
                     .withIdentity(CopyTask.class.getName(), depositId)

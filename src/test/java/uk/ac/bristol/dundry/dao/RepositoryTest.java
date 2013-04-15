@@ -81,7 +81,7 @@ public class RepositoryTest {
         
         JobDetail depJob = newJob(NoOpJob.class).build();
         
-        instance.makeDeposit(depJob, "2", "test-source");
+        instance.makeDeposit(depJob, "2", Collections.singletonList("test-source"));
         
         verify(instance.taskManager).executeJobsInOrder(anyString(), anyList());
     }

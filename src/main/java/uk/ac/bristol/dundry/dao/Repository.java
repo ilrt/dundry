@@ -190,12 +190,14 @@ public class Repository {
      * @param source An identifier for the source (will be recorded with
      * deposit)
      */
-    public void makeDeposit(JobDetail depositTask, String id, String source) throws SchedulerException { 
+    public void makeDeposit(JobDetail depositTask, String id, List<String> sources) throws SchedulerException { 
         // We permit additions even in deposited state
         ensureState(id, EnumSet.of(State.Created, State.Deposited));
         
         Resource prov = getProvenanceMetadata(id);
-        prov.addProperty(DCTerms.source, source);
+        for (String source: sources) {
+            prov.addProperty(DCTerms.source, source);
+        }
         prov.addLiteral(DCTerms.dateSubmitted, Calendar.getInstance());
         
         startProcess(id, prov,
