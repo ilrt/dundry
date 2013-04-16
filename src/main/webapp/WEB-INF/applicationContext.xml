@@ -92,6 +92,7 @@
         </constructor-arg>
         <constructor-arg>
             <list>
+                <value>source</value>
                 <value>contributors</value>
                 <value>creators</value>
                 <value>subjects</value>
