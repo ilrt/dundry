@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 import org.junit.Ignore;
 import org.junit.Test;
 import uk.ac.bristol.dundry.model.ResourceCollection;
+import static org.hamcrest.CoreMatchers.*;
 
 /**
  *
@@ -184,7 +185,26 @@ public class RdfResourceMappingProviderTest {
         in = this.getClass().getResourceAsStream("/ex3.json");
         r = i.readFrom(Resource.class, null, null, MediaType.valueOf("application/json"), null, in);
         expected = FileManager.get().loadModel("ex3.ttl");
+        //dump(expected, r);
         assertTrue("ex3 (empty id) json correct", expected.isIsomorphicWith(r.getModel()));
+    }
+    
+    @Test
+    public void testReadEmptyId() throws Exception {
+        RdfResourceMappingProvider i = get(
+                "contributor", "http://purl.org/dc/terms/contributor",
+                "creator", "http://purl.org/dc/terms/creator",
+                "source", "http://purl.org/dc/terms/source",
+                "title", "http://purl.org/dc/terms/title",
+                "alternative", "http://purl.org/dc/terms/alternative",
+                "description", "http://purl.org/dc/terms/description"
+                );
+        InputStream in = this.getClass().getResourceAsStream("/ex4.json");
+        Resource r = i.readFrom(Resource.class, null, null, MediaType.valueOf("application/json"), null, in);
+        Model expected = FileManager.get().loadModel("ex4.ttl");
+        assertThat(r.getModel().size(), is(5L));
+        
+        assertTrue("ex4 (empty id) json correct", expected.isIsomorphicWith(r.getModel()));
     }
     
     @Ignore // I'd like this to not explode :-(
@@ -224,5 +244,14 @@ public class RdfResourceMappingProviderTest {
         r = i.readFrom(Resource.class, null, null, MediaType.valueOf("application/json"), null, in);
         expected = FileManager.get().loadModel("ex3.ttl");
         assertTrue("ex3 (empty id) json correct", expected.isIsomorphicWith(r.getModel()));
+    }
+
+    private void dump(Model expected, Resource r) {
+        System.out.println("==== Expected ====");
+        expected.write(System.out, "N-TRIPLE");
+        System.out.println("==== Got ====");
+        r.getModel().write(System.out, "N-TRIPLE");
+        System.out.println("========");
+        System.out.flush();
     }
 }

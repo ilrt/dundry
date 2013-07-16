@@ -3,6 +3,7 @@
 
 <repo:18t28me0wbjal1qy480xpnw0br>
     dc:contributor <http://example/id2> ;
+    dc:contributor [ rdfs:label "label1" ] ;
     dc:source <file:///Users/pldms/Development/Projects/2011/data.bris/dundry/working/example/> ;
     dc:title "TitleEx" .
 

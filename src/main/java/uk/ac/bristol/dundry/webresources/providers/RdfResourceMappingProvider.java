@@ -305,6 +305,7 @@ public class RdfResourceMappingProvider
                 // This seems too complex. IS -> String -> JSONObject -> XSR
                 String jsonIn = CharStreams.toString(new InputStreamReader( in, "UTF-8" ) );
                 JSONObject o = new JSONObject(jsonIn);
+                //System.out.printf("Got JSON:\n%s\n", o.toString(2));
                 MappedNamespaceConvention con = new MappedNamespaceConvention();
                 return new MappedXMLStreamReader(o, con);
             default:
@@ -344,10 +345,14 @@ public class RdfResourceMappingProvider
         StringBuilder content = null;
         List<Attribute> properties = null;
         int level = 0;
+        
         while (reader.hasNext()) {
             int et = reader.next();
             
             if (XMLStreamReader.CHARACTERS == et) {
+                
+                //System.out.printf("'%s'\n", reader.getText());
+                
                 if (properties != null)
                     log.warn("Characters found unexpectedly. Mixed content. Continuing...");
                 if (content == null) content = new StringBuilder();
@@ -355,14 +360,22 @@ public class RdfResourceMappingProvider
                 //System.err.println("Chars: " + reader.getText());
             }
             else if (XMLStreamReader.START_ELEMENT == et) {
+                
+                //System.out.printf("<%s>\n", reader.getLocalName());
+                
                 if (content != null)
                     log.warn("Tag found unexpectedly. Mixed content. Continuing...");
                 if ("id".equals(reader.getLocalName())) {
                     // id is special.
                     id = reader.getElementText();
-                    
+                    //System.out.printf("'%s' (id)\n", id);
                     // Jettison bug. We should be at end element now
                     if (!reader.isEndElement()) reader.next();
+                    /*if (!reader.isEndElement()) {
+                        System.out.printf("Hey! this ought to be an end element: %s\n", reader);
+                    } else {
+                        System.out.printf("</%s> (c)\n", reader.getLocalName());
+                    }*/
                 }
                 else {
                     String name = reader.getLocalName();
@@ -372,18 +385,16 @@ public class RdfResourceMappingProvider
                     } else {
                         if (properties == null) properties = new LinkedList<>();
                         
-                        //System.err.println("START: " + reader.getLocalName());
                         Attribute a = 
                                 new Attribute(
                                     keyToProperty.get(name),
                                     parseRDFNode(reader, m));
-                        //System.err.printf("Add property: <%s> <%s>\n", a.predicate, a.value);
                         properties.add(a);
                     }
                 }
             }
             else if (XMLStreamReader.END_ELEMENT == et) {
-                //System.err.println("END: " + level + " " + reader.getLocalName());
+                //System.out.printf("</%s>\n", reader.getLocalName());
                 level--;
                 if (level < 0) break;
             }
@@ -391,7 +402,7 @@ public class RdfResourceMappingProvider
         
         /** We treat empty content as missing on the RDF side **/
         if (content != null && content.length() == 0) return null;
-        if (id != null && id.isEmpty()) return null;
+        //if (id != null && id.isEmpty() && properties.isEmpty()) return null;
         
         /** We have content: create a literal **/
         if (content != null) return m.createLiteral(content.toString());
@@ -405,9 +416,15 @@ public class RdfResourceMappingProvider
         if (properties != null) {
             for (Attribute a: properties) {
                 // If object is not null add property
-                if (a.value != null) r.addProperty(a.predicate, a.value);
+                if (a.value != null) {
+                    r.addProperty(a.predicate, a.value);
+                }
             }
         }
+        
+        // if r is an bNode with no properties ignore it
+        // intermediate bNodes are fine, leaves aren't
+        if (r.isAnon() && !r.hasProperty(null)) return null;
         
         return r;
     }
