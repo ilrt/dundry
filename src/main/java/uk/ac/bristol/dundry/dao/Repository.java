@@ -202,7 +202,29 @@ public class Repository {
                 State.Depositing, State.Deposited,
                 Collections.singletonList(depositTask), postDepositJobs, jobProperties);
     }
-
+    
+    /**
+     * Put content into the repository
+     *
+     * @param depositTask
+     * @param id The repository id
+     * @param source An identifier for the source (will be recorded with
+     * deposit)
+     */
+    public void removeDeposit(String id, String source) throws SchedulerException { 
+        // We permit removals in deposited state
+        ensureState(id, EnumSet.of(State.Deposited));
+        
+        Resource prov = getProvenanceMetadata(id);
+        prov.addProperty(DCTerms.source, source);
+        prov.addLiteral(DCTerms.dateSubmitted, Calendar.getInstance());
+        
+        /*startProcess(id, prov,
+                State.Depositing, State.Deposited,
+                Collections.singletonList(depositTask), postDepositJobs, jobProperties);*/
+        
+    }
+    
     public void publish(String id) throws SchedulerException {
         ensureState(id, EnumSet.of(State.Deposited));
         

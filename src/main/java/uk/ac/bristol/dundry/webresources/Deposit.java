@@ -134,6 +134,14 @@ public class Deposit {
         return Response.ok().build();
     }
     
+    // Remove and item from a deposit
+    @Path("{item}/source/{target: .*}")
+    @DELETE
+    public Response removeContent(@PathParam("item") String item, @PathParam("target") String target) {
+        log.info("DELETE from item {} path {}", item, target);
+        return Response.ok().build();
+    }
+    
     // Publish
     @Path("{item}/publish")
     @POST
