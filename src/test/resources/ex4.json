@@ -1,0 +1,19 @@
+{"deposit": {
+  "id": "18t28me0wbjal1qy480xpnw0br",
+  "title": "TitleEx",
+  "alternative": "",
+  "contributors": [{"contributor": {
+    "id": "",
+    "label": ""
+  }}],
+  "creators": [
+    {"creator": {
+      "id": "http://example/id2",
+      "label": "label2"
+    }},
+    {"creator": {
+      "id": "",
+      "label": "Foo"
+    }}
+  ]
+}}

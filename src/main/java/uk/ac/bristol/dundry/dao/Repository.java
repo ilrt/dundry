@@ -117,10 +117,20 @@ public class Repository {
                 + "  FILTER (?state != \"Deleted\") "
                 + "}");
         List<Resource> ids = new LinkedList<>();
+        
+        // Keep track of subject, to handle multiple values
+        Resource currentItem = null;
         while (r.hasNext()) {
             QuerySolution nxt = r.next();
             // get item and copy to resultModel
             Resource item = nxt.getResource("g").inModel(resultModel);
+            
+            // New item found
+            if (!item.equals(currentItem)) {
+                currentItem = item;
+                ids.add(item);
+            }
+            
             item.addProperty(RDFS.label, nxt.get("title"));
             item.addProperty(RepositoryVocab.state, nxt.get("state"));
             if (nxt.contains("source")) {
@@ -132,7 +142,6 @@ public class Repository {
             if (nxt.contains("project")) {
                 item.addProperty(RepositoryVocab.project, nxt.get("project"));
             }
-            ids.add(item);
         }
         log.info("Ids is: {}", ids);
         return new ResourceCollection(ids);
@@ -190,12 +199,14 @@ public class Repository {
      * @param source An identifier for the source (will be recorded with
      * deposit)
      */
-    public void makeDeposit(JobDetail depositTask, String id, String source) throws SchedulerException { 
+    public void makeDeposit(JobDetail depositTask, String id, List<String> sources) throws SchedulerException { 
         // We permit additions even in deposited state
         ensureState(id, EnumSet.of(State.Created, State.Deposited));
         
         Resource prov = getProvenanceMetadata(id);
-        prov.addProperty(DCTerms.source, source);
+        for (String source: sources) {
+            prov.addProperty(DCTerms.source, source);
+        }
         prov.addLiteral(DCTerms.dateSubmitted, Calendar.getInstance());
         
         startProcess(id, prov,
